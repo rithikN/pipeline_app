@@ -1,0 +1,39 @@
+/* Target only the top-level TaskMancerPage widget */
+QWidget#TaskMancerPage {
+    /* “Black” background */
+    background-color: #010409;
+
+    /* White text everywhere on this widget, if desired */
+    color: #E1E1E8;
+}
+
+QWidget#shared_container {
+    background-color:  #252B36;;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+
+
+QWidget#task_and_file_container {
+    background-color: #252B36;;  /* Light gray background */
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+
+QSplitter::handle {
+    background-color: transparent; /* Make the handles transparent */
+    border: none; /* Remove borders around handles */
+}
+
+QSplitter::handle:horizontal {
+    width: 0px; /* Remove horizontal handle */
+}
+
+QSplitter::handle:vertical {
+    height: 0px; /* Remove vertical handle */
+}

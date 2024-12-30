@@ -1,0 +1,21 @@
+/* login_style.css */
+
+/* General style for the login page */
+
+QFrame#right_frame,
+QFrame#right_frame * {
+    background-color: #E1E1E8;
+    color: #010409;
+}
+
+
+QPushButton#login_pushButton  {
+    background-color: #010409;
+    color: #E1E1E8;
+}
+
+
+QLabel#label {
+    font-weight: bold;
+    font-size: 24px;
+}

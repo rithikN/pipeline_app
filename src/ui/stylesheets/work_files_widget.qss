@@ -1,0 +1,29 @@
+
+QWidget#WorkFilesForm {
+    background-color: #010409;
+    color: #E1E1E8;
+    font-size: 14px;
+}
+
+
+/* ==============================
+   List widget
+   ============================== */
+QListWidget#workFiles_listWidget {
+    background-color: #010409;
+    border: none;
+    color: #E1E1E8;
+}
+
+QListWidget#workFiles_listWidget::item {
+    background-color: #E1E1E8;
+    border-radius: 8px;
+    border: none;
+}
+
+/* Selected item highlight */
+QListWidget#workFiles_listWidget::item:selected {
+    border: 2px solid #0078D7;
+    border-radius: 10px;
+    margin: 2px;
+}

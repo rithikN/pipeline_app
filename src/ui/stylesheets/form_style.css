@@ -1,0 +1,21 @@
+/* form_style.css */
+
+/* General style for the form page*/
+
+QFrame#right_frame,
+QFrame#right_frame * {
+    background-color: #E1E1E8;
+    color: #010409;
+}
+
+
+QLabel#user_label {
+    font-weight: bold;
+    font-size: 24px;
+}
+
+QPushButton#previous_button,
+QPushButton#next_button  {
+    background-color: #010409;
+    color: #E1E1E8;
+}

@@ -1,0 +1,188 @@
+/* Global styles for the app */
+* {
+    font-family: Inter;
+}
+
+QWidget {
+    background-color: #010409;  /* White background */
+    color: #E1E1E8;  /* Black text */
+}
+
+/* QLabel style */
+QLabel {
+    color:#010409;  /* Black text for labels */
+    font-size: 1.2em;
+}
+
+/* Button styles */
+QPushButton {
+    background-color: #010409;  /* Black button background */
+    color: #E1E1E8;  /* White text */
+    border-radius: 5px;
+    font-size: 1.1em;
+    padding: 8px 15px;
+    border: none;
+}
+
+QPushButton:hover {
+    background-color: #333333;  /* Darker grey on hover */
+}
+
+/* Input Fields */
+QLineEdit {
+    background-color: #f4f4f4;  /* Light grey background for inputs */
+    color: #000000;  /* Black text */
+    border: 1px solid #000000;  /* Black border */
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 1em;
+}
+
+/* Focused input fields */
+QLineEdit:focus {
+    border: 2px solid #333333;  /* Dark grey on focus */
+    background-color: #eaeaea;  /* Slightly darker grey on focus */
+}
+
+/* Scroll Area */
+QScrollArea {
+    /* Match the dark background seen in the screenshot */
+    background: #010409;
+    border: none;
+}
+
+/* ------ VERTICAL SCROLLBAR ------ */
+QScrollBar:vertical {
+    /* Slightly narrower than default */
+    width: 8px;
+    /* Dark track background to blend in with the UI */
+    background:#010409;
+    margin: 0px 2px 0px 0px;
+    border-radius: 10px;
+}
+
+/* Scroll handle (the draggable thumb) */
+QScrollBar::handle:vertical {
+    /* Medium-dark gray so it’s visible against the track */
+    background: #E1E1E8;
+    min-height: 20px;
+    border-radius: 10px;
+}
+
+/* Make the handle lighten on hover to show interactivity */
+QScrollBar::handle:vertical:hover {
+    background:  #E1E1E8;
+    border-radius: 10px;
+}
+
+/* Remove the up/down arrow buttons */
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0px;
+    background: none;
+    border: none;
+}
+
+/* ------ HORIZONTAL SCROLLBAR ------ */
+QScrollBar:horizontal {
+    height: 8px;
+    background: #1e1e1e;
+    margin: 2px 0px 0px 2px;
+    border-radius: 4px;
+}
+
+QScrollBar::handle:horizontal {
+    background: #666666;
+    min-width: 20px;
+    border-radius: 4px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: #888888;
+}
+
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal {
+    width: 0px;
+    background: none;
+    border: none;
+}
+/* Tabs */
+QTabWidget::pane {
+    border: none;
+    background:  #000000;  /* Black background */
+}
+
+
+/* Dropdowns */
+QComboBox {
+    background-color: #f4f4f4;  /* Light grey dropdown */
+    color: #000000;  /* Black text */
+    border: 2px solid #000000;  /* Black border */
+    padding: 5px;
+    border-radius: 5px;
+    min-width: 120px;
+}
+
+QComboBox::drop-down {
+    background: #E1E1E8;  /* White dropdown arrow */
+    border: none;
+    width: 20px;
+    subcontrol-position: right center;
+    background: transparent;
+}
+
+/* Explicit arrow icon */
+QComboBox::down-arrow {
+    image: url("resources/icons/down-arrow.png");
+    width: 15px;
+    height: 15px;
+}
+
+QComboBox QAbstractItemView {
+    background: #E1E1E8;  /* White dropdown list */
+    color: #000000;
+    border: 1px solid #cccccc;
+}
+
+/* Focused elements */
+QLineEdit:focus, QComboBox:focus {
+    border: 2px solid #000000;  /* Solid black border on focus */
+    background-color: #eaeaea;
+    color: #000000;  /* Black text */
+}
+
+QFrame#log_line,
+QFrame#header_line {
+    background-color: #E1E1E8;
+}
+
+
+QLabel#header_label {
+    color: #E1E1E8;  /* Black text for labels */
+    font-size: 1.2em;
+}
+
+QProgressBar#progress_bar {
+    background-color: #E1E1E8;
+}
+
+QMessageBox#msg_box {
+    background-color: #E1E1E8;
+}
+
+QMessageBox QLabel {
+    background-color: #E1E1E8;
+    color: #000000;  /* Ensure text is black and visible */
+    font-size: 14px; /* Adjust text size */
+}
+QMessageBox QPushButton {
+    background-color: #4C72B0; /* Button color */
+    color: white;              /* Button text color */
+    border: none;
+    border-radius: 5px;        /* Rounded corners */
+    padding: 5px 10px;
+}
+QMessageBox QPushButton:hover {
+    background-color: #3b5998; /* Darker button color on hover */
+}

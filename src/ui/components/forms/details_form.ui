@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>DetailsForm</class>
+    <widget class="QWidget" name="DetailsForm">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>535</width>
+                <height>438</height>
+            </rect>
+        </property>
+        <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+            </sizepolicy>
+        </property>
+        <property name="minimumSize">
+            <size>
+                <width>510</width>
+                <height>225</height>
+            </size>
+        </property>
+        <property name="windowTitle">
+            <string>Work Files Details</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+                <widget class="QFrame" name="MainContainer">
+                    <property name="frameShape">
+                        <enum>QFrame::Box</enum>
+                    </property>
+                    <property name="frameShadow">
+                        <enum>QFrame::Plain</enum>
+                    </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_2">
+                        <property name="spacing">
+                            <number>6</number>
+                        </property>
+                        <property name="bottomMargin">
+                            <number>6</number>
+                        </property>
+                        <item>
+                            <widget class="QLabel" name="header_label">
+                                <property name="sizePolicy">
+                                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>0</width>
+                                        <height>26</height>
+                                    </size>
+                                </property>
+                                <property name="maximumSize">
+                                    <size>
+                                        <width>16777215</width>
+                                        <height>26</height>
+                                    </size>
+                                </property>
+                                <property name="text">
+                                    <string>Placeholder</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="Line" name="header_line">
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>0</width>
+                                        <height>1</height>
+                                    </size>
+                                </property>
+                                <property name="maximumSize">
+                                    <size>
+                                        <width>16777215</width>
+                                        <height>1</height>
+                                    </size>
+                                </property>
+                                <property name="frameShadow">
+                                    <enum>QFrame::Plain</enum>
+                                </property>
+                                <property name="orientation">
+                                    <enum>Qt::Horizontal</enum>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QFrame" name="main_frame">
+                                <property name="frameShape">
+                                    <enum>QFrame::NoFrame</enum>
+                                </property>
+                                <property name="frameShadow">
+                                    <enum>QFrame::Plain</enum>
+                                </property>
+                                <layout class="QVBoxLayout" name="main_horizontalLayout">
+                                    <property name="spacing">
+                                        <number>0</number>
+                                    </property>
+                                    <property name="bottomMargin">
+                                        <number>0</number>
+                                    </property>
+                                    <item>
+                                        <layout class="QHBoxLayout" name="horizontalLayout">
+                                            <item>
+                                                <widget class="QFrame" name="preview_frame">
+                                                    <property name="sizePolicy">
+                                                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                                                            <horstretch>0</horstretch>
+                                                            <verstretch>0</verstretch>
+                                                        </sizepolicy>
+                                                    </property>
+                                                    <property name="minimumSize">
+                                                        <size>
+                                                            <width>238</width>
+                                                            <height>0</height>
+                                                        </size>
+                                                    </property>
+                                                    <property name="frameShape">
+                                                        <enum>QFrame::NoFrame</enum>
+                                                    </property>
+                                                    <property name="frameShadow">
+                                                        <enum>QFrame::Plain</enum>
+                                                    </property>
+                                                    <property name="lineWidth">
+                                                        <number>0</number>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                            <item>
+                                                <widget class="QTextEdit" name="details_textEdit">
+                                                    <property name="sizePolicy">
+                                                        <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+                                                            <horstretch>0</horstretch>
+                                                            <verstretch>0</verstretch>
+                                                        </sizepolicy>
+                                                    </property>
+                                                    <property name="font">
+                                                        <font>
+                                                            <pointsize>8</pointsize>
+                                                        </font>
+                                                    </property>
+                                                    <property name="mouseTracking">
+                                                        <bool>false</bool>
+                                                    </property>
+                                                    <property name="focusPolicy">
+                                                        <enum>Qt::NoFocus</enum>
+                                                    </property>
+                                                    <property name="accessibleName">
+                                                        <string>v</string>
+                                                    </property>
+                                                    <property name="frameShape">
+                                                        <enum>QFrame::NoFrame</enum>
+                                                    </property>
+                                                    <property name="frameShadow">
+                                                        <enum>QFrame::Plain</enum>
+                                                    </property>
+                                                    <property name="verticalScrollBarPolicy">
+                                                        <enum>Qt::ScrollBarAlwaysOff</enum>
+                                                    </property>
+                                                    <property name="horizontalScrollBarPolicy">
+                                                        <enum>Qt::ScrollBarAlwaysOff</enum>
+                                                    </property>
+                                                    <property name="sizeAdjustPolicy">
+                                                        <enum>QAbstractScrollArea::AdjustIgnored</enum>
+                                                    </property>
+                                                    <property name="undoRedoEnabled">
+                                                        <bool>false</bool>
+                                                    </property>
+                                                    <property name="lineWrapColumnOrWidth">
+                                                        <number>0</number>
+                                                    </property>
+                                                    <property name="readOnly">
+                                                        <bool>true</bool>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                        </layout>
+                                    </item>
+                                    <item>
+                                        <layout class="QHBoxLayout" name="button_horizontalLayout">
+                                            <property name="spacing">
+                                                <number>8</number>
+                                            </property>
+                                            <item>
+                                                <spacer name="horizontalSpacer">
+                                                    <property name="orientation">
+                                                        <enum>Qt::Horizontal</enum>
+                                                    </property>
+                                                    <property name="sizeType">
+                                                        <enum>QSizePolicy::MinimumExpanding</enum>
+                                                    </property>
+                                                    <property name="sizeHint" stdset="0">
+                                                        <size>
+                                                            <width>200</width>
+                                                            <height>20</height>
+                                                        </size>
+                                                    </property>
+                                                </spacer>
+                                            </item>
+                                            <item>
+                                                <widget class="QPushButton" name="delete_button">
+                                                    <property name="sizePolicy">
+                                                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                                                            <horstretch>0</horstretch>
+                                                            <verstretch>0</verstretch>
+                                                        </sizepolicy>
+                                                    </property>
+                                                    <property name="styleSheet">
+                                                        <string notr="true">background-color: #7B0A15; color: #E1E1E8;
+                                                            padding: 5px;
+                                                        </string>
+                                                    </property>
+                                                    <property name="text">
+                                                        <string>Delete</string>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                            <item>
+                                                <widget class="QPushButton" name="explorer_button">
+                                                    <property name="sizePolicy">
+                                                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                                                            <horstretch>0</horstretch>
+                                                            <verstretch>0</verstretch>
+                                                        </sizepolicy>
+                                                    </property>
+                                                    <property name="styleSheet">
+                                                        <string notr="true">background-color: #9C521B; color: #E1E1E8;
+                                                            padding: 5px;
+                                                        </string>
+                                                    </property>
+                                                    <property name="text">
+                                                        <string>Explorer</string>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                            <item>
+                                                <widget class="QPushButton" name="open_button">
+                                                    <property name="sizePolicy">
+                                                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                                                            <horstretch>0</horstretch>
+                                                            <verstretch>0</verstretch>
+                                                        </sizepolicy>
+                                                    </property>
+                                                    <property name="styleSheet">
+                                                        <string notr="true">background-color: #216582; color: #E1E1E8;
+                                                            padding: 5px;
+                                                        </string>
+                                                    </property>
+                                                    <property name="text">
+                                                        <string>Open</string>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                        </layout>
+                                    </item>
+                                </layout>
+                            </widget>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+        </layout>
+    </widget>
+    <resources/>
+    <connections/>
+</ui>
