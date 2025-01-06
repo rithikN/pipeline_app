@@ -41,19 +41,17 @@ class ReviewAreaWidget(QWidget):
 
         # Create a parent container for Task List and Task Details
         container_frame = QFrame()
-        container_frame.setObjectName(u"shared_container")
+        container_frame.setObjectName(u"MainContainer")
         container_frame.setFrameStyle(QFrame.Box | QFrame.Plain)
         container_frame.setLineWidth(1)
         container_layout = QVBoxLayout(container_frame)
         container_layout.setContentsMargins(0, 0, 0, 0)
-        # container_frame.setStyleSheet("background-color: #dfe6f0;")  # Light grayish blue background
 
         # Create horizontal splitter for Task List and Task Details
         task_and_details_splitter = QSplitter(Qt.Horizontal)
         task_and_details_splitter.setObjectName("task_and_file_container")
-        task_and_details_splitter.addWidget(self.task_list_widget)  # Directly add task_list_widget
-        task_and_details_splitter.addWidget(self.task_details_widget)  # Directly add task_details_widget
-        # task_and_details_splitter.setHandleWidth(25)  # Set spacing between frames
+        task_and_details_splitter.addWidget(self.task_list_widget)
+        task_and_details_splitter.addWidget(self.task_details_widget)
         task_and_details_splitter.setStretchFactor(0, 1)
         task_and_details_splitter.setStretchFactor(1, 3)
 

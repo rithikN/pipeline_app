@@ -8,9 +8,9 @@ along with an optional image preview (maintaining a 16:9 aspect ratio).
 import logging
 from typing import Optional, Dict, List
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSizePolicy
-from PySide6.QtCore import Qt, Signal, QRect
-from PySide6.QtGui import QPixmap, QPainter
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSizePolicy, QFrame
+from PySide6.QtCore import Qt, Signal, QRect, QSize
+from PySide6.QtGui import QPixmap, QPainter, QIcon
 
 from ui.components.forms.task_details_form import Ui_TaskDetailsForm
 from ui.components.core_widgets.task_log import TaskLogWidget
@@ -38,15 +38,6 @@ class TaskDetailsWidget(QWidget):
             task_logs_data: Optional[List] = None,
             parent: Optional[QWidget] = None
     ):
-        """
-        Initialize the TaskDetailsWidget.
-
-        Args:
-            title (str): The header label text.
-            task_details_data (dict, optional): Dictionary of task details. Defaults to None.
-            task_logs_data (list, optional): List of task logs. Defaults to None.
-            parent (QWidget, optional): The parent widget, if any. Defaults to None.
-        """
         super().__init__(parent)
         logger.debug("Initializing TaskDetailsWidget.")
 
@@ -63,6 +54,8 @@ class TaskDetailsWidget(QWidget):
         self.header_label = self._ui.header_label
         self.task_details_textEdit = self._ui.task_details_textEdit
         self.taskLog_frame = self._ui.taskLog_frame
+        self.taskLog_frame.setFrameShape(QFrame.NoFrame)  # Remove frame shape
+        self.taskLog_frame.setStyleSheet("border: none;")  # Remove border via stylesheet
         self.preview_frame = self._ui.preview_frame
         self.task_details_textEdit = self._ui.task_details_textEdit
 
@@ -115,6 +108,8 @@ class TaskDetailsWidget(QWidget):
 
         # Hide main layout if no details are provided
         set_layout_visibility(self._ui.verticalLayout_3, bool(self._task_details_data))
+        self._ui.open_button.setIcon(QIcon("resources/icons/task_detail/open_in_kitsu.svg"))
+        self._ui.open_button.setIconSize(QSize(20, 20))
         self._ui.open_button.clicked.connect(
             lambda: self.message_box.show_message(
                 "Yet To Implement",
@@ -247,8 +242,8 @@ if __name__ == "__main__":
         "preview_path": "path/to/preview_image.png",
     }
     task_logs = [
-        {"task_status": "APPROVED", "username": "John Doe", "date": "01-15 10:30", "comment": "Reviewed and approved."},
-        {"task_status": "IN PROGRESS", "username": "Jane Smith", "date": "01-12 14:00", "comment": "Work in progress."},
+        {"status": "APPROVED", "username": "John Doe", "date": "01-15 10:30", "comment": "Reviewed and approved."},
+        {"status": "IN PROGRESS", "username": "Jane Smith", "date": "01-12 14:00", "comment": "Work in progress."},
     ]
 
     widget = TaskDetailsWidget("Task Details", task_details, task_logs)
@@ -265,9 +260,9 @@ if __name__ == "__main__":
     }
 
     widget.task_logs = [
-        {"task_status": "REVIEW", "username": "Michael Brown", "date": "02-10 11:20", "comment": "Needs revision.",
+        {"status": "REVIEW", "username": "Michael Brown", "date": "02-10 11:20", "comment": "Needs revision.",
          "task_status_color": "blue"},
-        {"task_status": "DONE", "username": "Emily White", "date": "02-11 16:00",
+        {"status": "DONE", "username": "Emily White", "date": "02-11 16:00",
          "comment": "Finalized and ready for submission.", "task_status_color": "green"},
     ]
 
@@ -282,7 +277,7 @@ if __name__ == "__main__":
             "preview_path": "path/to/another_preview_image.png",
         },
         "task_logs": [
-            {"task_status": "PENDING", "username": "Alice Green", "date": "03-02 10:00", "comment": "Pending review.",
+            {"status": "PENDING", "username": "Alice Green", "date": "03-02 10:00", "comment": "Pending review.",
              "task_status_color": "orange"},
         ],
     })

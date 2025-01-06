@@ -9,16 +9,15 @@ import logging
 from typing import Dict, List
 from PySide6.QtWidgets import (
     QWidget, QApplication, QHBoxLayout, QLabel, QSpacerItem,
-    QSizePolicy, QListWidgetItem, QMenu
+    QSizePolicy, QListWidgetItem, QMenu, QLineEdit
 )
 from PySide6.QtCore import Signal, Qt, QPoint
-from PySide6.QtGui import QAction
+from PySide6.QtGui import  QIcon, QAction, QPixmap
 
 from ui.components.forms.task_list_form import Ui_TaskListForm
 from ui.utils.stylesheet_loader import load_stylesheet
 from ui.utils.task_filter import TaskFilter
 from services.constants import TASK_NAME, TASK_STATUS
-
 logger = logging.getLogger(__name__)
 
 
@@ -120,14 +119,19 @@ class TaskListWidget(QWidget):
         # Load external stylesheet
         load_stylesheet(self, r"ui\stylesheets\task_list_widget.qss")
 
+        pixmap = QPixmap("resources/icons/task_list/search.svg")
+        if not pixmap.isNull():
+            icon = QIcon(pixmap)
+            action = QAction(icon, "", self.search_lineEdit)
+            action.setIconVisibleInMenu(False)  # Hide in menus (optional)
+            action.setIcon(icon)
+            self.search_lineEdit.addAction(action, QLineEdit.LeadingPosition)
+
         # Configure the task_listWidget
         self.task_listWidget.setMinimumWidth(400)
-        self.task_listWidget.setSpacing(3)
+        self.task_listWidget.setSpacing(5)
         self.task_listWidget.setViewportMargins(0, 0, 10, 0)
         self.task_listWidget.setContextMenuPolicy(Qt.CustomContextMenu)
-
-        # Configure the search line edit
-        self.search_lineEdit.setStyleSheet("QLineEdit { padding: 5px; }")
 
     def _setup_connections(self):
         """
@@ -138,6 +142,15 @@ class TaskListWidget(QWidget):
         self.task_listWidget.itemClicked.connect(self._emit_task_selected)
         self.task_listWidget.currentItemChanged.connect(self._highlight_selected_item)
         self.search_lineEdit.textChanged.connect(self.filter_tasks)
+
+    def set_icon(self):
+        pixmap = QPixmap("resources/icons/task_list/search.svg")
+        if not pixmap.isNull():
+            icon = QIcon(pixmap)
+            action = QAction(icon, "", self.search_lineEdit)
+            action.setIconVisibleInMenu(False)  # Hide in menus (optional)
+            action.setIcon(icon)
+            self.search_lineEdit.addAction(action, QLineEdit.LeadingPosition)
 
     # ------------------------------
     # Private Helper Methods
@@ -177,7 +190,7 @@ class TaskListWidget(QWidget):
         task_widget.setStyleSheet(
             """
             background-color: #E1E1E8;
-            border-radius: 8px;
+            border-radius: 5px;
             """
         )
         layout = QHBoxLayout(task_widget)
@@ -202,7 +215,7 @@ class TaskListWidget(QWidget):
             color: #E1E1E8;
             font-size: 12px;
             padding: 4px 10px;
-            border-radius: 8px;
+            border-radius: 5px;
             """
         )
         layout.addWidget(task_status_label)
@@ -300,8 +313,7 @@ class TaskListWidget(QWidget):
                 prev_widget.setStyleSheet(
                     """
                     background-color: #E1E1E8;
-                    border: 1px solid #252B36;
-                    border-radius: 10px;
+                    border-radius: 5px;
                     """
                 )
 
@@ -311,8 +323,7 @@ class TaskListWidget(QWidget):
             if curr_widget:
                 curr_widget.setStyleSheet(
                     """
-                    border: 2px solid #0078D7; /* Highlight border */
-                    border-radius: 10px;
+                    border-radius: 5px;
                     background-color: rgba(0, 120, 215, 0.1); /* Light highlight */
                     """
                 )

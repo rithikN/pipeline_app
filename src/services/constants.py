@@ -14,6 +14,14 @@ LOGOUT_LABEL = 'Log Out'
 DOWNLOAD_LABEL = 'Download Project Files'
 EXIT_PROJECT_LABEL = 'Exit Project'
 
+# login_page
+USER_ID = 'user'
+USER_LABEL = 'Username'
+USER_PLACEHOLDER = 'User ID'
+PASS_ID = 'pass'
+PASS_LABEL = 'Password'
+PASS_PLACEHOLDER = '•••••••••••••••••'
+
 # form_page
 TYPE = 'type'
 LABEL = 'label'
@@ -49,3 +57,12 @@ WORK_APP = "app"
 WORK_VERSION = "version"
 WORK_SIZE = "size"
 WORK_DATE = "date"
+SOFTWARE_ICON_DATA = {
+    "Blender": "resources/icons/work_list/software/blender.svg",
+    "After Effects": "resources/icons/work_list/software/afterfx.svg",
+    "DaVinci": "resources/icons/work_list/software/davinci.svg",
+    "Maya": "resources/icons/work_list/software/maya.svg",
+    "Nuke": "resources/icons/work_list/software/nuke.svg",
+    "pftrack": "resources/icons/work_list/software/pftrack.svg",
+    "Photoshop": "resources/icons/work_list/software/photoshop.svg",
+}

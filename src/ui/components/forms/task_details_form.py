@@ -3,29 +3,28 @@
 ################################################################################
 ## Form generated from reading UI file 'task_details_form.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.5.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-                            QMetaObject, QObject, QPoint, QRect,
-                            QSize, QTime, QUrl, Qt)
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
 from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-                           QFont, QFontDatabase, QGradient, QIcon,
-                           QImage, QKeySequence, QLinearGradient, QPainter,
-                           QPalette, QPixmap, QRadialGradient, QTransform)
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractScrollArea, QApplication, QFrame, QHBoxLayout,
-                               QLabel, QPushButton, QSizePolicy, QSpacerItem,
-                               QTextEdit, QVBoxLayout, QWidget)
-
+    QLabel, QPushButton, QSizePolicy, QSpacerItem,
+    QTextEdit, QVBoxLayout, QWidget)
 
 class Ui_TaskDetailsForm(object):
     def setupUi(self, TaskDetailsForm):
         if not TaskDetailsForm.objectName():
             TaskDetailsForm.setObjectName(u"TaskDetailsForm")
         TaskDetailsForm.resize(670, 590)
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred)
+        sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(TaskDetailsForm.sizePolicy().hasHeightForWidth())
@@ -35,17 +34,17 @@ class Ui_TaskDetailsForm(object):
         self.horizontalLayout_2.setSpacing(0)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.horizontalLayout_2.setContentsMargins(-1, 9, -1, -1)
-        self.TaskDetails_frame = QFrame(TaskDetailsForm)
-        self.TaskDetails_frame.setObjectName(u"TaskDetails_frame")
-        self.TaskDetails_frame.setFrameShape(QFrame.NoFrame)
-        self.TaskDetails_frame.setFrameShadow(QFrame.Plain)
-        self.verticalLayout_2 = QVBoxLayout(self.TaskDetails_frame)
+        self.MainContainer = QFrame(TaskDetailsForm)
+        self.MainContainer.setObjectName(u"MainContainer")
+        self.MainContainer.setFrameShape(QFrame.NoFrame)
+        self.MainContainer.setFrameShadow(QFrame.Plain)
+        self.verticalLayout_2 = QVBoxLayout(self.MainContainer)
         self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(9, 0, 9, 9)
-        self.header_label = QLabel(self.TaskDetails_frame)
+        self.header_label = QLabel(self.MainContainer)
         self.header_label.setObjectName(u"header_label")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.header_label.sizePolicy().hasHeightForWidth())
@@ -55,17 +54,17 @@ class Ui_TaskDetailsForm(object):
 
         self.verticalLayout_2.addWidget(self.header_label)
 
-        self.header_line = QFrame(self.TaskDetails_frame)
+        self.header_line = QFrame(self.MainContainer)
         self.header_line.setObjectName(u"header_line")
         self.header_line.setMinimumSize(QSize(0, 1))
         self.header_line.setMaximumSize(QSize(16777215, 1))
         self.header_line.setFrameShadow(QFrame.Plain)
         self.header_line.setLineWidth(0)
-        self.header_line.setFrameShape(QFrame.Shape.HLine)
+        self.header_line.setFrameShape(QFrame.HLine)
 
         self.verticalLayout_2.addWidget(self.header_line)
 
-        self.main_frame = QFrame(self.TaskDetails_frame)
+        self.main_frame = QFrame(self.MainContainer)
         self.main_frame.setObjectName(u"main_frame")
         self.main_frame.setFrameShape(QFrame.NoFrame)
         self.main_frame.setFrameShadow(QFrame.Plain)
@@ -78,7 +77,7 @@ class Ui_TaskDetailsForm(object):
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.preview_frame = QFrame(self.main_frame)
         self.preview_frame.setObjectName(u"preview_frame")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.preview_frame.sizePolicy().hasHeightForWidth())
@@ -110,22 +109,27 @@ class Ui_TaskDetailsForm(object):
 
         self.horizontalLayout_3.addWidget(self.task_details_textEdit)
 
+
         self.verticalLayout.addLayout(self.horizontalLayout_3)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalSpacer = QSpacerItem(40, 10, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer = QSpacerItem(40, 10, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
         self.open_button = QPushButton(self.main_frame)
         self.open_button.setObjectName(u"open_button")
         self.open_button.setMinimumSize(QSize(0, 0))
-        self.open_button.setStyleSheet(u"background-color: #216582; color: #E1E1E8; padding: 5px;")
+        self.open_button.setStyleSheet(u"background-color: #216582; color:\n"
+"                                                                    #E1E1E8; padding: 5px;\n"
+"                                                                ")
 
         self.horizontalLayout.addWidget(self.open_button)
 
+
         self.verticalLayout.addLayout(self.horizontalLayout)
+
 
         self.verticalLayout_3.addLayout(self.verticalLayout)
 
@@ -134,7 +138,7 @@ class Ui_TaskDetailsForm(object):
         self.log_line.setMinimumSize(QSize(0, 1))
         self.log_line.setMaximumSize(QSize(16777215, 1))
         self.log_line.setFrameShadow(QFrame.Plain)
-        self.log_line.setFrameShape(QFrame.Shape.HLine)
+        self.log_line.setFrameShape(QFrame.HLine)
 
         self.verticalLayout_3.addWidget(self.log_line)
 
@@ -146,21 +150,24 @@ class Ui_TaskDetailsForm(object):
 
         self.verticalLayout_3.addWidget(self.taskLog_frame)
 
+
         self.verticalLayout_2.addWidget(self.main_frame)
 
-        self.horizontalLayout_2.addWidget(self.TaskDetails_frame)
+
+        self.horizontalLayout_2.addWidget(self.MainContainer)
+
 
         self.retranslateUi(TaskDetailsForm)
 
         QMetaObject.connectSlotsByName(TaskDetailsForm)
-
     # setupUi
 
     def retranslateUi(self, TaskDetailsForm):
         TaskDetailsForm.setWindowTitle(QCoreApplication.translate("TaskDetailsForm", u"Work Files Details", None))
         self.header_label.setText(QCoreApplication.translate("TaskDetailsForm", u"Placeholder", None))
-        # if QT_CONFIG(accessibility)
-        self.task_details_textEdit.setAccessibleName(QCoreApplication.translate("TaskDetailsForm", u"v  ", None))
-        # endif // QT_CONFIG(accessibility)
+#if QT_CONFIG(accessibility)
+        self.task_details_textEdit.setAccessibleName(QCoreApplication.translate("TaskDetailsForm", u"v", None))
+#endif // QT_CONFIG(accessibility)
         self.open_button.setText(QCoreApplication.translate("TaskDetailsForm", u"Open On Kitsu", None))
     # retranslateUi
+

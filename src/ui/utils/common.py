@@ -98,3 +98,30 @@ def verify_fonts(widget):
     print("Font Style:", font.style())
     print("Font Weight:", font.weight())
     print("Font Size:", font.pointSize())
+
+
+def add_indented_item(combo_box, text, indent_width):
+    """
+    Add an item to the combo box with text indentation.
+
+    :param combo_box: The QComboBox object.
+    :param text: The text for the item.
+    :param indent_width: The number of spaces for indentation.
+    """
+    # Use Unicode non-breaking spaces or regular spaces
+    indent = "\u00A0" * indent_width  # Non-breaking spaces
+    combo_box.addItem(f"{indent}{text}")
+
+
+def get_widget_size(widget):
+    """
+    Get the current width and height of the given widget.
+
+    :param widget: The widget whose size is to be retrieved.
+    :return: A tuple (width, height) representing the size.
+    """
+    width = widget.width()
+    height = widget.height()
+    return width, height
+
+

@@ -1,13 +1,6 @@
-"""
-selection_widget.py
-
-Defines the SelectionWidget, which provides combo boxes for selecting shots,
-episodes, scenes, tasks, and statuses in the 3D Pipeline.
-"""
-
 import logging
 from typing import List
-from PySide6.QtWidgets import QWidget, QApplication
+from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Signal
 from ui.components.forms.selection_form import Ui_SelectionForm
 from ui.components.extensions.message_box import MessageBox
@@ -24,12 +17,6 @@ class SelectionWidget(QWidget):
     selectionChanged = Signal(dict)
 
     def __init__(self, parent: QWidget = None):
-        """
-        Initialize the SelectionWidget.
-
-        Args:
-            parent (QWidget, optional): The parent widget. Defaults to None.
-        """
         super().__init__(parent)
         logger.debug("Initializing SelectionWidget.")
 
@@ -50,29 +37,26 @@ class SelectionWidget(QWidget):
         self._setup_connections()
 
     def _setup_ui(self):
-        """
-        Configure additional UI elements if needed.
-        Currently, it only uses the setupUi() from the generated form.
-        """
         logger.debug("Setting up UI for SelectionWidget.")
-        # Example: you can apply styles or additional properties here if needed.
+        self.setStyleSheet("""
+            font-size: 12px; 
+            font-weight: bold;  
+        """)
 
     def _setup_connections(self):
-        """
-        Connect combo box signals to the internal _emit_selection slot.
-        """
         logger.debug("Setting up signal connections for SelectionWidget.")
 
+        # For single-combo (shots), we connect currentTextChanged
         self.shot_comboBox.currentTextChanged.connect(self._emit_selection)
+
+        # For multi-select combos (episodes/scenes/tasks/statuses),
+        # assume they each have a selectionChanged signal
         self.episode_comboBox.selectionChanged.connect(self._emit_selection)
         self.scene_comboBox.selectionChanged.connect(self._emit_selection)
         self.task_comboBox.selectionChanged.connect(self._emit_selection)
         self.status_comboBox.selectionChanged.connect(self._emit_selection)
 
     def _emit_selection(self):
-        """
-        Emit the selectionChanged signal with the current combo box selections.
-        """
         logger.debug("Emitting selection from SelectionWidget.")
         selection = {
             "shot": self.shot_comboBox.currentText(),
@@ -83,71 +67,78 @@ class SelectionWidget(QWidget):
         }
         self.selectionChanged.emit(selection)
 
-    # -----------------------------
-    # Public Methods for Updating UI
-    # -----------------------------
+    # --------------------------------------------------------------------
+    #                  Helper Methods
+    # --------------------------------------------------------------------
+
+    def _set_single_selection(self, combo_box, new_value: str, label: str):
+        """
+        Helper method to set a single selected item in a combo box.
+        """
+        logger.debug(f"Setting current {label} to '{new_value}'.")
+        current_text = combo_box.currentText()
+
+        if new_value == current_text:
+            logger.debug(f"{label.capitalize()} is already set; skipping.")
+            return
+
+        index = combo_box.findText(new_value)
+        if index < 0:
+            logger.debug(f"{label.capitalize()} '{new_value}' not found; skipping or handle as needed.")
+            return
+
+        combo_box.setCurrentIndex(index)
+        logger.debug(f"{label.capitalize()} updated to '{new_value}'.")
+
+    def _set_multiple_selections(self, combo_box, new_items: List[str], label: str):
+        """
+        Helper method to set multiple selected items in a combo box.
+        """
+        logger.debug(f"Setting current {label}: {new_items}")
+        old_items = combo_box.selectedItems()
+
+        if set(new_items) == set(old_items):
+            logger.debug(f"{label.capitalize()} are already set; skipping.")
+            return
+
+        combo_box.setSelectedItems(new_items)
+        logger.debug(f"{label.capitalize()} updated.")
+
+    # --------------------------------------------------------------------
+    #                  Public Setter Methods
+    # --------------------------------------------------------------------
 
     def set_current_shot(self, shot: str):
         """
-        Set the current shot in the shot_comboBox.
-
-        Args:
-            shot (str): The shot to set.
+        Sets the shot in shot_comboBox only if it differs from
+        the currently selected text. Blocks signals to prevent duplicates.
         """
-        logger.debug(f"Setting current shot to '{shot}'.")
-        index = self.shot_comboBox.findText(shot)
-        if index != -1:
-            self.shot_comboBox.setCurrentIndex(index)
+        self._set_single_selection(self.shot_comboBox, shot, "shot")
 
     def set_current_episode(self, episodes: List[str]):
         """
-        Set the selected episodes in the episode_comboBox.
-
-        Args:
-            episodes (List[str]): A list of episode strings.
+        Sets the selected episodes in episode_comboBox if they're different
+        from what's currently selected. Blocks signals to prevent duplicates.
         """
-        logger.debug(f"Setting current episodes: {episodes}")
-        self.episode_comboBox.setSelectedItems(episodes)
+        self._set_multiple_selections(self.episode_comboBox, episodes, "episodes")
 
     def set_current_scene(self, scenes: List[str]):
         """
-        Set the selected scenes in the scene_comboBox.
-
-        Args:
-            scenes (List[str]): A list of scene strings.
+        Sets the selected scenes in scene_comboBox if they're different
+        from what's currently selected. Blocks signals to prevent duplicates.
         """
-        logger.debug(f"Setting current scenes: {scenes}")
-        self.scene_comboBox.setSelectedItems(scenes)
+        self._set_multiple_selections(self.scene_comboBox, scenes, "scenes")
 
     def set_current_task(self, tasks: List[str]):
         """
-        Set the selected tasks in the task_comboBox.
-
-        Args:
-            tasks (List[str]): A list of task strings.
+        Sets the selected tasks in task_comboBox if they're different
+        from what's currently selected. Blocks signals to prevent duplicates.
         """
-        logger.debug(f"Setting current tasks: {tasks}")
-        self.task_comboBox.setSelectedItems(tasks)
+        self._set_multiple_selections(self.task_comboBox, tasks, "tasks")
 
     def set_current_status(self, statuses: List[str]):
         """
-        Set the selected statuses in the status_comboBox.
-
-        Args:
-            statuses (List[str]): A list of status strings.
+        Sets the selected statuses in status_comboBox if they're different
+        from what's currently selected. Blocks signals to prevent duplicates.
         """
-        logger.debug(f"Setting current statuses: {statuses}")
-        self.status_comboBox.setSelectedItems(statuses)
-
-
-if __name__ == "__main__":
-    import sys
-
-    # Configure logging for standalone testing
-    logging.basicConfig(level=logging.DEBUG)
-    app = QApplication(sys.argv)
-
-    widget = SelectionWidget()
-    widget.show()
-
-    sys.exit(app.exec())
+        self._set_multiple_selections(self.status_comboBox, statuses, "statuses")

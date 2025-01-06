@@ -1,11 +1,11 @@
-from PySide6.QtWidgets import QComboBox, QApplication, QListView
+from PySide6.QtWidgets import QComboBox, QListView, QLineEdit, QApplication
 from PySide6.QtGui import QStandardItemModel, QStandardItem
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, QEvent
 
 
 class MultiSelectComboBox(QComboBox):
-    selectionChanged = Signal(list)  # Signal to emit when selection changes
-    currentTextChanged = Signal(str)  # Signal to emit when the displayed text changes
+    selectionChanged = Signal(list)
+    currentTextChanged = Signal(str)
 
     def __init__(self, placeholder, parent=None):
         super().__init__(parent)
@@ -16,75 +16,40 @@ class MultiSelectComboBox(QComboBox):
         self.placeholder = placeholder
         self._first_item_added = False
 
-        # Handle combo box activation
-        self.view().pressed.connect(self.handle_item_pressed)
-
-        # Set placeholder text
+        # Setup combo as editable with a read-only line edit
         self.setEditable(True)
-        self.lineEdit().setReadOnly(True)
-        self.lineEdit().setPlaceholderText(self.placeholder)
+        line_edit = self.lineEdit()
+        line_edit.setReadOnly(True)
+        line_edit.setPlaceholderText(self.placeholder)
+        line_edit.setAlignment(Qt.AlignLeft)
 
-        # Remove the dropdown arrow
-        self.setStyleSheet("QComboBox::drop-down { border: 0px; }")
-        # Resize the lineEdit for better display
-        self.lineEdit().setAlignment(Qt.AlignLeft)
-        self.lineEdit().setContentsMargins(5, 0, 5, 0)
+        # --- Install event filter on the line edit ---
+        line_edit.installEventFilter(self)
 
-        # Style
-        self.setStyleSheet("""
-            QComboBox {
-                background-color: #E1E1E8;
-                color: #000000;
-                border: 2px solid #000000;
-                border-radius: 5px;
-                padding: 5px;
-                min-width: 120px;
-            }
-            QComboBox::drop-down {
-                border: none;
-                background: transparent;
-                width: 20px;
-            }
-            QComboBox::down-arrow {
-                image: url("resources/icons/down-arrow.png");  /* Default Qt arrow icon */
-                width: 15px;
-                height: 15px;
-            }
-            QComboBox QAbstractItemView {
-                background-color: #E1E1E8;
-                color: #000000;
-                selection-background-color: #1e90ff;
-                selection-color: #E1E1E8;
-                padding: 5px;
-                border: 1px solid #cccccc;
-            }
-            QAbstractItemView::item {
-                padding: 8px;
-                margin: 3px 5px;
-                border-radius: 5px;
-            }
-            QAbstractItemView::item:hover {
-                background-color: #3b5998;
-            }
-            QAbstractItemView::item:selected {
-                background-color: #000000;
-                color: #1e90ff;
-            }
-        """)
-
-        # Connect signals
+        self.view().pressed.connect(self.handle_item_pressed)
         self.currentIndexChanged.connect(self.handle_index_changed)
 
+    def eventFilter(self, obj, event):
+        """
+        Capture mouse presses on the line edit, and open/close the popup
+        so that clicking *anywhere* in the combobox triggers the dropdown.
+        """
+        if obj == self.lineEdit() and event.type() == QEvent.MouseButtonPress:
+            if event.button() == Qt.LeftButton:
+                if self.view().isVisible():
+                    self.hidePopup()
+                else:
+                    self.showPopup()
+            return True
+        return super().eventFilter(obj, event)
+
     def handle_index_changed(self, index):
-        """Handle index changes and check if the first item is selected."""
-        if index == 0:  # Check if the first item is selected
+        if index == 0:
             self.deselect_all()
-            # Update placeholder text
             self.lineEdit().setText(self.placeholder)
-            self.selectionChanged.emit([])  # Emit signal with empty selection
+            self.selectionChanged.emit([])
 
     def deselect_all(self):
-        """Deselect all items."""
         for row in range(self.model().rowCount()):
             item = self.model().item(row)
             if item.flags() & Qt.ItemIsUserCheckable:
@@ -92,7 +57,6 @@ class MultiSelectComboBox(QComboBox):
         self._selected_items = []
 
     def addItem(self, text, data=None):
-        """Add a single item with or without a checkbox."""
         item = QStandardItem(text)
         if not self._first_item_added:
             # First item: No checkbox
@@ -106,24 +70,18 @@ class MultiSelectComboBox(QComboBox):
         self.model().appendRow(item)
 
     def addItems(self, texts):
-        """Add multiple items with checkboxes (except for the first item)."""
         for text in texts:
             self.addItem(text)
 
     def handle_item_pressed(self, index):
-        """Handle item press events with special behavior for the first item."""
         if self._is_updating:
             return
-
         item = self.model().itemFromIndex(index)
 
-        if index.row() == 0:  # First element pressed
-            # Deselect all other items
+        if index.row() == 0:
+            # "Select All" / first element pressed => deselect everything
             self.deselect_all()
-            # Update display to show only the placeholder text
             self.lineEdit().setText(self.placeholder)
-
-            # Emit signal with an empty list, as nothing is selected
             self.selectionChanged.emit([])
         else:
             # Deselect the first item if any other item is selected
@@ -131,7 +89,7 @@ class MultiSelectComboBox(QComboBox):
             if first_item:
                 first_item.setCheckState(Qt.Unchecked)
 
-            # Toggle the current item's state
+            # Toggle check state
             if item.checkState() == Qt.Checked:
                 item.setCheckState(Qt.Unchecked)
             else:
@@ -140,7 +98,6 @@ class MultiSelectComboBox(QComboBox):
         self.update_selected_items()
 
     def update_selected_items(self):
-        """Update the list of selected items and display them."""
         self._is_updating = True
         self._selected_items = []
         selected_texts = []
@@ -151,22 +108,18 @@ class MultiSelectComboBox(QComboBox):
                 self._selected_items.append(item)
                 selected_texts.append(item.text())
 
-        # Update the placeholder text or display selected items
         display_text = ", ".join(selected_texts) if selected_texts else self.placeholder
         self.lineEdit().setText(display_text)
 
-        # Emit signals
         self.selectionChanged.emit(selected_texts)
-        self.currentTextChanged.emit(display_text)  # Emit the currentTextChanged signal
+        self.currentTextChanged.emit(display_text)
 
         self._is_updating = False
 
     def selectedItems(self):
-        """Return a list of selected items' texts."""
         return [item.text() for item in self._selected_items]
 
     def setSelectedItems(self, texts):
-        """Set the selected items programmatically."""
         self._is_updating = True
         for row in range(self.model().rowCount()):
             item = self.model().item(row)
@@ -178,10 +131,8 @@ class MultiSelectComboBox(QComboBox):
         self._is_updating = False
 
 
-# Example usage
 if __name__ == "__main__":
     import sys
-
     app = QApplication(sys.argv)
 
     combo = MultiSelectComboBox("Scene")
@@ -193,14 +144,11 @@ if __name__ == "__main__":
     combo.resize(200, 30)
     combo.show()
 
-
     def on_selection_changed(selected):
         print("Selected items:", selected)
 
-
     def on_text_changed(text):
         print("Current text changed:", text)
-
 
     combo.selectionChanged.connect(on_selection_changed)
     combo.currentTextChanged.connect(on_text_changed)

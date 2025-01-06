@@ -10,8 +10,9 @@ import sys
 import logging
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QLabel, QHBoxLayout,
-    QFrame, QMenuBar, QMenu, QSpacerItem, QSizePolicy
+    QFrame, QMenuBar, QMenu, QSizePolicy
 )
+from PySide6.QtGui import QIcon
 from PySide6.QtCore import Qt
 
 # Initialize logger (optional)
@@ -44,7 +45,7 @@ class CustomMenuWidget(QWidget):
         self._frame.setStyleSheet("""
             QFrame {
                 border: 1px solid #E1E1E8;
-                border-radius: 10px;
+                border-radius: 6px;
                 background-color: black;
             }
         """)
@@ -95,7 +96,7 @@ class CustomMenuWidget(QWidget):
         """
         logger.debug(f"Setting text for CustomMenuWidget: {text}")
         if text:
-            self._icon_label.setText(text[0])
+            self._icon_label.setText(text[0].title())
             self._text_label.setText(text)
         else:
             self._icon_label.clear()
@@ -130,6 +131,29 @@ class MainWindow(QMainWindow):
         # Add standard menus
         file_menu = menu_bar.addMenu("File")
         edit_menu = menu_bar.addMenu("Edit")
+
+        # Add actions with icons to the "File" menu
+        new_action = QAction(QIcon("path/to/new_icon.png"), "New", self)
+        open_action = QAction(QIcon("path/to/open_icon.png"), "Open", self)
+        save_action = QAction(QIcon("path/to/save_icon.png"), "Save", self)
+        exit_action = QAction(QIcon("path/to/exit_icon.png"), "Exit", self)
+
+        # Add actions to the File menu
+        file_menu.addAction(new_action)
+        file_menu.addAction(open_action)
+        file_menu.addAction(save_action)
+        file_menu.addSeparator()
+        file_menu.addAction(exit_action)
+
+        # Add actions with icons to the "Edit" menu
+        cut_action = QAction(QIcon("path/to/cut_icon.png"), "Cut", self)
+        copy_action = QAction(QIcon("path/to/copy_icon.png"), "Copy", self)
+        paste_action = QAction(QIcon("path/to/paste_icon.png"), "Paste", self)
+
+        # Add actions to the Edit menu
+        edit_menu.addAction(cut_action)
+        edit_menu.addAction(copy_action)
+        edit_menu.addAction(paste_action)
 
         # Style the menu bar for vertical centering
         menu_bar.setStyleSheet("""
@@ -187,6 +211,5 @@ if __name__ == "__main__":
 
     app = QApplication(sys.argv)
     window = MainWindow()
-    project_widget = CustomMenuWidget("Project")
     window.show()
     sys.exit(app.exec())

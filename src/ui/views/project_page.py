@@ -20,6 +20,7 @@ from ui.components.extensions.message_box import MessageBox
 from ui.components.core_widgets.project_card import ProjectCard
 from services.data_service import get_projects
 from services.constants import PROJECT_NAME, PROJECT_TYPE, THUMBNAIL_PATH
+from ui.utils.stylesheet_loader import load_stylesheet
 
 # Initialize logger
 logger = logging.getLogger(__name__)
@@ -27,8 +28,7 @@ logger = logging.getLogger(__name__)
 
 class ProjectPage(QWidget):
     """
-    The ProjectPage displays project cards in a grid (QTableWidget).
-    Allows selection and navigation to the next page.
+    Displays project cards in a grid and allows user selection and navigation.
     """
 
     def __init__(self, next_page_callback, prev_page_callback):
@@ -42,92 +42,72 @@ class ProjectPage(QWidget):
         super().__init__()
         logger.info("Initializing ProjectPage...")
 
-        # UI data & callbacks
+        # UI setup
         self._ui = Ui_ProjectForm()
         self._ui.setupUi(self)
+        load_stylesheet(self, r'ui/stylesheets/project_style.css')
 
-        self.message_box = MessageBox()
+        # Callbacks
         self.next_page_callback = next_page_callback
         self.prev_page_callback = prev_page_callback
-        self.form_data = {}
+
+        # Instance variables
         self.projects = []
+        self.selected_row, self.selected_col = None, None
 
-        # ProjectCard dimensions
-        self.card_width = 250
-        self.card_height = 180
-        self.border_width = 30
+        # Constants for project card dimensions
+        self.card_width, self.card_height, self.border_width = 250, 180, 30
 
-        # Keep track of user selection
-        self.selected_row = None
-        self.selected_col = None
-
-        # Perform setup
+        # Initialize components
+        self.message_box = MessageBox()
         self._setup_ui()
         self._setup_connections()
 
     def _setup_ui(self):
         """
-        Configure UI elements (table widget, styles, etc.) for the ProjectPage.
+        Configure the UI components.
         """
-        logger.debug("Setting up UI for ProjectPage.")
         table = self._ui.project_tableWidget
-        bottom_frame = self._ui.bottom_frame
-        next_btn = self._ui.next_pushButton
 
-        # Configure QTableWidget
+        # Table settings
         table.setColumnCount(1)
-        table.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
-        table.horizontalHeader().setVisible(False)
-        table.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
         table.setHorizontalScrollMode(QTableWidget.ScrollPerPixel)
         table.setVerticalScrollMode(QTableWidget.ScrollPerPixel)
         table.setShowGrid(False)
         table.setEditTriggers(QTableWidget.NoEditTriggers)
-        table.setFocusPolicy(Qt.StrongFocus)
-        table.verticalHeader().setVisible(False)
         table.setSelectionMode(QTableWidget.SingleSelection)
         table.setSelectionBehavior(QTableWidget.SelectItems)
+        table.setFocusPolicy(Qt.StrongFocus)
         table.setIconSize(QSize(self.card_width, self.card_height))
 
+        # Header visibility
+        table.horizontalHeader().setVisible(False)
+        table.verticalHeader().setVisible(False)
+        table.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
+        table.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
+
+        # Style settings
         table.setStyleSheet("""
-            QTableWidget {
-                background-color: #010409;
-            }
-            QTableWidget::item:selected {
-                background-color: #3A4B6D;
-                border: 1px solid #005bb5;
-            }
-            QTableWidget::item:hover {
-                background-color: #3A4B60;
-            }
+            QTableWidget { background-color: #010409; }
+            QTableWidget::item:selected { background-color: #3A4B6D; outline: none; }
+            QTableWidget::item:hover { background-color: #3A4B60; outline: none; }
         """)
 
-        bottom_frame.setStyleSheet("background-color: #010409;")
+        # Disable the "Next" button initially
+        self._ui.next_pushButton.setEnabled(False)
 
-        # Disable "Next" button initially
-        next_btn.setEnabled(False)
-
-        # Recalculate layout on resize
-        # We override the table's resizeEvent with our own method
+        # Attach a resize event handler
         table.resizeEvent = self._on_resize
 
     def _setup_connections(self):
         """
-        Connect signals to their corresponding slots.
+        Setup signal-slot connections.
         """
         logger.debug("Setting up connections for ProjectPage.")
         self._ui.next_pushButton.clicked.connect(self._on_next)
         self._ui.previous_pushButton.clicked.connect(self._on_previous)
         self._ui.project_tableWidget.cellClicked.connect(self._on_cell_clicked)
         self._ui.project_tableWidget.cellDoubleClicked.connect(self._on_cell_double_clicked)
-
-    def _on_previous(self):
-        """
-        Handle the 'Previous' button click event.
-        """
-        logger.debug("Previous button clicked. Navigating back.")
-        if self.prev_page_callback:
-            self.prev_page_callback()
 
     def set_form_data(self, form_data):
         """
@@ -136,34 +116,25 @@ class ProjectPage(QWidget):
         Args:
             form_data (dict): Data from the FormPage.
         """
-        logger.debug(f"Setting form data on ProjectPage: {form_data}")
-        self.form_data = form_data
+        logger.debug(f"Setting form data: {form_data}")
+        self.projects = get_projects(form_data)
+        self._populate_project_table()
 
-        # Load projects using the data service
-        self.projects = self._load_projects()
-        logger.debug(f"Loaded projects: {self.projects}")
-
-        # Populate the table with project cards
-        self._populate_project_table(self.projects)
-
-    def _populate_project_table(self, projects):
+    def _populate_project_table(self):
         """
         Populate the table widget with project cards.
 
         Args:
             projects (list): A list of project dictionaries.
         """
-        logger.debug("Populating project table...")
-        if not projects:
-            logger.warning("No projects available to populate.")
+        if not self.projects:
+            logger.warning("No projects to display.")
             return
 
         table = self._ui.project_tableWidget
         table_width = table.viewport().width()
-
-        # Calculate how many columns can fit
-        num_columns = self._calculate_columns(table_width)
-        num_rows = (len(projects) + num_columns - 1) // num_columns
+        num_columns = max((table_width - self.border_width) // (self.card_width + self.border_width), 1)
+        num_rows = -(-len(self.projects) // num_columns)  # Ceiling division
 
         table.setColumnCount(num_columns)
         table.setRowCount(num_rows)
@@ -173,152 +144,90 @@ class ProjectPage(QWidget):
         for row in range(num_rows):
             table.setRowHeight(row, self.card_height + self.border_width)
 
-        row, col = 0, 0
-        for project in projects:
-            project_name = project.get(PROJECT_NAME, "").strip()
-            project_type = project.get(PROJECT_TYPE, "").strip()
-            thumbnail_path = project.get(THUMBNAIL_PATH, "resources/empty_project.png").strip()
+        for idx, project in enumerate(self.projects):
+            row, col = divmod(idx, num_columns)
+            project_card = ProjectCard(
+                title=project.get(PROJECT_NAME, ""),
+                project_type=project.get(PROJECT_TYPE, ""),
+                parent=self,
+                thumbnail=project.get(THUMBNAIL_PATH, "resources/empty_project.png")
+            )
+            container = self._wrap_project_card(project_card)
+            table.setCellWidget(row, col, container)
+            table.setItem(row, col, self._create_table_item(project))
 
-            item = QTableWidgetItem("")
-            if project_name and project_type:
-                item.setData(Qt.UserRole, project)
-                item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+        # Fill remaining cells
+        self._fill_empty_cells(table, num_columns, len(self.projects))
 
-                project_card = ProjectCard(
-                    title=project_name,
-                    project_type=project_type,
-                    parent=self,
-                    thumbnail=thumbnail_path
-                )
+    def _create_table_item(self, project):
+        """
+        Create a table item with project data.
+        """
+        item = QTableWidgetItem()
+        item.setData(Qt.UserRole, project)
+        item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+        return item
 
-                # Create a container to center the ProjectCard
-                container = QWidget()
-                container.setStyleSheet("background: transparent;")
-                container.setAttribute(Qt.WA_TransparentForMouseEvents, True)
+    def _wrap_project_card(self, project_card):
+        """
+        Wrap a project card in a transparent container.
+        """
+        container = QWidget()
+        container.setStyleSheet("background: transparent;")
+        layout = QHBoxLayout(container)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setAlignment(Qt.AlignCenter)
+        layout.addWidget(project_card)
+        return container
 
-                layout = QHBoxLayout(container)
-                layout.setContentsMargins(0, 0, 0, 0)
-                layout.setSpacing(0)
-                layout.setAlignment(Qt.AlignCenter)
-                layout.addWidget(project_card)
-
-                table.setCellWidget(row, col, container)
-            else:
-                # If project_name and project_type are empty, disable selection
-                item.setFlags(Qt.NoItemFlags)
-
+    def _fill_empty_cells(self, table, num_columns, num_projects):
+        """
+        Disable selection and hover for empty cells.
+        """
+        for idx in range(num_projects, table.rowCount() * num_columns):
+            row, col = divmod(idx, num_columns)
+            item = QTableWidgetItem()
+            item.setFlags(Qt.NoItemFlags)
             table.setItem(row, col, item)
 
-            col += 1
-            if col >= num_columns:
-                col = 0
-                row += 1
-
-        table.setStyleSheet("""
-            QTableWidget {
-                background-color: #010409;
-            }
-            QTableWidget::item:selected {
-                background-color: #3A4B6D;
-                border: 1px solid #005bb5;
-            }
-            QTableWidget::item:hover:!enabled {
-                background-color: transparent;
-            }
-        """)
-
-    def _calculate_columns(self, table_width):
+    def _on_previous(self):
         """
-        Calculate how many columns can fit based on the table width.
-
-        Args:
-            table_width (int): The width of the table's viewport.
-
-        Returns:
-            int: Number of columns that can fit.
+        Navigate to the previous page.
         """
-        available_width = table_width - self.border_width
-        columns = max(available_width // (self.card_width + self.border_width), 1)
-        logger.debug(f"Calculated {columns} columns for width {table_width}.")
-        return columns
-
-    def _on_resize(self, event):
-        """
-        Handle resizing of the table widget.
-        """
-        logger.debug("ProjectPage table resized. Recalculating layout.")
-        if self.projects:
-            self._populate_project_table(self.projects)
-
-    def _on_cell_clicked(self, row, col):
-        """
-        Handle single cell click (selection).
-        """
-        logger.debug(f"Cell clicked at row={row}, col={col}.")
-        table = self._ui.project_tableWidget
-        table.clearSelection()
-
-        item = table.item(row, col)
-        if not item or not table.cellWidget(row, col):
-            logger.debug("Clicked cell is empty or does not contain a project.")
-            return
-
-        # Mark as selected and enable the "Next" button
-        item.setSelected(True)
-        self.selected_row = row
-        self.selected_col = col
-        self._ui.next_pushButton.setEnabled(True)
-
-    def _on_cell_double_clicked(self, row, col):
-        """
-        Handle double-click on a project cell (shortcut to 'Next').
-        """
-        logger.debug(f"Cell double-clicked at row={row}, col={col}.")
-        table = self._ui.project_tableWidget
-        item = table.item(row, col)
-        if item and item.data(Qt.UserRole) == "empty":
-            logger.debug("Double-clicked cell is empty; ignoring.")
-            return
-
-        project_data = item.data(Qt.UserRole)
-        if not project_data.get(PROJECT_NAME):
-            logger.debug(f"No {PROJECT_NAME} key found in {project_data}.")
-            return
-
-        project_name = project_data[PROJECT_NAME]
-        logger.info(f"Double-clicked project: {project_name}")
-        self.next_page_callback(project_data)
+        if self.prev_page_callback:
+            self.prev_page_callback()
 
     def _on_next(self):
         """
-        Handle the "Next" button click. Pass the selected project to the callback.
+        Navigate to the next page with the selected project data.
         """
-        logger.debug("Next button clicked.")
-        if self.selected_col is None or self.selected_row is None:
-            logger.debug("No cell is selected; ignoring 'Next' click.")
-            return
+        table = self._ui.project_tableWidget
+        item = table.item(self.selected_row, self.selected_col)
+        if item and (project_data := item.data(Qt.UserRole)):
+            self.next_page_callback(project_data)
 
+    def _on_cell_clicked(self, row, col):
+        """
+        Handle cell click event.
+        """
         table = self._ui.project_tableWidget
         item = table.item(row, col)
-        if item and item.data(Qt.UserRole) == "empty":
-            logger.debug("Double-clicked cell is empty; ignoring.")
-            return
+        if item and item.data(Qt.UserRole):
+            self.selected_row, self.selected_col = row, col
+            self._ui.next_pushButton.setEnabled(True)
 
-        project_data = item.data(Qt.UserRole)
-        if not project_data.get(PROJECT_NAME):
-            logger.debug(f"No {PROJECT_NAME} key found in {project_data}.")
-            return
-
-        project_name = project_data[PROJECT_NAME]
-        logger.info(f"Double-clicked project: {project_name}")
-        self.next_page_callback(project_data)
-
-    def _load_projects(self):
+    def _on_cell_double_clicked(self, row, col):
         """
-        Load projects based on the current form_data.
-
-        Returns:
-            list: A list of project dictionaries.
+        Handle cell double-click event.
         """
-        logger.debug("Loading projects from data service.")
-        return get_projects(self.form_data)
+        table = self._ui.project_tableWidget
+        item = table.item(row, col)
+        if item and (project_data := item.data(Qt.UserRole)):
+            self.next_page_callback(project_data)
+
+    def _on_resize(self, event):
+        """
+        Handle table resize event.
+        """
+        if self.projects:
+            self._populate_project_table()

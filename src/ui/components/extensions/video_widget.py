@@ -1,8 +1,9 @@
 import sys
 from PySide6.QtWidgets import QApplication, QFrame, QVBoxLayout, QPushButton, QSlider, QHBoxLayout
+from PySide6.QtGui import QIcon
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 from PySide6.QtMultimediaWidgets import QVideoWidget
-from PySide6.QtCore import QUrl, Qt, QTimer
+from PySide6.QtCore import QUrl, Qt, QTimer, QSize
 
 
 class VideoPlayer:
@@ -33,17 +34,32 @@ class VideoPlayer:
 
         # Frame-by-frame backward button
         self.frame_backward_button = QPushButton("⏪")
+        self.frame_backward_button.setVisible(False)
         self.frame_backward_button.pressed.connect(self.start_rewind_hold)
         self.frame_backward_button.released.connect(self.stop_rewind_hold)
         self.controls_layout.addWidget(self.frame_backward_button)
 
         # Play/Pause Button
-        self.play_pause_button = QPushButton("Play")
+        # Play/Pause Button
+        self.play_icon = QIcon("resources/icons/general/play.svg")
+        self.pause_icon = QIcon("resources/icons/general/pause.svg")
+        self.play_pause_button = QPushButton()
+        self.play_pause_button.setStyleSheet("""
+            background-color: white;
+            border: none;
+            width: 50px;  
+            height: 10px;
+        """)
+        self.play_pause_button.setFixedWidth(50)
+        self.play_pause_button.setFixedHeight(20)
+        self.play_pause_button.setIcon(self.play_icon)
+        self.play_pause_button.setIconSize(QSize(32, 32))
         self.play_pause_button.clicked.connect(self.toggle_play_pause)
         self.controls_layout.addWidget(self.play_pause_button)
 
         # Frame-by-frame forward button
         self.frame_forward_button = QPushButton("⏩")
+        self.frame_forward_button.setVisible(False)
         self.frame_forward_button.pressed.connect(self.start_forward_hold)
         self.frame_forward_button.released.connect(self.stop_forward_hold)
         self.controls_layout.addWidget(self.frame_forward_button)
@@ -92,10 +108,10 @@ class VideoPlayer:
         """Toggle between play and pause."""
         if self.media_player.playbackState() == QMediaPlayer.PlayingState:
             self.media_player.pause()
-            self.play_pause_button.setText("Play")
+            self.play_pause_button.setIcon(self.play_icon)
         else:
             self.media_player.play()
-            self.play_pause_button.setText("Pause")
+            self.play_pause_button.setIcon(self.pause_icon)
 
     def start_forward_hold(self):
         """Start fast forwarding when button pressed."""

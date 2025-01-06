@@ -7,7 +7,7 @@ the top bar (menu bar) via TopBarManager.
 """
 
 import logging
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import (
     QMainWindow,
     QStackedWidget,
@@ -27,7 +27,7 @@ from ui.views.form_page import FormPage
 from ui.views.project_page import ProjectPage
 from ui.views.task_mancer_page import TaskMancerPage
 
-from services.constants import ABOUT_INFO_LABEL, ABOUT_LABEL
+from services.constants import ABOUT_INFO_LABEL, ABOUT_LABEL, PROJECT_NAME
 
 # Initialize logger
 logger = logging.getLogger(__name__)
@@ -62,7 +62,8 @@ class MainWindow(QMainWindow):
         Initialize the MainWindow class, set up the UI, pages, and menu bar.
         """
         super().__init__()
-        self.setWindowTitle("3D Pipeline")
+        self.setWindowTitle("PhilmCGI Pipeline 2.0")
+        self.setWindowIcon(QIcon("resources/icons/main_window.svg"))
         self.resize(1200, 700)
 
         # Logging an informational message
@@ -111,10 +112,12 @@ class MainWindow(QMainWindow):
         self._connect_signals()
 
         # --- Example usage for quick testing ---
-        # self.login_page.username = 'test user'
-        # self.show_task_mancer_page({'project_name': 'Testing Project'})
-        # self.show_form_page()
+        # self.login_page.username = 'Art'
+        # self.show_task_mancer_page({'name': 'Testing Project'})
+        # self.show_project_page({})
         # ---------------------------------------
+
+
 
         logger.info("MainWindow initialized successfully.")
 
@@ -251,7 +254,7 @@ class MainWindow(QMainWindow):
 
         # Add new corner widget with user + project
         username = self.login_page.get_username()
-        project_name = project_data.get("project_name", "Unknown Project")
+        project_name = project_data.get(PROJECT_NAME, "Unknown Project")
         self.top_bar_manager.add_topbar_widget(self, username=username, project_name=project_name)
 
         # Add the 'Project' section
@@ -293,7 +296,7 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     from PySide6.QtWidgets import QApplication
-
+    import sys
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
