@@ -21,22 +21,26 @@ def clean_previous_builds():
             subprocess.call(["rmdir", "/s", "/q", directory], shell=True)
             print(f"Removed {directory} directory.")
 
+
 def build_application():
     """Build the application using pyinstaller."""
     print("Building the application...")
-    # Ensure the src directory is included in PYTHONPATH
     env = os.environ.copy()
     env["PYTHONPATH"] = os.path.abspath("src") + os.pathsep + env.get("PYTHONPATH", "")
     
-    build_command = (
-        r"C:\Users\sknay\PycharmProjects\pipeline_app\venv\Scripts\pyinstaller.exe "
-        r"--name PipelineManager "
-        r"--add-data src\\ui\\stylesheets;ui\\stylesheets "
-        r"--add-data src\\resources;resources "
-        r"src\\main.py"
-    )
+    # Detect the appropriate path separator for --add-data
+    path_sep = ";" if platform.system() == "Windows" else ":"
+    
+    build_command = [
+        "pyinstaller",
+        "--name", "PipelineManager",
+        "--add-data", f"src/ui/stylesheets{path_sep}ui/stylesheets",
+        "--add-data", f"src/resources{path_sep}resources",
+        "src/main.py"
+    ]
+    
     try:
-        subprocess.check_call(build_command, shell=True, env=env)
+        subprocess.check_call(build_command, shell=False, env=env)
         print("Build complete.")
     except subprocess.CalledProcessError as e:
         print(f"Error during build: {e}")

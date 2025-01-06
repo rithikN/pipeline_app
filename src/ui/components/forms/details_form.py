@@ -3,29 +3,28 @@
 ################################################################################
 ## Form generated from reading UI file 'details_form.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.5.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-                            QMetaObject, QObject, QPoint, QRect,
-                            QSize, QTime, QUrl, Qt)
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
 from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-                           QFont, QFontDatabase, QGradient, QIcon,
-                           QImage, QKeySequence, QLinearGradient, QPainter,
-                           QPalette, QPixmap, QRadialGradient, QTransform)
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractScrollArea, QApplication, QFrame, QHBoxLayout,
-                               QLabel, QPushButton, QSizePolicy, QSpacerItem,
-                               QTextEdit, QVBoxLayout, QWidget)
-
+    QLabel, QPushButton, QSizePolicy, QSpacerItem,
+    QTextEdit, QVBoxLayout, QWidget)
 
 class Ui_DetailsForm(object):
     def setupUi(self, DetailsForm):
         if not DetailsForm.objectName():
             DetailsForm.setObjectName(u"DetailsForm")
         DetailsForm.resize(535, 438)
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
+        sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(DetailsForm.sizePolicy().hasHeightForWidth())
@@ -35,15 +34,16 @@ class Ui_DetailsForm(object):
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.MainContainer = QFrame(DetailsForm)
         self.MainContainer.setObjectName(u"MainContainer")
-        self.MainContainer.setFrameShape(QFrame.Box)
+        self.MainContainer.setFrameShape(QFrame.NoFrame)
         self.MainContainer.setFrameShadow(QFrame.Plain)
+        self.MainContainer.setLineWidth(0)
         self.verticalLayout_2 = QVBoxLayout(self.MainContainer)
         self.verticalLayout_2.setSpacing(6)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(-1, -1, -1, 6)
         self.header_label = QLabel(self.MainContainer)
         self.header_label.setObjectName(u"header_label")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.header_label.sizePolicy().hasHeightForWidth())
@@ -58,7 +58,7 @@ class Ui_DetailsForm(object):
         self.header_line.setMinimumSize(QSize(0, 1))
         self.header_line.setMaximumSize(QSize(16777215, 1))
         self.header_line.setFrameShadow(QFrame.Plain)
-        self.header_line.setFrameShape(QFrame.Shape.HLine)
+        self.header_line.setFrameShape(QFrame.HLine)
 
         self.verticalLayout_2.addWidget(self.header_line)
 
@@ -67,14 +67,14 @@ class Ui_DetailsForm(object):
         self.main_frame.setFrameShape(QFrame.NoFrame)
         self.main_frame.setFrameShadow(QFrame.Plain)
         self.main_horizontalLayout = QVBoxLayout(self.main_frame)
-        self.main_horizontalLayout.setSpacing(0)
+        self.main_horizontalLayout.setSpacing(6)
         self.main_horizontalLayout.setObjectName(u"main_horizontalLayout")
         self.main_horizontalLayout.setContentsMargins(-1, -1, -1, 0)
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.preview_frame = QFrame(self.main_frame)
         self.preview_frame.setObjectName(u"preview_frame")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred)
+        sizePolicy2 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.preview_frame.sizePolicy().hasHeightForWidth())
@@ -88,7 +88,7 @@ class Ui_DetailsForm(object):
 
         self.details_textEdit = QTextEdit(self.main_frame)
         self.details_textEdit.setObjectName(u"details_textEdit")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.MinimumExpanding)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.MinimumExpanding)
         sizePolicy3.setHorizontalStretch(0)
         sizePolicy3.setVerticalStretch(0)
         sizePolicy3.setHeightForWidth(self.details_textEdit.sizePolicy().hasHeightForWidth())
@@ -109,23 +109,26 @@ class Ui_DetailsForm(object):
 
         self.horizontalLayout.addWidget(self.details_textEdit)
 
+
         self.main_horizontalLayout.addLayout(self.horizontalLayout)
 
         self.button_horizontalLayout = QHBoxLayout()
         self.button_horizontalLayout.setSpacing(8)
         self.button_horizontalLayout.setObjectName(u"button_horizontalLayout")
-        self.horizontalSpacer = QSpacerItem(200, 20, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer = QSpacerItem(200, 20, QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
 
         self.button_horizontalLayout.addItem(self.horizontalSpacer)
 
         self.delete_button = QPushButton(self.main_frame)
         self.delete_button.setObjectName(u"delete_button")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Fixed)
+        sizePolicy4 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Fixed)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
         sizePolicy4.setHeightForWidth(self.delete_button.sizePolicy().hasHeightForWidth())
         self.delete_button.setSizePolicy(sizePolicy4)
-        self.delete_button.setStyleSheet(u"background-color: #7B0A15; color: #E1E1E8; padding: 5px;")
+        self.delete_button.setStyleSheet(u"background-color: #7B0A15; color: #E1E1E8;\n"
+"                                                            padding: 5px;\n"
+"                                                        ")
 
         self.button_horizontalLayout.addWidget(self.delete_button)
 
@@ -133,7 +136,9 @@ class Ui_DetailsForm(object):
         self.explorer_button.setObjectName(u"explorer_button")
         sizePolicy4.setHeightForWidth(self.explorer_button.sizePolicy().hasHeightForWidth())
         self.explorer_button.setSizePolicy(sizePolicy4)
-        self.explorer_button.setStyleSheet(u"background-color: #9C521B; color: #E1E1E8; padding: 5px;")
+        self.explorer_button.setStyleSheet(u"background-color: #9C521B; color: #E1E1E8;\n"
+"                                                            padding: 5px;\n"
+"                                                        ")
 
         self.button_horizontalLayout.addWidget(self.explorer_button)
 
@@ -141,29 +146,35 @@ class Ui_DetailsForm(object):
         self.open_button.setObjectName(u"open_button")
         sizePolicy4.setHeightForWidth(self.open_button.sizePolicy().hasHeightForWidth())
         self.open_button.setSizePolicy(sizePolicy4)
-        self.open_button.setStyleSheet(u"background-color: #216582; color: #E1E1E8; padding: 5px;")
+        self.open_button.setStyleSheet(u"background-color: #216582; color: #E1E1E8;\n"
+"                                                            padding: 5px;\n"
+"                                                        ")
 
         self.button_horizontalLayout.addWidget(self.open_button)
 
+
         self.main_horizontalLayout.addLayout(self.button_horizontalLayout)
+
 
         self.verticalLayout_2.addWidget(self.main_frame)
 
+
         self.verticalLayout_3.addWidget(self.MainContainer)
+
 
         self.retranslateUi(DetailsForm)
 
         QMetaObject.connectSlotsByName(DetailsForm)
-
     # setupUi
 
     def retranslateUi(self, DetailsForm):
         DetailsForm.setWindowTitle(QCoreApplication.translate("DetailsForm", u"Work Files Details", None))
         self.header_label.setText(QCoreApplication.translate("DetailsForm", u"Placeholder", None))
-        # if QT_CONFIG(accessibility)
-        self.details_textEdit.setAccessibleName(QCoreApplication.translate("DetailsForm", u"v  ", None))
-        # endif // QT_CONFIG(accessibility)
+#if QT_CONFIG(accessibility)
+        self.details_textEdit.setAccessibleName(QCoreApplication.translate("DetailsForm", u"v", None))
+#endif // QT_CONFIG(accessibility)
         self.delete_button.setText(QCoreApplication.translate("DetailsForm", u"Delete", None))
         self.explorer_button.setText(QCoreApplication.translate("DetailsForm", u"Explorer", None))
         self.open_button.setText(QCoreApplication.translate("DetailsForm", u"Open", None))
     # retranslateUi
+

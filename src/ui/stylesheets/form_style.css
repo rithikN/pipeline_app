@@ -4,7 +4,7 @@
 
 QFrame#right_frame,
 QFrame#right_frame * {
-    background-color: #E1E1E8;
+    background-color: #fefefe;
     color: #010409;
 }
 
@@ -18,4 +18,13 @@ QPushButton#previous_button,
 QPushButton#next_button  {
     background-color: #010409;
     color: #E1E1E8;
+}
+
+
+QComboBox#CustomComboBox::drop-down {
+    background: #E1E1E8;  /* White dropdown arrow */
+    border: none;
+    width: 60px;
+    subcontrol-position: right center;
+    background: transparent;
 }

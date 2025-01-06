@@ -1,138 +1,63 @@
 /* Global styles for the app */
 * {
     font-family: Inter;
+    outline: none;
 }
 
+/* General Widget Styles */
 QWidget {
-    background-color: #010409;  /* White background */
-    color: #E1E1E8;  /* Black text */
+    background-color: #010409; /* Dark background */
+    color: #E1E1E8;           /* Light text */
 }
 
-/* QLabel style */
+/* QLabel Styles */
 QLabel {
-    color:#010409;  /* Black text for labels */
+    color: #010409;  /* Black text for labels */
     font-size: 1.2em;
 }
 
-/* Button styles */
+/* QPushButton Styles */
 QPushButton {
-    background-color: #010409;  /* Black button background */
-    color: #E1E1E8;  /* White text */
+    background-color: #010409; /* Dark button background */
+    color: #E1E1E8;           /* Light text */
     border-radius: 5px;
     font-size: 1.1em;
     padding: 8px 15px;
-    border: none;
 }
 
 QPushButton:hover {
-    background-color: #333333;  /* Darker grey on hover */
+    background-color: #333333; /* Darker grey on hover */
 }
 
-/* Input Fields */
-QLineEdit {
-    background-color: #f4f4f4;  /* Light grey background for inputs */
-    color: #000000;  /* Black text */
-    border: 1px solid #000000;  /* Black border */
+/* Input Field Styles */
+QLineEdit, QComboBox {
+    background-color: #F4F4F4; /* Light grey background */
+    color: #000000;           /* Black text */
+    border: 1px solid #000000;
     border-radius: 5px;
-    padding: 8px;
+    padding: 8px 0px 8px 0px;             /* Uniform padding for alignment */
     font-size: 1em;
+    height: 30px;         /* Consistent height */
 }
 
-/* Focused input fields */
-QLineEdit:focus {
-    border: 2px solid #333333;  /* Dark grey on focus */
-    background-color: #eaeaea;  /* Slightly darker grey on focus */
-}
-
-/* Scroll Area */
-QScrollArea {
-    /* Match the dark background seen in the screenshot */
-    background: #010409;
-    border: none;
-}
-
-/* ------ VERTICAL SCROLLBAR ------ */
-QScrollBar:vertical {
-    /* Slightly narrower than default */
-    width: 8px;
-    /* Dark track background to blend in with the UI */
-    background:#010409;
-    margin: 0px 2px 0px 0px;
-    border-radius: 10px;
-}
-
-/* Scroll handle (the draggable thumb) */
-QScrollBar::handle:vertical {
-    /* Medium-dark gray so it’s visible against the track */
-    background: #E1E1E8;
-    min-height: 20px;
-    border-radius: 10px;
-}
-
-/* Make the handle lighten on hover to show interactivity */
-QScrollBar::handle:vertical:hover {
-    background:  #E1E1E8;
-    border-radius: 10px;
-}
-
-/* Remove the up/down arrow buttons */
-QScrollBar::add-line:vertical,
-QScrollBar::sub-line:vertical {
-    height: 0px;
-    background: none;
-    border: none;
-}
-
-/* ------ HORIZONTAL SCROLLBAR ------ */
-QScrollBar:horizontal {
-    height: 8px;
-    background: #1e1e1e;
-    margin: 2px 0px 0px 2px;
-    border-radius: 4px;
-}
-
-QScrollBar::handle:horizontal {
-    background: #666666;
-    min-width: 20px;
-    border-radius: 4px;
-}
-
-QScrollBar::handle:horizontal:hover {
-    background: #888888;
-}
-
-QScrollBar::add-line:horizontal,
-QScrollBar::sub-line:horizontal {
-    width: 0px;
-    background: none;
-    border: none;
-}
-/* Tabs */
-QTabWidget::pane {
-    border: none;
-    background:  #000000;  /* Black background */
+QLineEdit:focus, QComboBox:focus {
+    border: 2px solid #333333; /* Darker border on focus */
+    background-color: #EAEAEA; /* Slightly darker grey on focus */
+    color: #000000;
 }
 
 
-/* Dropdowns */
+/* QComboBox Dropdown and Items */
+
 QComboBox {
-    background-color: #f4f4f4;  /* Light grey dropdown */
-    color: #000000;  /* Black text */
-    border: 2px solid #000000;  /* Black border */
-    padding: 5px;
-    border-radius: 5px;
-    min-width: 120px;
+    padding: 8px;
 }
-
 QComboBox::drop-down {
-    background: #E1E1E8;  /* White dropdown arrow */
+    background: transparent;
     border: none;
     width: 20px;
-    subcontrol-position: right center;
-    background: transparent;
 }
 
-/* Explicit arrow icon */
 QComboBox::down-arrow {
     image: url("resources/icons/down-arrow.png");
     width: 15px;
@@ -140,49 +65,120 @@ QComboBox::down-arrow {
 }
 
 QComboBox QAbstractItemView {
-    background: #E1E1E8;  /* White dropdown list */
+    background: #E1E1E8; /* Light dropdown list */
     color: #000000;
-    border: 1px solid #cccccc;
+    border: 1px solid #CCCCCC;
+    outline: none;
+    padding: 10px;
 }
 
-/* Focused elements */
-QLineEdit:focus, QComboBox:focus {
-    border: 2px solid #000000;  /* Solid black border on focus */
-    background-color: #eaeaea;
-    color: #000000;  /* Black text */
+QComboBox QAbstractItemView::item {
+    min-height: 35px; /* Match height with input fields */
+    padding: 5px;
 }
 
-QFrame#log_line,
-QFrame#header_line {
+QComboBox QAbstractItemView::item:hover {
+    background-color: #000000; /* Dark background on hover */
+    color: #FFFFFF;           /* Light text on hover */
+}
+
+QComboBox QAbstractItemView::item:selected {
+    background-color: #000000; /* Dark background when selected */
+    color: #FFFFFF;           /* Light text when selected */
+}
+
+/* Scroll Area */
+QScrollArea {
+    background: transparent;
+    border: none;
+}
+
+/* Vertical Scrollbar */
+QScrollBar:vertical {
+    width: 6px;
+    background: transparent;
+    margin: 0px 0px 0px 0px;
+    border-radius: 4px;
+}
+
+QScrollBar::handle:vertical {
+    background: #E1E1E8;
+    min-height: 20px;
+    border-radius: 10px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #FFFFFF; /* Lighter handle on hover */
+}
+
+/* Horizontal Scrollbar */
+QScrollBar:horizontal {
+    height: 4px;
+    background: transparent; /* Transparent scrollbar track */
+    margin: 0px 0px 0px 0px; /* Adjust as needed */
+    border-radius: 4px; /* Optional for scrollbar track */
+}
+
+QScrollBar::handle:horizontal {
+    background: #E1E1E8; /* Light gray handle */
+    min-width: 20px; /* Minimum width of handle */
+    border-radius: 10px; /* Rounded handle */
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: #FFFFFF; /* Lighter handle on hover */
+}
+
+/* Remove up/down arrow buttons for vertical and horizontal scrollbars */
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical,
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    height: 0px;
+    width: 0px;
+    background: none;
+    border: none;
+}
+
+/* Remove unnecessary track artifacts */
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical,
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+    background: transparent;
+}
+
+/* Tabs */
+QTabWidget::pane {
+    border: none;
+    background: #000000;
+}
+
+/* Frame Styles */
+QFrame#log_line, QFrame#header_line {
     background-color: #E1E1E8;
 }
 
-
-QLabel#header_label {
-    color: #E1E1E8;  /* Black text for labels */
-    font-size: 1.2em;
-}
-
+/* Progress Bar */
 QProgressBar#progress_bar {
     background-color: #E1E1E8;
 }
 
+/* QMessageBox Styles */
 QMessageBox#msg_box {
     background-color: #E1E1E8;
 }
 
 QMessageBox QLabel {
     background-color: #E1E1E8;
-    color: #000000;  /* Ensure text is black and visible */
-    font-size: 14px; /* Adjust text size */
+    color: #000000;
+    font-size: 14px;
 }
+
 QMessageBox QPushButton {
-    background-color: #4C72B0; /* Button color */
-    color: white;              /* Button text color */
+    background-color: #4C72B0;
+    color: white;
     border: none;
-    border-radius: 5px;        /* Rounded corners */
+    border-radius: 5px;
     padding: 5px 10px;
 }
+
 QMessageBox QPushButton:hover {
-    background-color: #3b5998; /* Darker button color on hover */
+    background-color: #3B5998;
 }

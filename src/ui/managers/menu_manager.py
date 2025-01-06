@@ -4,11 +4,12 @@ import logging
 from typing import Callable
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import (
     QMenuBar,
     QWidget,
-    QHBoxLayout
+    QHBoxLayout,
+    QSizePolicy
 )
 
 from ui.components.core_widgets.menu_widget import CustomMenuWidget
@@ -20,6 +21,7 @@ from services.constants import (
     EDIT_LABEL, LOGOUT_LABEL, WIKI_LABEL,
     DOWNLOAD_LABEL, EXIT_PROJECT_LABEL
 )
+
 
 logger = logging.getLogger(__name__)
 
@@ -54,12 +56,12 @@ class TopBarManager:
         # Define base sections (always visible) with their actions
         self._base_sections = {
             APP_LABEL: [
-                (UPDATE_LABEL, self._emit_update_triggered),
-                (EXIT_LABEL, self._emit_exit_triggered),
+                (UPDATE_LABEL, self._emit_update_triggered, "resources/icons/menu_bar/update_app.svg"),
+                (EXIT_LABEL, self._emit_exit_triggered, "resources/icons/menu_bar/exit.svg"),
             ],
             HELP_LABEL: [
-                (WIKI_LABEL, self._emit_wiki_triggered),
-                (ABOUT_LABEL, self._emit_about_triggered),
+                (WIKI_LABEL, self._emit_wiki_triggered, "resources/icons/menu_bar/wiki.svg"),
+                (ABOUT_LABEL, self._emit_about_triggered, "resources/icons/menu_bar/about.svg"),
             ],
         }
 
@@ -86,11 +88,10 @@ class TopBarManager:
         """
         logger.debug(f"Creating section: {section_name}")
         new_menu = self.menu_bar.addMenu(section_name)
-        for label, callback in actions_data:
-            action = QAction(label, self.menu_bar)
+        for label, callback, icon_path in actions_data:
+            action = QAction(QIcon(icon_path), label, self.menu_bar)
             action.triggered.connect(callback)
             new_menu.addAction(action)
-        # We don't store references to base sections because we never remove them.
         return new_menu
 
     def _apply_topbar_styles(self):
@@ -98,22 +99,41 @@ class TopBarManager:
         Apply custom styles to the QMenuBar and its items.
         """
         self.menu_bar.setStyleSheet("""
+            /* ----- Top Menu Bar ----- */
             QMenuBar {
-                background-color: #000000;
-                color: #E1E1E8;
+                background-color: #000000;  /* Black background */
+                color: #FFFFFF;             /* White text */
                 padding: 5px;
+                font-size: 14px;
+                font-weight: bold;
             }
             QMenuBar::item {
                 background-color: transparent;
                 margin: 3px 10px;
                 padding: 5px 10px;
             }
+            /* Hover on top menu bar items */
             QMenuBar::item:selected {
-                background-color: #444; /* Highlight color when hovered */
+                background-color: #222222; /* Slightly lighter black on hover */
+                color: #FFFFFF;
             }
+
+            /* ----- Drop-down Menus ----- */
             QMenu {
-                background-color: #333; /* Drop-down background */
-                color: #E1E1E8;
+                background-color: #FFFFFF;  /* White background */
+                color: #000000;             /* Black text */
+                font-size: 14px;
+                font-weight: bold;
+            }
+            /* Default appearance for each drop-down item */
+            QMenu::item {
+                background-color: #FFFFFF;
+                color: #000000;
+            }
+            /* Hover or select in the drop-down menu */
+            QMenu::item:selected {
+                background-color: #000000;  /* Black background */
+                color: #FFFFFF;             /* White text */
             }
         """)
 
@@ -167,8 +187,8 @@ class TopBarManager:
             # We can define user section actions here
             help_section_action = self.menu_bar.actions()[-1]
             user_actions = [
-                (EDIT_LABEL, self._emit_edit_triggered),
-                (LOGOUT_LABEL, self._emit_logout_triggered),
+                (EDIT_LABEL, self._emit_edit_triggered, "resources/icons/menu_bar/edit.svg"),
+                (LOGOUT_LABEL, self._emit_logout_triggered, "resources/icons/menu_bar/logout.svg"),
             ]
             # Create the QMenu
             user_menu = self._create_section("User", user_actions)
@@ -192,8 +212,8 @@ class TopBarManager:
         if not self.project_section_action:
             help_section_action = self.menu_bar.actions()[-1]
             project_actions = [
-                (DOWNLOAD_LABEL, self._emit_download_triggered),
-                (EXIT_PROJECT_LABEL, self._emit_exit_project_triggered),
+                (DOWNLOAD_LABEL, self._emit_download_triggered, "resources/icons/menu_bar/download.svg"),
+                (EXIT_PROJECT_LABEL, self._emit_exit_project_triggered, "resources/icons/menu_bar/exit.svg"),
             ]
             project_menu = self._create_section("Project", project_actions)
             self.project_section_action = self.menu_bar.insertMenu(help_section_action, project_menu)
@@ -211,7 +231,12 @@ class TopBarManager:
     # Top-Right Corner Widget
     # -------------------------------------------------
 
-    def add_topbar_widget(self, parent, username=None, project_name=None):
+    def add_topbar_widget(
+        self,
+        parent: QWidget,
+        username=None,
+        project_name= None
+    ):
         """
         Dynamically add a widget on the top-right corner to display
         username and/or project name.
@@ -225,6 +250,12 @@ class TopBarManager:
         self.topbar_widget = QWidget(parent)
         self.topbar_widget.setStyleSheet("background-color: transparent;")
 
+        # Make sure the widget can expand horizontally if needed:
+        self.topbar_widget.setSizePolicy(
+            QSizePolicy.Expanding,
+            QSizePolicy.Fixed
+        )
+
         self.topbar_layout = QHBoxLayout(self.topbar_widget)
         self.topbar_layout.setContentsMargins(0, 0, 20, 0)
         self.topbar_layout.setSpacing(10)
@@ -233,16 +264,29 @@ class TopBarManager:
         # Add project label if provided
         if project_name:
             self.display_project_label = CustomMenuWidget(project_name, parent=self.topbar_widget)
-            self.display_project_label.setFixedSize(150, 30)
+            # Use an expanding size policy or a minimum width rather than a fixed size
+            self.display_project_label.setSizePolicy(
+                QSizePolicy.Expanding,
+                QSizePolicy.Fixed
+            )
+            # Optional: set a comfortable minimum width
+            self.display_project_label.setMinimumWidth(150)
             self.topbar_layout.addWidget(self.display_project_label)
 
         # Add user label if provided
         if username:
             self.display_user_label = CustomMenuWidget(username, parent=self.topbar_widget)
-            self.display_user_label.setFixedSize(150, 30)
+            self.display_user_label.setSizePolicy(
+                QSizePolicy.Expanding,
+                QSizePolicy.Fixed
+            )
+            self.display_user_label.setMinimumWidth(150)
             self.topbar_layout.addWidget(self.display_user_label)
 
+        # Place the widget in the top-right corner of the menu bar
         self.menu_bar.setCornerWidget(self.topbar_widget, Qt.Corner.TopRightCorner)
+
+        # Let the layout adjust itself to accommodate text length
         self.topbar_widget.adjustSize()
         self.topbar_widget.show()
         self.menu_bar.update()
@@ -259,3 +303,70 @@ class TopBarManager:
             self.display_user_label = None
             self.display_project_label = None
             self.topbar_layout = None
+
+if __name__ == "__main__":
+
+    from PySide6.QtWidgets import QApplication, QMainWindow, QMenuBar, QMessageBox
+    from PySide6.QtCore import QObject, Signal
+
+    # Mock SignalManager
+    class SignalManager(QObject):
+        update_triggered = Signal()
+        exit_triggered = Signal()
+        about_triggered = Signal()
+        wiki_triggered = Signal()
+        edit_triggered = Signal()
+        logout_triggered = Signal()
+        download_triggered = Signal()
+        exit_project_triggered = Signal()
+
+    # Main Application Window
+    class MainWindow(QMainWindow):
+        def __init__(self):
+            super().__init__()
+            self.setWindowTitle("TopBarManager Demo")
+            self.resize(800, 600)
+
+            # Create QMenuBar and SignalManager
+            menu_bar = QMenuBar(self)
+            self.setMenuBar(menu_bar)
+            signal_manager = SignalManager()
+
+            # Connect SignalManager signals to message handlers
+            signal_manager.update_triggered.connect(lambda: self.show_message("Update Action Triggered"))
+            signal_manager.exit_triggered.connect(lambda: self.show_message("Exit Action Triggered"))
+            signal_manager.about_triggered.connect(lambda: self.show_message("About Action Triggered"))
+            signal_manager.wiki_triggered.connect(lambda: self.show_message("Wiki Action Triggered"))
+            signal_manager.edit_triggered.connect(lambda: self.show_message("Edit User Action Triggered"))
+            signal_manager.logout_triggered.connect(lambda: self.show_message("Logout Action Triggered"))
+            signal_manager.download_triggered.connect(lambda: self.show_message("Download Action Triggered"))
+            signal_manager.exit_project_triggered.connect(lambda: self.show_message("Exit Project Action Triggered"))
+
+            # Create a message box
+            message_box = QMessageBox(self)
+
+            # Initialize TopBarManager
+            self.top_bar_manager = TopBarManager(
+                menu_bar=menu_bar,
+                message_box=message_box,
+                signal_manager=signal_manager
+            )
+
+            # Add dynamic sections
+            self.top_bar_manager.add_user_section()
+            self.top_bar_manager.add_project_section()
+
+            # Add a corner widget with user and project info
+            self.top_bar_manager.add_topbar_widget(self, username="Alice", project_name="DemoProject1111111111111111")
+
+        def show_message(self, message):
+            """
+            Display a message in a QMessageBox.
+            """
+            QMessageBox.information(self, "TopBarManager Action", message)
+
+
+    app = QApplication([])
+    window = MainWindow()
+    window.show()
+    app.exec()

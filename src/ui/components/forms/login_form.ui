@@ -1,463 +1,286 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>LoginForm</class>
-    <widget class="QWidget" name="LoginForm">
-        <property name="geometry">
+ <class>LoginForm</class>
+ <widget class="QWidget" name="LoginForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1196</width>
+    <height>657</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Philmcgi Pipeline 2.0</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <item row="1" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="logo_label">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>100</horstretch>
+         <verstretch>100</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>600</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>24</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="mouseTracking">
+        <bool>false</bool>
+       </property>
+       <property name="whatsThis">
+        <string notr="true"/>
+       </property>
+       <property name="accessibleName">
+        <string notr="true"/>
+       </property>
+       <property name="accessibleDescription">
+        <string notr="true"/>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="lineWidth">
+        <number>0</number>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::PlainText</enum>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="indent">
+        <number>0</number>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::NoTextInteraction</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="right_frame">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <property name="leftMargin">
+         <number>130</number>
+        </property>
+        <property name="topMargin">
+         <number>130</number>
+        </property>
+        <property name="rightMargin">
+         <number>130</number>
+        </property>
+        <property name="bottomMargin">
+         <number>130</number>
+        </property>
+        <item row="2" column="0">
+         <widget class="QScrollArea" name="scrollArea">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Plain</enum>
+          </property>
+          <property name="lineWidth">
+           <number>0</number>
+          </property>
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents">
+           <property name="geometry">
             <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>1215</width>
-                <height>724</height>
+             <x>0</x>
+             <y>0</y>
+             <width>334</width>
+             <height>254</height>
             </rect>
-        </property>
-        <property name="windowTitle">
-            <string>Philmcgi Pipeline 2.0</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout">
-            <property name="leftMargin">
-                <number>0</number>
-            </property>
-            <property name="topMargin">
-                <number>0</number>
-            </property>
-            <property name="rightMargin">
-                <number>0</number>
-            </property>
-            <property name="bottomMargin">
-                <number>0</number>
-            </property>
-            <property name="spacing">
-                <number>0</number>
-            </property>
-            <item row="0" column="0">
-                <widget class="Line" name="header_line">
-                    <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                    </property>
-                </widget>
-            </item>
-            <item row="1" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout">
-                    <property name="spacing">
-                        <number>0</number>
-                    </property>
-                    <item>
-                        <widget class="QLabel" name="Welcome_label">
-                            <property name="sizePolicy">
-                                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                                    <horstretch>100</horstretch>
-                                    <verstretch>100</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>600</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                            <property name="font">
-                                <font>
-                                    <family>MS Shell Dlg 2</family>
-                                    <pointsize>24</pointsize>
-                                    <weight>50</weight>
-                                    <italic>false</italic>
-                                    <bold>false</bold>
-                                    <kerning>false</kerning>
-                                </font>
-                            </property>
-                            <property name="mouseTracking">
-                                <bool>false</bool>
-                            </property>
-                            <property name="whatsThis">
-                                <string notr="true"/>
-                            </property>
-                            <property name="accessibleName">
-                                <string notr="true"/>
-                            </property>
-                            <property name="accessibleDescription">
-                                <string notr="true"/>
-                            </property>
-                            <property name="styleSheet">
-                                <string notr="true"/>
-                            </property>
-                            <property name="lineWidth">
-                                <number>0</number>
-                            </property>
-                            <property name="text">
-                                <string/>
-                            </property>
-                            <property name="textFormat">
-                                <enum>Qt::PlainText</enum>
-                            </property>
-                            <property name="scaledContents">
-                                <bool>true</bool>
-                            </property>
-                            <property name="alignment">
-                                <set>Qt::AlignCenter</set>
-                            </property>
-                            <property name="indent">
-                                <number>0</number>
-                            </property>
-                            <property name="textInteractionFlags">
-                                <set>Qt::NoTextInteraction</set>
-                            </property>
-                        </widget>
-                    </item>
-                    <item>
-                        <widget class="QFrame" name="right_frame">
-                            <property name="styleSheet">
-                                <string notr="true"/>
-                            </property>
-                            <property name="frameShape">
-                                <enum>QFrame::StyledPanel</enum>
-                            </property>
-                            <property name="frameShadow">
-                                <enum>QFrame::Raised</enum>
-                            </property>
-                            <layout class="QGridLayout" name="gridLayout_2">
-                                <item row="0" column="1">
-                                    <spacer name="outside_verticalSpacer_1">
-                                        <property name="orientation">
-                                            <enum>Qt::Vertical</enum>
-                                        </property>
-                                        <property name="sizeType">
-                                            <enum>QSizePolicy::MinimumExpanding</enum>
-                                        </property>
-                                        <property name="sizeHint" stdset="0">
-                                            <size>
-                                                <width>20</width>
-                                                <height>150</height>
-                                            </size>
-                                        </property>
-                                    </spacer>
-                                </item>
-                                <item row="1" column="1">
-                                    <widget class="QFrame" name="login_frame">
-                                        <property name="sizePolicy">
-                                            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                                                <horstretch>1</horstretch>
-                                                <verstretch>1</verstretch>
-                                            </sizepolicy>
-                                        </property>
-                                        <property name="styleSheet">
-                                            <string notr="true"/>
-                                        </property>
-                                        <property name="frameShape">
-                                            <enum>QFrame::NoFrame</enum>
-                                        </property>
-                                        <property name="frameShadow">
-                                            <enum>QFrame::Plain</enum>
-                                        </property>
-                                        <layout class="QVBoxLayout" name="verticalLayout_2">
-                                            <property name="spacing">
-                                                <number>6</number>
-                                            </property>
-                                            <property name="leftMargin">
-                                                <number>9</number>
-                                            </property>
-                                            <property name="topMargin">
-                                                <number>9</number>
-                                            </property>
-                                            <property name="rightMargin">
-                                                <number>9</number>
-                                            </property>
-                                            <property name="bottomMargin">
-                                                <number>9</number>
-                                            </property>
-                                            <item>
-                                                <spacer name="inside_verticalSpacer_5">
-                                                    <property name="orientation">
-                                                        <enum>Qt::Vertical</enum>
-                                                    </property>
-                                                    <property name="sizeType">
-                                                        <enum>QSizePolicy::MinimumExpanding</enum>
-                                                    </property>
-                                                    <property name="sizeHint" stdset="0">
-                                                        <size>
-                                                            <width>20</width>
-                                                            <height>17</height>
-                                                        </size>
-                                                    </property>
-                                                </spacer>
-                                            </item>
-                                            <item>
-                                                <widget class="QLabel" name="label_2">
-                                                    <property name="styleSheet">
-                                                        <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;
-                                                        </string>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>Ready To Start ?</string>
-                                                    </property>
-                                                </widget>
-                                            </item>
-                                            <item>
-                                                <widget class="QLabel" name="label">
-                                                    <property name="font">
-                                                        <font>
-                                                            <family>Arial</family>
-                                                            <pointsize>24</pointsize>
-                                                            <weight>75</weight>
-                                                            <italic>false</italic>
-                                                            <bold>true</bold>
-                                                        </font>
-                                                    </property>
-                                                    <property name="styleSheet">
-                                                        <string notr="true"/>
-                                                    </property>
-                                                    <property name="lineWidth">
-                                                        <number>0</number>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>Login</string>
-                                                    </property>
-                                                    <property name="margin">
-                                                        <number>2</number>
-                                                    </property>
-                                                </widget>
-                                            </item>
-                                            <item>
-                                                <spacer name="inside_verticalSpacer_1">
-                                                    <property name="orientation">
-                                                        <enum>Qt::Vertical</enum>
-                                                    </property>
-                                                    <property name="sizeType">
-                                                        <enum>QSizePolicy::Fixed</enum>
-                                                    </property>
-                                                    <property name="sizeHint" stdset="0">
-                                                        <size>
-                                                            <width>20</width>
-                                                            <height>35</height>
-                                                        </size>
-                                                    </property>
-                                                </spacer>
-                                            </item>
-                                            <item>
-                                                <widget class="QScrollArea" name="scrollArea">
-                                                    <property name="frameShape">
-                                                        <enum>QFrame::NoFrame</enum>
-                                                    </property>
-                                                    <property name="frameShadow">
-                                                        <enum>QFrame::Plain</enum>
-                                                    </property>
-                                                    <property name="lineWidth">
-                                                        <number>0</number>
-                                                    </property>
-                                                    <property name="widgetResizable">
-                                                        <bool>true</bool>
-                                                    </property>
-                                                    <widget class="QWidget" name="scrollAreaWidgetContents">
-                                                        <property name="geometry">
-                                                            <rect>
-                                                                <x>0</x>
-                                                                <y>0</y>
-                                                                <width>133</width>
-                                                                <height>93</height>
-                                                            </rect>
-                                                        </property>
-                                                        <layout class="QVBoxLayout" name="verticalLayout">
-                                                            <property name="spacing">
-                                                                <number>0</number>
-                                                            </property>
-                                                            <property name="leftMargin">
-                                                                <number>0</number>
-                                                            </property>
-                                                            <property name="topMargin">
-                                                                <number>0</number>
-                                                            </property>
-                                                            <property name="rightMargin">
-                                                                <number>0</number>
-                                                            </property>
-                                                            <property name="bottomMargin">
-                                                                <number>0</number>
-                                                            </property>
-                                                            <item>
-                                                                <widget class="QLabel" name="username_label">
-                                                                    <property name="font">
-                                                                        <font>
-                                                                            <family>Arial</family>
-                                                                            <pointsize>11</pointsize>
-                                                                            <weight>75</weight>
-                                                                            <bold>true</bold>
-                                                                        </font>
-                                                                    </property>
-                                                                    <property name="styleSheet">
-                                                                        <string notr="true"/>
-                                                                    </property>
-                                                                    <property name="frameShadow">
-                                                                        <enum>QFrame::Plain</enum>
-                                                                    </property>
-                                                                    <property name="text">
-                                                                        <string>Username</string>
-                                                                    </property>
-                                                                    <property name="margin">
-                                                                        <number>1</number>
-                                                                    </property>
-                                                                </widget>
-                                                            </item>
-                                                            <item>
-                                                                <widget class="QLineEdit" name="username_lineEdit">
-                                                                    <property name="styleSheet">
-                                                                        <string notr="true"/>
-                                                                    </property>
-                                                                    <property name="placeholderText">
-                                                                        <string>username@philmcgi.com</string>
-                                                                    </property>
-                                                                </widget>
-                                                            </item>
-                                                            <item>
-                                                                <spacer name="inside_verticalSpacer_2">
-                                                                    <property name="orientation">
-                                                                        <enum>Qt::Vertical</enum>
-                                                                    </property>
-                                                                    <property name="sizeType">
-                                                                        <enum>QSizePolicy::Fixed</enum>
-                                                                    </property>
-                                                                    <property name="sizeHint" stdset="0">
-                                                                        <size>
-                                                                            <width>16</width>
-                                                                            <height>13</height>
-                                                                        </size>
-                                                                    </property>
-                                                                </spacer>
-                                                            </item>
-                                                            <item>
-                                                                <widget class="QLabel" name="password_label">
-                                                                    <property name="font">
-                                                                        <font>
-                                                                            <pointsize>11</pointsize>
-                                                                            <weight>75</weight>
-                                                                            <bold>true</bold>
-                                                                        </font>
-                                                                    </property>
-                                                                    <property name="styleSheet">
-                                                                        <string notr="true"/>
-                                                                    </property>
-                                                                    <property name="text">
-                                                                        <string>Password</string>
-                                                                    </property>
-                                                                    <property name="margin">
-                                                                        <number>1</number>
-                                                                    </property>
-                                                                </widget>
-                                                            </item>
-                                                            <item>
-                                                                <widget class="QLineEdit" name="password_lineEdit">
-                                                                    <property name="styleSheet">
-                                                                        <string notr="true"/>
-                                                                    </property>
-                                                                    <property name="echoMode">
-                                                                        <enum>QLineEdit::Password</enum>
-                                                                    </property>
-                                                                    <property name="placeholderText">
-                                                                        <string>••••••••••</string>
-                                                                    </property>
-                                                                </widget>
-                                                            </item>
-                                                        </layout>
-                                                    </widget>
-                                                </widget>
-                                            </item>
-                                            <item>
-                                                <spacer name="inside_verticalSpacer_3">
-                                                    <property name="orientation">
-                                                        <enum>Qt::Vertical</enum>
-                                                    </property>
-                                                    <property name="sizeType">
-                                                        <enum>QSizePolicy::Fixed</enum>
-                                                    </property>
-                                                    <property name="sizeHint" stdset="0">
-                                                        <size>
-                                                            <width>20</width>
-                                                            <height>30</height>
-                                                        </size>
-                                                    </property>
-                                                </spacer>
-                                            </item>
-                                            <item>
-                                                <widget class="QPushButton" name="login_pushButton">
-                                                    <property name="styleSheet">
-                                                        <string notr="true"/>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>Login</string>
-                                                    </property>
-                                                </widget>
-                                            </item>
-                                            <item>
-                                                <spacer name="inside_verticalSpacer_4">
-                                                    <property name="orientation">
-                                                        <enum>Qt::Vertical</enum>
-                                                    </property>
-                                                    <property name="sizeType">
-                                                        <enum>QSizePolicy::MinimumExpanding</enum>
-                                                    </property>
-                                                    <property name="sizeHint" stdset="0">
-                                                        <size>
-                                                            <width>13</width>
-                                                            <height>16</height>
-                                                        </size>
-                                                    </property>
-                                                </spacer>
-                                            </item>
-                                        </layout>
-                                    </widget>
-                                </item>
-                                <item row="1" column="0">
-                                    <spacer name="outside_horizontalSpacer_1">
-                                        <property name="orientation">
-                                            <enum>Qt::Horizontal</enum>
-                                        </property>
-                                        <property name="sizeType">
-                                            <enum>QSizePolicy::MinimumExpanding</enum>
-                                        </property>
-                                        <property name="sizeHint" stdset="0">
-                                            <size>
-                                                <width>150</width>
-                                                <height>20</height>
-                                            </size>
-                                        </property>
-                                    </spacer>
-                                </item>
-                                <item row="1" column="2">
-                                    <spacer name="outside_horizontalSpacer_2">
-                                        <property name="orientation">
-                                            <enum>Qt::Horizontal</enum>
-                                        </property>
-                                        <property name="sizeType">
-                                            <enum>QSizePolicy::MinimumExpanding</enum>
-                                        </property>
-                                        <property name="sizeHint" stdset="0">
-                                            <size>
-                                                <width>150</width>
-                                                <height>20</height>
-                                            </size>
-                                        </property>
-                                    </spacer>
-                                </item>
-                                <item row="2" column="1">
-                                    <spacer name="outside_verticalSpacer_2">
-                                        <property name="orientation">
-                                            <enum>Qt::Vertical</enum>
-                                        </property>
-                                        <property name="sizeType">
-                                            <enum>QSizePolicy::MinimumExpanding</enum>
-                                        </property>
-                                        <property name="sizeHint" stdset="0">
-                                            <size>
-                                                <width>20</width>
-                                                <height>150</height>
-                                            </size>
-                                        </property>
-                                    </spacer>
-                                </item>
-                            </layout>
-                        </widget>
-                    </item>
-                </layout>
-            </item>
-        </layout>
+           </property>
+          </widget>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="ready_textlabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>Ready To Start ?</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="login_text_label">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>30</pointsize>
+            <weight>75</weight>
+            <italic>false</italic>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="lineWidth">
+           <number>0</number>
+          </property>
+          <property name="text">
+           <string>Login</string>
+          </property>
+          <property name="margin">
+           <number>2</number>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QPushButton" name="login_pushButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>20</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>Login</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="0">
+    <widget class="Line" name="header_line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
     </widget>
-    <resources/>
-    <connections/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
 </ui>

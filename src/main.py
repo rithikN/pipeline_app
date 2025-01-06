@@ -25,7 +25,7 @@ def setup_logging():
     """
     # Create a custom logger
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.CRITICAL)
 
     # Create handlers
     console_handler = logging.StreamHandler(sys.stdout)

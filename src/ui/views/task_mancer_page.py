@@ -66,32 +66,51 @@ class TaskMancerPage(QWidget):
         self._project = None
         self._taskStatus = None
 
-        # State variables
-        self.current_search_text = ""
-        self.current_selection = {
-            "shot": [],
-            "episode": [],
-            "scene": [],
-            "task": [],
-            "status": []
+        # -- To reduce repetition, store area-specific components in a dict --
+        # This makes it easier to loop over areas for certain operations.
+        self.areas = {
+            "work": {
+                "selection_widget": None,
+                "task_list_widget": None,
+                "file_widget": None,
+                "file_detail_widget": None,
+                "file_preview_widget": None,
+                "area_widget": None,
+                "search_text": "",
+                "current_selection": {
+                    "shot": [],
+                    "episode": [],
+                    "scene": [],
+                    "task": [],
+                    "status": []
+                }
+            },
+            "review": {
+                "selection_widget": None,
+                "task_list_widget": None,
+                "task_detail_widget": None,
+                "area_widget": None,
+                "search_text": "",
+                "current_selection": {
+                    "shot": [],
+                    "episode": [],
+                    "scene": [],
+                    "task": [],
+                    "status": []
+                }
+            }
         }
+
+        # Synchronization flags
         self.sync_in_progress = False
         self.cancel_requested = False
 
-        # Dynamically initialized UI components
-        self.work_selection_widget = None
-        self.work_tasklist_widget = None
-        self.work_file_widget = None
-        self.work_file_detail_widget = None
-        self.file_preview_widget = None
-        self.review_selection_widget = None
-        self.review_tasklist_widget = None
-        self.review_taskDetail_widget = None
-        self.work_area_widget = None
-        self.review_widget = None
-
         # Replace the default tab widget with a CustomTabWidget
         self._setup_tab_widget()
+
+    # ------------------------------------------------------------
+    #                  UI SETUP & TEARDOWN
+    # ------------------------------------------------------------
 
     def _setup_tab_widget(self):
         """
@@ -112,6 +131,7 @@ class TaskMancerPage(QWidget):
             self._ui.TaskMancer_tabWidget = CustomTabWidget()
             parent_layout.addWidget(self._ui.TaskMancer_tabWidget)
 
+            # Example style (could be loaded via stylesheet)
             self._ui.TaskMancer_tabWidget.setStyleSheet(
                 """
                 QTabBar::tab {
@@ -147,38 +167,40 @@ class TaskMancerPage(QWidget):
         """
         logger.debug("Building UI components for TaskMancerPage.")
 
-        # Create & style widgets for the Work Area
-        self.work_selection_widget = SelectionWidget()
-        self.work_tasklist_widget = TaskListWidget()
-        self.work_file_widget = WorkFilesWidget()
-        self.work_file_detail_widget = WorkDetailsWidget(title="Work Files Details")
-        self.file_preview_widget = FileDetailsWidget(title="File Preview")
+        # -- Create Work Area Widgets --
+        self.areas["work"]["selection_widget"] = SelectionWidget()
+        self.areas["work"]["task_list_widget"] = TaskListWidget()
+        self.areas["work"]["file_widget"] = WorkFilesWidget()
+        self.areas["work"]["file_detail_widget"] = WorkDetailsWidget(title="Work Files Details")
+        self.areas["work"]["file_preview_widget"] = FileDetailsWidget(title="File Preview")
 
-        # Create & style widgets for the Review Area
-        self.review_selection_widget = SelectionWidget()
-        self.review_tasklist_widget = TaskListWidget()
-        self.review_taskDetail_widget = TaskDetailsWidget("Task Details")
-
-        # Create container widgets (WorkAreaWidget, ReviewAreaWidget)
-        self.work_area_widget = WorkAreaWidget(
-            self.work_selection_widget,
-            self.work_tasklist_widget,
-            self.work_file_widget,
-            self.work_file_detail_widget,
-            self.file_preview_widget,
+        # Container widget for Work Area
+        self.areas["work"]["area_widget"] = WorkAreaWidget(
+            self.areas["work"]["selection_widget"],
+            self.areas["work"]["task_list_widget"],
+            self.areas["work"]["file_widget"],
+            self.areas["work"]["file_detail_widget"],
+            self.areas["work"]["file_preview_widget"],
         )
-        self.review_widget = ReviewAreaWidget(
-            self.review_selection_widget,
-            self.review_tasklist_widget,
-            self.review_taskDetail_widget,
+
+        # -- Create Review Area Widgets --
+        self.areas["review"]["selection_widget"] = SelectionWidget()
+        self.areas["review"]["task_list_widget"] = TaskListWidget()
+        self.areas["review"]["task_detail_widget"] = TaskDetailsWidget("Task Details")
+
+        # Container widget for Review Area
+        self.areas["review"]["area_widget"] = ReviewAreaWidget(
+            self.areas["review"]["selection_widget"],
+            self.areas["review"]["task_list_widget"],
+            self.areas["review"]["task_detail_widget"],
         )
 
         # Clear and re-populate the tab widget
         self._ui.TaskMancer_tabWidget.clear()
-        self._ui.TaskMancer_tabWidget.addTab(self.work_area_widget, "Work Area")
-        self._ui.TaskMancer_tabWidget.addTab(self.review_widget, "Review")
+        self._ui.TaskMancer_tabWidget.addTab(self.areas["work"]["area_widget"], "Work Area")
+        self._ui.TaskMancer_tabWidget.addTab(self.areas["review"]["area_widget"], "Review")
 
-        # Finally, connect signals in the newly created widgets
+        # Connect signals
         self._setup_connections()
 
     def _clear_ui(self):
@@ -188,26 +210,28 @@ class TaskMancerPage(QWidget):
         logger.debug("Clearing TaskMancerPage UI components.")
         self._ui.TaskMancer_tabWidget.clear()
 
-        self.work_area_widget = None
-        self.review_widget = None
-        self.work_selection_widget = None
-        self.work_tasklist_widget = None
-        self.work_file_widget = None
-        self.work_file_detail_widget = None
-        self.file_preview_widget = None
-        self.review_selection_widget = None
-        self.review_tasklist_widget = None
-        self.review_taskDetail_widget = None
+        # Reset all references and states
+        for area_name in self.areas:
+            for key in self.areas[area_name]:
+                if isinstance(self.areas[area_name][key], QWidget):
+                    self.areas[area_name][key] = None
+                elif isinstance(self.areas[area_name][key], dict):
+                    # For 'current_selection', reset them
+                    self.areas[area_name][key] = {
+                        "shot": [],
+                        "episode": [],
+                        "scene": [],
+                        "task": [],
+                        "status": []
+                    }
+                elif isinstance(self.areas[area_name][key], str):
+                    self.areas[area_name][key] = ""
 
-        self.current_search_text = ""
-        self.current_selection = {
-            "shot": [],
-            "episode": [],
-            "scene": [],
-            "task": [],
-            "status": []
-        }
         self.sync_in_progress = False
+
+    # ------------------------------------------------------------
+    #                 PROJECT & DATA FETCHING
+    # ------------------------------------------------------------
 
     def set_project(self, project_name):
         """
@@ -234,7 +258,6 @@ class TaskMancerPage(QWidget):
             """
             Handle successful data fetching from the server.
             """
-            # Don't close the dialog immediately; schedule the UI build with QTimer
             QTimer.singleShot(0, lambda: _build_and_populate_ui(task_data, task_status, progress_dialog))
 
         def _build_and_populate_ui(task_data, task_status, progress_dialog):
@@ -285,122 +308,61 @@ class TaskMancerPage(QWidget):
         self.data_thread.start()
         progress_dialog.progress_bar.setRange(0, 0)
 
-    def _on_previous(self):
-        """
-        Navigate back to the previous page, if a callback is provided.
-        """
-        logger.debug("Previous button clicked. Navigating back.")
-        if self.prev_page_callback:
-            self._clear_ui()
-            self.prev_page_callback()
-
-    def _download_project_files(self):
-        """
-        Navigate back to the previous page, if a callback is provided.
-        """
-        logger.debug("Download project files menu action clicked.")
-
-    # ---------------------
-    # SYNC & SELECTION LOGIC
-    # ---------------------
-
-    def sync_task_selection(self, task_name):
-        """
-        Synchronize task selection between work and review task lists.
-        """
-        if self.sync_in_progress:
-            return
-
-        self.sync_in_progress = True
-        try:
-            sender = self.sender()
-            if sender == self.work_tasklist_widget:
-                self.review_tasklist_widget.set_selected_task(task_name, emit_signal=True)
-            elif sender == self.review_tasklist_widget:
-                self.work_tasklist_widget.set_selected_task(task_name, emit_signal=True)
-        finally:
-            self.sync_in_progress = False
-
-    def sync_selection(self, selection):
-        """
-        Synchronize shot/episode/scene/task/status selection between work and review widgets.
-        """
-        if self.sync_in_progress:
-            return
-
-        self.sync_in_progress = True
-        try:
-            sender = self.sender()
-            if sender == self.work_selection_widget:
-                self.review_selection_widget.set_current_shot(selection.get("shot"))
-                self.review_selection_widget.set_current_episode(selection.get("episode"))
-                self.review_selection_widget.set_current_scene(selection.get("scene"))
-                self.review_selection_widget.set_current_task(selection.get("task"))
-                self.review_selection_widget.set_current_status(selection.get("status"))
-            elif sender == self.review_selection_widget:
-                self.work_selection_widget.set_current_shot(selection.get("shot"))
-                self.work_selection_widget.set_current_episode(selection.get("episode"))
-                self.work_selection_widget.set_current_scene(selection.get("scene"))
-                self.work_selection_widget.set_current_task(selection.get("task"))
-                self.work_selection_widget.set_current_status(selection.get("status"))
-        finally:
-            self.sync_in_progress = False
-
-    def sync_search_text(self, text):
-        """
-        Synchronize the search text between the work and review task lists.
-        """
-        if self.sync_in_progress:
-            return
-
-        self.sync_in_progress = True
-        try:
-            sender = self.sender()
-            if sender == self.work_tasklist_widget.search_lineEdit:
-                self.review_tasklist_widget.search_lineEdit.setText(text)
-            elif sender == self.review_tasklist_widget.search_lineEdit:
-                self.work_tasklist_widget.search_lineEdit.setText(text)
-        finally:
-            self.sync_in_progress = False
-
-    # ---------------------
-    # UI SIGNAL CONNECTIONS
-    # ---------------------
+    # ------------------------------------------------------------
+    #                 SHARED UI SIGNAL CONNECTIONS
+    # ------------------------------------------------------------
 
     def _setup_connections(self):
         """
-        Connect signals of widgets (selection, task list, file widgets) to their respective slots.
+        Connect signals of widgets to their respective slots.
         """
         logger.debug("Setting up signal connections for TaskMancerPage.")
 
-        # Work Area
-        if self.work_selection_widget:
-            self.work_selection_widget.selectionChanged.connect(self._on_work_selection_changed)
-            self.work_selection_widget.selectionChanged.connect(self.sync_selection)
+        # Work area signals
+        work_selection = self.areas["work"]["selection_widget"]
+        work_task_list = self.areas["work"]["task_list_widget"]
+        work_file_widget = self.areas["work"]["file_widget"]
 
-        if self.work_tasklist_widget:
-            self.work_tasklist_widget.search_lineEdit.textChanged.connect(self._on_work_search_text_changed)
-            self.work_tasklist_widget.taskSelected.connect(self._populate_work_files)
-            self.work_tasklist_widget.taskSelected.connect(self.sync_task_selection)
-            self.work_tasklist_widget.search_lineEdit.textChanged.connect(self.sync_search_text)
+        if work_selection:
+            work_selection.selectionChanged.connect(
+                lambda sel: self._on_selection_changed("work", sel)
+            )
+            work_selection.selectionChanged.connect(self._sync_selection)
 
-        if self.work_file_widget:
-            self.work_file_widget.fileSelected.connect(self._update_details)
+        if work_task_list:
+            work_task_list.search_lineEdit.textChanged.connect(
+                lambda text: self._on_search_text_changed("work", text)
+            )
+            work_task_list.taskSelected.connect(
+                lambda task_name, data: self._populate_work_files(task_name, data)
+            )
+            work_task_list.taskSelected.connect(self._sync_task_selection)
+            work_task_list.search_lineEdit.textChanged.connect(self._sync_search_text)
 
-        # Review Area
-        if self.review_selection_widget:
-            self.review_selection_widget.selectionChanged.connect(self._on_review_selection_changed)
-            self.review_selection_widget.selectionChanged.connect(self.sync_selection)
+        if work_file_widget:
+            work_file_widget.fileSelected.connect(self._update_work_details)
 
-        if self.review_tasklist_widget:
-            self.review_tasklist_widget.search_lineEdit.textChanged.connect(self._on_review_search_text_changed)
-            self.review_tasklist_widget.taskSelected.connect(self._update_task_details)
-            self.review_tasklist_widget.taskSelected.connect(self.sync_task_selection)
-            self.review_tasklist_widget.search_lineEdit.textChanged.connect(self.sync_search_text)
+        # Review area signals
+        review_selection = self.areas["review"]["selection_widget"]
+        review_task_list = self.areas["review"]["task_list_widget"]
 
-    # ---------------------
-    # DATA POPULATION
-    # ---------------------
+        if review_selection:
+            review_selection.selectionChanged.connect(
+                lambda sel: self._on_selection_changed("review", sel)
+            )
+            review_selection.selectionChanged.connect(self._sync_selection)
+
+        if review_task_list:
+            review_task_list.search_lineEdit.textChanged.connect(
+                lambda text: self._on_search_text_changed("review", text)
+            )
+            review_task_list.taskSelected.connect(self._update_review_task_details)
+            review_task_list.taskSelected.connect(self._sync_task_selection)
+            review_task_list.search_lineEdit.textChanged.connect(self._sync_search_text)
+
+    # ------------------------------------------------------------
+    #                       POPULATION
+    # ------------------------------------------------------------
 
     def _populate(self, task_data, task_status):
         """
@@ -415,162 +377,259 @@ class TaskMancerPage(QWidget):
             logger.warning("No task data or status data to populate.")
             return
 
-        # Populate 'Work' area widgets
-        self.work_tasklist_widget.set_tasks(task_data)
-        self.work_tasklist_widget.set_task_status_colors(task_status)
-
-        # Populate 'Review' area widgets
-        self.review_tasklist_widget.set_tasks(task_data)
-        self.review_tasklist_widget.set_task_status_colors(task_status)
+        # Set tasks & status colors for both areas
+        for area_name in ("work", "review"):
+            task_list_widget = self.areas[area_name]["task_list_widget"]
+            if task_list_widget:
+                task_list_widget.set_tasks(task_data)
+                task_list_widget.set_task_status_colors(task_status)
 
         # Populate selection widgets
-        self._populate_selection_widgets([self.work_selection_widget, self.review_selection_widget])
+        for area_name in ("work", "review"):
+            selection_widget = self.areas[area_name]["selection_widget"]
+            if selection_widget:
+                self._populate_selection_widget(selection_widget)
 
-    def _populate_selection_widgets(self, selection_widgets):
+    def _populate_selection_widget(self, selection_widget):
         """
-        Populate shot, episode, scene, task, and status in each provided selection widget.
-
-        Args:
-            selection_widgets (list): A list of selection widgets (work/review).
+        Populate shot, episode, scene, task, and status in the given selection widget.
         """
-        logger.debug("Populating selection widgets (shots, episodes, scenes, tasks, status).")
-        for widget in selection_widgets:
-            if not widget:
-                continue
-            self._set_shots(widget)
-            self._set_episodes(widget)
-            self._set_scenes(widget)
-            self._set_tasks(widget)
-            self._set_status(widget)
-
-    def _set_shots(self, selection_widget):
+        logger.debug("Populating a selection widget with shots, episodes, scenes, tasks, status.")
+        # Shots
         selection_widget.shot_comboBox.clear()
         selection_widget.shot_comboBox.addItems(["Shot", "Assets"])
 
-    def _set_episodes(self, selection_widget):
+        # Episodes
         episodes = get_episodes(self._project)
-        selection_widget.episode_comboBox.clear()
-        selection_widget.episode_comboBox.addItem("Select All")
-        selection_widget.episode_comboBox.addItems(episodes)
+        self._fill_combobox(selection_widget.episode_comboBox, "Select All", episodes)
 
-    def _set_scenes(self, selection_widget):
+        # Scenes
         scenes = get_scenes(self._project)
-        selection_widget.scene_comboBox.clear()
-        selection_widget.scene_comboBox.addItem("Select All")
-        selection_widget.scene_comboBox.addItems(scenes)
+        self._fill_combobox(selection_widget.scene_comboBox, "Select All", scenes)
 
-    def _set_tasks(self, selection_widget):
+        # Tasks
         tasks = get_tasks(self._project)
-        selection_widget.task_comboBox.clear()
-        selection_widget.task_comboBox.addItem("Select All")
-        selection_widget.task_comboBox.addItems(tasks)
+        self._fill_combobox(selection_widget.task_comboBox, "Select All", tasks)
 
-    def _set_status(self, selection_widget):
+        # Status
         selection_widget.status_comboBox.clear()
         selection_widget.status_comboBox.addItem("Select All")
         if self._taskStatus:
             selection_widget.status_comboBox.addItems(self._taskStatus.keys())
 
-    # ---------------------
-    # WORK AREA LOGIC
-    # ---------------------
+    @staticmethod
+    def _fill_combobox(combobox, default_item, items):
+        """
+        Helper to fill a combobox with a default item plus a list of items.
+        """
+        combobox.clear()
+        combobox.addItem(default_item)
+        if items:
+            combobox.addItems(items)
 
-    def _on_work_selection_changed(self, selection):
-        """
-        Triggered when the selection in the Work Area changes.
-        """
-        logger.debug(f"Work selection changed: {selection}")
-        self.current_selection = selection
-        self._apply_work_filters()
-        self._update_details({})  # Clear details when selection changes
+    # ------------------------------------------------------------
+    #                WORK AREA LOGIC / SLOTS
+    # ------------------------------------------------------------
 
-    def _on_work_search_text_changed(self, text):
+    def _on_selection_changed(self, area, selection):
         """
-        Triggered when the search text in the Work Area changes.
+        Called when the selection in either the Work or Review area changes.
         """
-        logger.debug(f"Work search text changed: {text}")
-        self.current_search_text = text
-        self._apply_work_filters()
-        self._update_details({})  # Clear details when filtering
+        logger.debug(f"{area.title()} selection changed: {selection}")
+        self.areas[area]["current_selection"] = selection
 
-    def _apply_work_filters(self):
+        # Apply filters to the relevant task list
+        self._apply_filters(area)
+        # Clear out relevant details
+        if area == "work":
+            self._update_work_details({})
+        else:
+            self._update_review_task_details("")
+
+    def _on_search_text_changed(self, area, text):
         """
-        Filter tasks in the Work Area based on current search text and selection.
+        Called when the search text in either the Work or Review area changes.
         """
-        if self.work_tasklist_widget:
-            logger.debug("Applying work filters.")
-            self.work_tasklist_widget.filter_tasks(
-                search_text=self.current_search_text,
-                selection=self.current_selection
-            )
+        logger.debug(f"{area.title()} search text changed: {text}")
+        self.areas[area]["search_text"] = text
+        self._apply_filters(area)
+
+        # Clear details
+        if area == "work":
+            self._update_work_details({})
+        else:
+            self._update_review_task_details("")
+
+    def _apply_filters(self, area):
+        """
+        Filter tasks in the specified area's task list based on current search text and selection.
+        """
+        task_list_widget = self.areas[area]["task_list_widget"]
+        if not task_list_widget:
+            return
+
+        logger.debug(f"Applying {area} filters.")
+        task_list_widget.filter_tasks(
+            search_text=self.areas[area]["search_text"],
+            selection=self.areas[area]["current_selection"]
+        )
 
     def _populate_work_files(self, task_name, task_data):
         """
         Update the WorkFilesWidget with files related to the given task name.
         """
         logger.debug(f"Updating WorkFilesWidget for task '{task_name}'.")
-        if self.work_file_widget:
-            files_data = get_workFiles(task_data)
-            self.work_file_widget.files = files_data
+        work_file_widget = self.areas["work"]["file_widget"]
+        if not work_file_widget:
+            return
 
-    def _update_details(self, workfile_data):
+        files_data = get_workFiles(task_data)
+        work_file_widget.set_task_data(task_data)
+        work_file_widget.files = files_data
+
+    def _update_work_details(self, workfile_data):
         """
-        Update details widgets for the selected work file.
+        Update details widgets for the selected work file in the Work Area.
         """
         logger.debug("Updating details for Work Area.")
-        if self.work_file_detail_widget and workfile_data:
-            print(workfile_data, '>>>>>>>>3455')
-            detail_data = get_workDetails(workfile_data)
+        if not workfile_data:
+            # Clear data if empty
+            if self.areas["work"]["file_detail_widget"]:
+                self.areas["work"]["file_detail_widget"].details_data = {}
+            if self.areas["work"]["file_preview_widget"]:
+                self.areas["work"]["file_preview_widget"].details_data = {}
+            return
 
-            self.work_file_detail_widget.details_data = detail_data
+        detail_data = get_workDetails(workfile_data)
+        preview_data = get_fileDetails(workfile_data)
 
-        if self.file_preview_widget and workfile_data:
-            preview_data = get_fileDetails(workfile_data)
-            self.file_preview_widget.details_data = preview_data
+        if self.areas["work"]["file_detail_widget"]:
+            self.areas["work"]["file_detail_widget"].details_data = detail_data
+        if self.areas["work"]["file_preview_widget"]:
+            self.areas["work"]["file_preview_widget"].details_data = preview_data
 
-    # ---------------------
-    # REVIEW AREA LOGIC
-    # ---------------------
+    # ------------------------------------------------------------
+    #                REVIEW AREA LOGIC / SLOTS
+    # ------------------------------------------------------------
 
-    def _on_review_selection_changed(self, selection):
-        """
-        Triggered when the selection in the Review Area changes.
-        """
-        logger.debug(f"Review selection changed: {selection}")
-        self.current_selection = selection
-        self._apply_review_filters()
-        self._update_task_details("")  # Clear details when selection changes
-
-    def _on_review_search_text_changed(self, text):
-        """
-        Triggered when the search text in the Review Area changes.
-        """
-        logger.debug(f"Review search text changed: {text}")
-        self.current_search_text = text
-        self._apply_review_filters()
-        self._update_task_details("")  # Clear details when filtering
-
-    def _apply_review_filters(self):
-        """
-        Filter tasks in the Review Area based on current search text and selection.
-        """
-        if self.review_tasklist_widget:
-            logger.debug("Applying review filters.")
-            self.review_tasklist_widget.filter_tasks(
-                search_text=self.current_search_text,
-                selection=self.current_selection,
-            )
-
-    def _update_task_details(self, task_name):
+    def _update_review_task_details(self, task_name):
         """
         Update the task details and logs in the Review Area for the given task name.
         """
         logger.debug(f"Updating task details for Review Area, task '{task_name}'.")
-        if self.review_taskDetail_widget and task_name:
-            task_detail_data = get_taskDetail(task_name)
-            self.review_taskDetail_widget.details_data = task_detail_data
-            task_log_data = get_taskLog(task_name)
-            self.review_taskDetail_widget.task_logs = task_log_data
+        detail_widget = self.areas["review"]["task_detail_widget"]
+
+        if not detail_widget:
+            return
+
+        # Clear if no task name
+        if not task_name:
+            detail_widget.details_data = {}
+            detail_widget.task_logs = []
+            return
+
+        task_detail_data = get_taskDetail(task_name)
+        task_log_data = get_taskLog(task_name)
+        detail_widget.details_data = task_detail_data
+        detail_widget.task_logs = task_log_data
+
+    # ------------------------------------------------------------
+    #                SYNCHRONIZATION LOGIC
+    # ------------------------------------------------------------
+
+    def _sync_task_selection(self, task_name, *args):
+        """
+        Synchronize task selection between work and review task lists.
+        """
+        if self.sync_in_progress:
+            return
+
+        self.sync_in_progress = True
+        try:
+            sender = self.sender()
+            work_task_list = self.areas["work"]["task_list_widget"]
+            review_task_list = self.areas["review"]["task_list_widget"]
+
+            if sender == work_task_list:
+                if review_task_list:
+                    review_task_list.set_selected_task(task_name, emit_signal=True)
+            elif sender == review_task_list:
+                if work_task_list:
+                    work_task_list.set_selected_task(task_name, emit_signal=True)
+        finally:
+            self.sync_in_progress = False
+
+    def _sync_selection(self, selection):
+        """
+        Synchronize shot/episode/scene/task/status selection between work and review widgets.
+        """
+        if self.sync_in_progress:
+            return
+
+        self.sync_in_progress = True
+        try:
+            sender = self.sender()
+            work_selection = self.areas["work"]["selection_widget"]
+            review_selection = self.areas["review"]["selection_widget"]
+
+            if sender == work_selection and review_selection:
+                review_selection.set_current_shot(selection.get("shot"))
+                review_selection.set_current_episode(selection.get("episode"))
+                review_selection.set_current_scene(selection.get("scene"))
+                review_selection.set_current_task(selection.get("task"))
+                review_selection.set_current_status(selection.get("status"))
+            elif sender == review_selection and work_selection:
+                work_selection.set_current_shot(selection.get("shot"))
+                work_selection.set_current_episode(selection.get("episode"))
+                work_selection.set_current_scene(selection.get("scene"))
+                work_selection.set_current_task(selection.get("task"))
+                work_selection.set_current_status(selection.get("status"))
+        finally:
+            self.sync_in_progress = False
+
+    def _sync_search_text(self, text):
+        """
+        Synchronize the search text between the work and review task lists.
+        """
+        if self.sync_in_progress:
+            return
+
+        self.sync_in_progress = True
+        try:
+            sender = self.sender()
+            work_line_edit = None
+            review_line_edit = None
+
+            if self.areas["work"]["task_list_widget"]:
+                work_line_edit = self.areas["work"]["task_list_widget"].search_lineEdit
+            if self.areas["review"]["task_list_widget"]:
+                review_line_edit = self.areas["review"]["task_list_widget"].search_lineEdit
+
+            if sender == work_line_edit and review_line_edit:
+                review_line_edit.setText(text)
+            elif sender == review_line_edit and work_line_edit:
+                work_line_edit.setText(text)
+        finally:
+            self.sync_in_progress = False
+
+    # ------------------------------------------------------------
+    #                  NAVIGATION & MISC
+    # ------------------------------------------------------------
+
+    def _on_previous(self):
+        """
+        Navigate back to the previous page, if a callback is provided.
+        """
+        logger.debug("Previous button clicked. Navigating back.")
+        if self.prev_page_callback:
+            self._clear_ui()
+            self.prev_page_callback()
+
+    def _download_project_files(self):
+        """
+        An example stub for further functionality.
+        """
+        logger.debug("Download project files menu action clicked.")
 
 
 class DataFetchThread(QThread):
@@ -600,11 +659,7 @@ class DataFetchThread(QThread):
             task_data = get_taskData(self.project_data)
             if not task_data:
                 raise Exception("Failed to fetch task data.")
-            # task_status = get_taskStatus(self.project_data)
-            task_status = {
-                'In Progress': 'orange',
-                'Approved': 'green'
-            }
+            task_status = get_taskStatus(self.project_data)
             if not task_status:
                 raise Exception("Failed to fetch task status.")
             logger.debug("Data fetched successfully, emitting data_fetched signal.")
@@ -615,7 +670,6 @@ class DataFetchThread(QThread):
 
 
 if __name__ == "__main__":
-    # For testing purposes only:
     import sys
 
     app = QApplication(sys.argv)

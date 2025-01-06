@@ -156,7 +156,7 @@ def get_fileDetails(data):
 
 # Task and log-related operations
 def get_taskDetail(task_data):
-    return send_data("TaskDetail", task_name, required_keys=[PREVIEW_PATH])
+    return send_data("TaskDetail", task_data, required_keys=[PREVIEW_PATH])
 
 
 def get_taskLog(task_name):
@@ -171,6 +171,11 @@ def get_taskData(data):
 
 def get_taskStatus(data):
     return send_data("taskStatus", data)
+
+
+def create_file(data):
+    print(data)
+    return 'file created and updated database'
 
 
 # Additional notes for backend

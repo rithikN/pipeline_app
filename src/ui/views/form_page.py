@@ -65,11 +65,11 @@ class FormPage(QWidget):
 
         # Set up the GIF animation
         movie = QMovie("resources/logo.gif")
-        self._ui.Welcome_label.setMovie(movie)
+        self._ui.logo_label.setMovie(movie)
         movie.start()
 
         # Center the GIF label
-        self._ui.Welcome_label.setAlignment(Qt.AlignCenter)
+        self._ui.logo_label.setAlignment(Qt.AlignCenter)
 
         # Retrieve form data
         self.form_ui_data = get_formUiData() or {}
@@ -77,7 +77,7 @@ class FormPage(QWidget):
 
         # Create a vertical layout for our scroll area contents
         self.scroll_layout = QVBoxLayout(self._ui.scrollAreaWidgetContents)
-        self.scroll_layout.setContentsMargins(0, 0, 0, 0)
+        self.scroll_layout.setContentsMargins(0, 15, 0, 35)
         self.scroll_layout.setSpacing(0)
 
         # Dynamically add widgets based on form_ui_data
@@ -94,16 +94,6 @@ class FormPage(QWidget):
                 self.scroll_layout.addWidget(component)
             else:
                 logger.warning(f"Unknown field type encountered: {field_type}")
-
-        # Add spacers between fields but not after the last field
-        for i in range(self.scroll_layout.count() - 1):
-            spacer_item = QSpacerItem(
-                16, 13,
-                QSizePolicy.Policy.Minimum,
-                QSizePolicy.Policy.Fixed
-            )
-
-            self.scroll_layout.insertItem((i * 2) + 1, spacer_item)
 
     def _setup_connections(self):
         """
@@ -125,7 +115,7 @@ class FormPage(QWidget):
             username (str): The username to display.
         """
         self._username = username
-        self._ui.user_label.setText(username)
+        self._ui.user_text_label.setText(username)
         logger.debug(f"Username set to: {username}")
 
     def get_username(self) -> str:
@@ -142,6 +132,7 @@ class FormPage(QWidget):
         Collect and process form data, then call the next page callback if available.
         """
         logger.debug("Submitting form data from FormPage.")
+
         form_data = {}
         form_data["username"] = self.get_username()
 
@@ -156,21 +147,6 @@ class FormPage(QWidget):
             elif isinstance(widget, ComboBoxComponent):
                 form_data[widget.id] = widget.get_value()
 
-        print(self._ui.horizontalSpacer_3.geometry())
-        rect = self._ui.horizontalSpacer_3.geometry()
-        width = rect.width()
-        height = rect.height()
-        print('form inside_verticalSpacer_5', self._ui.inside_verticalSpacer_5.geometry().width(),
-              self._ui.inside_verticalSpacer_5.geometry().height())
-        print('form inside_verticalSpacer_1', self._ui.inside_verticalSpacer_1.geometry().width(),
-              self._ui.inside_verticalSpacer_1.geometry().height())
-        print('form inside_verticalSpacer_3', self._ui.inside_verticalSpacer_3.geometry().width(),
-              self._ui.inside_verticalSpacer_3.geometry().height())
-        print('form inside_verticalSpacer_4', self._ui.inside_verticalSpacer_4.geometry().width(),
-              self._ui.inside_verticalSpacer_4.geometry().height())
-        print(f"Spacer1 width: {width}, height: {height}")
-
-        print(self._ui.main_frame.height(), 111)
         if form_data:
             logger.info("Form data collected successfully.")
             logger.debug(f"Form data: {form_data}")
@@ -188,6 +164,6 @@ class FormPage(QWidget):
         """
         total_width = self.width()
         label_width = total_width // 2
-        self._ui.Welcome_label.setFixedWidth(label_width)
-        self._ui.Welcome_label.setMaximumSize(QSize(label_width, self.height()))
+        self._ui.logo_label.setFixedWidth(label_width)
+        self._ui.logo_label.setMaximumSize(QSize(label_width, self.height()))
         super().resizeEvent(event)

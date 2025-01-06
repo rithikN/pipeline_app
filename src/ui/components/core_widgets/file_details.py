@@ -8,6 +8,7 @@ including text-based metadata and an optional video preview.
 import logging
 
 from PySide6.QtWidgets import QApplication, QWidget
+from PySide6.QtGui import QIcon
 from PySide6.QtCore import Signal, QTimer, QSize
 
 from ui.components.forms.details_form import Ui_DetailsForm  # Generated UI
@@ -56,6 +57,13 @@ class FileDetailsWidget(QWidget):
 
         # Hide main layout by default until valid details_data is set
         set_layout_visibility(self._ui.main_horizontalLayout, False)
+
+        self._ui.delete_button.setIcon(QIcon("resources/icons/detail_form/delete.svg"))
+        self._ui.delete_button.setIconSize(QSize(20, 20))
+        self._ui.explorer_button.setIcon(QIcon("resources/icons/detail_form/explorer.svg"))
+        self._ui.explorer_button.setIconSize(QSize(20, 20))
+        self._ui.open_button.setIcon(QIcon("resources/icons/detail_form/open.svg"))
+        self._ui.open_button.setIconSize(QSize(20, 20))
 
         # Connect UI buttons
         self._setup_connections()
@@ -155,8 +163,9 @@ class FileDetailsWidget(QWidget):
         Args:
             details (dict): New details to be displayed.
         """
-        self._details_data = details
-        self._update_text_field()
+        if details:
+            self._details_data = details
+            self._update_text_field()
 
     def _update_text_field(self):
         """

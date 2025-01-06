@@ -176,7 +176,6 @@ def validate_json_keys1(json_data, required_keys, endpoint, max_display_length=5
     if not required_keys:
         return  # No required keys to check
 
-    print(json_data, '>>>>>>>>>')
 
     def check_key_path(data, key_path):
         """

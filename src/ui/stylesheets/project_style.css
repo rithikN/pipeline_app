@@ -1,0 +1,9 @@
+QPushButton#previous_pushButton,
+QPushButton#next_pushButton {
+    background-color: #E1E1E8;
+    color: #010409;
+}
+
+QLabel#selectProject_label{
+    padding: 8px;
+}

@@ -5,16 +5,18 @@ Defines the LoginPage class which handles user login functionality.
 """
 
 import logging
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget, QVBoxLayout
 from PySide6.QtGui import QMovie, QFont
 from PySide6.QtCore import Qt, QSize
 
+from ui.components.extensions.user_form.lineedit_component import LineEditComponent
 from ui.components.forms.login_form import Ui_LoginForm
 from ui.components.extensions.message_box import MessageBox
 from ui.utils.stylesheet_loader import load_stylesheet
 from ui.utils.common import verify_fonts
 
 from services.data_service import login_user
+from services.constants import USER_ID, USER_LABEL, USER_PLACEHOLDER, PASS_ID, PASS_LABEL, PASS_PLACEHOLDER
 
 # Initialize logger
 logger = logging.getLogger(__name__)
@@ -44,7 +46,6 @@ class LoginPage(QWidget):
         self._setup_ui()
         self._setup_connections()
 
-        verify_fonts(self.login_ui.username_label)
 
     def _setup_ui(self):
         """
@@ -57,15 +58,30 @@ class LoginPage(QWidget):
         self.login_ui.setupUi(self)
 
         # Load and apply the login stylesheet
-        load_stylesheet(self, r'ui\stylesheets\login_style.css')
+        load_stylesheet(self, r'ui/stylesheets/login_style.css')
 
         # Set up the GIF animation
         movie = QMovie("resources/logo.gif")
-        self.login_ui.Welcome_label.setMovie(movie)
+        self.login_ui.logo_label.setMovie(movie)
         movie.start()
 
         # Center the GIF label
-        self.login_ui.Welcome_label.setAlignment(Qt.AlignCenter)
+        self.login_ui.logo_label.setAlignment(Qt.AlignCenter)
+
+        # Create a vertical layout for our scroll area contents
+        self.scroll_layout = QVBoxLayout(self.login_ui.scrollAreaWidgetContents)
+        self.scroll_layout.setContentsMargins(0, 15, 0, 35)
+        self.scroll_layout.setSpacing(0)
+
+        self.username_lineEdit = LineEditComponent(
+            USER_ID, USER_LABEL, USER_PLACEHOLDER, "resources/icons/login_page/user.png")
+        self.scroll_layout.addWidget(self.username_lineEdit)
+        self.password_lineEdit = LineEditComponent(
+            PASS_ID, PASS_LABEL, PASS_PLACEHOLDER, "resources/icons/login_page/pass.svg", True)
+        self.scroll_layout.addWidget(self.password_lineEdit)
+
+
+
 
     def _setup_connections(self):
         """
@@ -79,10 +95,10 @@ class LoginPage(QWidget):
         Handle the login process when the user clicks the "Login" button.
         """
         logger.debug("Login button clicked. Attempting to authenticate user.")
-        self.username = self.login_ui.username_lineEdit.text()
-        password = self.login_ui.password_lineEdit.text()
+        self.username = self.username_lineEdit.get_value()
+        self.password = self.password_lineEdit.get_value()
 
-        if not self.username or not password:
+        if not self.username or not self.password:
             logger.warning("Username or password not provided. Showing warning message.")
             self.message_box.show_message(
                 "Please enter both username and password.",
@@ -91,26 +107,11 @@ class LoginPage(QWidget):
             )
             return
 
-        response = login_user({"username": self.username, "password": password})
+        response = login_user({"username": self.username, "password": self.password})
         if not response:
             logger.error("No response received from the login service.")
             return
 
-        print(self.login_ui.outside_horizontalSpacer_1.geometry())
-        rect = self.login_ui.outside_horizontalSpacer_1.geometry()
-        width = rect.width()
-        height = rect.height()
-        print('inside_verticalSpacer_5', self.login_ui.inside_verticalSpacer_5.geometry().width(),
-              self.login_ui.inside_verticalSpacer_5.geometry().height())
-        print('inside_verticalSpacer_1', self.login_ui.inside_verticalSpacer_1.geometry().width(),
-              self.login_ui.inside_verticalSpacer_1.geometry().height())
-        print('inside_verticalSpacer_3', self.login_ui.inside_verticalSpacer_3.geometry().width(),
-              self.login_ui.inside_verticalSpacer_3.geometry().height())
-        print('inside_verticalSpacer_4', self.login_ui.inside_verticalSpacer_4.geometry().width(),
-              self.login_ui.inside_verticalSpacer_4.geometry().height())
-        print(f"Spacer width: {width}, height: {height}")
-
-        print(self.login_ui.login_frame.height(), '>>>')
         if response.get("status") == "success":
             logger.info(f"User '{self.username}' logged in successfully.")
             if self.next_page_callback:
@@ -141,8 +142,8 @@ class LoginPage(QWidget):
         """
         total_width = self.width()
         label_width = total_width // 2
-        self.login_ui.Welcome_label.setFixedWidth(label_width)
-        self.login_ui.Welcome_label.setMaximumSize(QSize(label_width, self.height()))
+        self.login_ui.logo_label.setFixedWidth(label_width)
+        self.login_ui.logo_label.setMaximumSize(QSize(label_width, self.height()))
         super().resizeEvent(event)
 
 

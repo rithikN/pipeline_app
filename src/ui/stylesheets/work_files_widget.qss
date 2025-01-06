@@ -1,4 +1,6 @@
-
+/* ==============================
+   Base widget style
+   ============================== */
 QWidget#WorkFilesForm {
     background-color: #010409;
     color: #E1E1E8;
@@ -17,13 +19,30 @@ QListWidget#workFiles_listWidget {
 
 QListWidget#workFiles_listWidget::item {
     background-color: #E1E1E8;
-    border-radius: 8px;
+    border-radius: 5px;
     border: none;
 }
 
-/* Selected item highlight */
+/* ==============================
+   Selected item highlight
+   ============================== */
 QListWidget#workFiles_listWidget::item:selected {
-    border: 2px solid #0078D7;
-    border-radius: 10px;
-    margin: 2px;
+    border: 0.1px solid #010409;
+    border-radius: 5px;
+    margin: 1px;
+}
+
+/* Remove dotted focus outline when list or item is focused */
+QListWidget:focus,
+QListWidget::item:focus,
+QListWidget::item:selected:focus {
+    outline: none;
+    border: none;
+}
+
+
+
+
+QComboBox#sort_comboBox {
+    padding: 0px;
 }

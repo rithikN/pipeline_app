@@ -3,22 +3,21 @@
 ################################################################################
 ## Form generated from reading UI file 'project_form.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.5.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-                            QMetaObject, QObject, QPoint, QRect,
-                            QSize, QTime, QUrl, Qt)
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
 from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-                           QFont, QFontDatabase, QGradient, QIcon,
-                           QImage, QKeySequence, QLinearGradient, QPainter,
-                           QPalette, QPixmap, QRadialGradient, QTransform)
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout,
-                               QHeaderView, QLabel, QPushButton, QSizePolicy,
-                               QSpacerItem, QTableWidget, QTableWidgetItem, QWidget)
-
+    QHeaderView, QLabel, QPushButton, QSizePolicy,
+    QSpacerItem, QTableWidget, QTableWidgetItem, QWidget)
 
 class Ui_ProjectForm(object):
     def setupUi(self, ProjectForm):
@@ -35,11 +34,14 @@ class Ui_ProjectForm(object):
         self.bottom_frame.setFrameShape(QFrame.StyledPanel)
         self.bottom_frame.setFrameShadow(QFrame.Raised)
         self.gridLayout = QGridLayout(self.bottom_frame)
+        self.gridLayout.setSpacing(0)
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setContentsMargins(-1, 0, -1, -1)
         self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setSpacing(20)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.horizontalLayout_2.setContentsMargins(-1, 9, -1, -1)
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer)
 
@@ -50,13 +52,14 @@ class Ui_ProjectForm(object):
 
         self.next_pushButton = QPushButton(self.bottom_frame)
         self.next_pushButton.setObjectName(u"next_pushButton")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.next_pushButton.sizePolicy().hasHeightForWidth())
         self.next_pushButton.setSizePolicy(sizePolicy)
 
         self.horizontalLayout_2.addWidget(self.next_pushButton)
+
 
         self.gridLayout.addLayout(self.horizontalLayout_2, 3, 0, 1, 1)
 
@@ -75,7 +78,7 @@ class Ui_ProjectForm(object):
         self.selectProject_label.setObjectName(u"selectProject_label")
         font = QFont()
         font.setFamilies([u"Arial"])
-        font.setPointSize(10)
+        font.setPointSize(13)
         font.setBold(True)
         self.selectProject_label.setFont(font)
         self.selectProject_label.setStyleSheet(u"color: rgb(255, 255, 255);")
@@ -84,7 +87,7 @@ class Ui_ProjectForm(object):
 
         self.line = QFrame(self.bottom_frame)
         self.line.setObjectName(u"line")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Fixed)
+        sizePolicy1 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.line.sizePolicy().hasHeightForWidth())
@@ -96,19 +99,21 @@ class Ui_ProjectForm(object):
         font1.setKerning(False)
         self.line.setFont(font1)
         self.line.setStyleSheet(u"color: rgb(255, 255, 255);\n"
-                                "background-color: rgb(255, 255, 255);")
+"                                        background-color: rgb(255, 255, 255);\n"
+"                                    ")
         self.line.setFrameShadow(QFrame.Plain)
         self.line.setLineWidth(1)
-        self.line.setFrameShape(QFrame.Shape.HLine)
+        self.line.setFrameShape(QFrame.HLine)
 
         self.gridLayout.addWidget(self.line, 0, 0, 1, 1)
 
+
         self.gridLayout_3.addWidget(self.bottom_frame, 0, 0, 1, 1)
+
 
         self.retranslateUi(ProjectForm)
 
         QMetaObject.connectSlotsByName(ProjectForm)
-
     # setupUi
 
     def retranslateUi(self, ProjectForm):
@@ -117,3 +122,4 @@ class Ui_ProjectForm(object):
         self.selectProject_label.setText(QCoreApplication.translate("ProjectForm", u"Select Project:", None))
         pass
     # retranslateUi
+

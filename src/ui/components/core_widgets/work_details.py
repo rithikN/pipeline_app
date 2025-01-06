@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QApplication, QWidget, QLabel
-from PySide6.QtCore import Signal, Qt
-from PySide6.QtGui import QPixmap, QPainter
+from PySide6.QtCore import Signal, Qt, QSize
+from PySide6.QtGui import QPixmap, QPainter, QIcon
 from ui.components.forms.details_form import Ui_DetailsForm  # The auto-generated UI
 from ui.components.extensions.message_box import MessageBox
 
@@ -33,6 +33,13 @@ class WorkDetailsWidget(QWidget, Ui_DetailsForm):
 
         # Set a placeholder image with 16:9 aspect ratio
         self.set_image()
+
+        self.delete_button.setIcon(QIcon("resources/icons/detail_form/delete.svg"))
+        self.delete_button.setIconSize(QSize(20, 20))
+        self.explorer_button.setIcon(QIcon("resources/icons/detail_form/explorer.svg"))
+        self.explorer_button.setIconSize(QSize(20, 20))
+        self.open_button.setIcon(QIcon("resources/icons/detail_form/open.svg"))
+        self.open_button.setIconSize(QSize(20, 20))
 
         self.delete_button.clicked.connect(
             lambda: self.message_box.show_message(

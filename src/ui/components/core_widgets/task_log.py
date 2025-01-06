@@ -73,6 +73,7 @@ class TaskContent(QWidget):
         # Header layout (Task Status + Username + Date)
         header_layout = QHBoxLayout()
         header_layout.setContentsMargins(5, 0, 5, 0)
+        header_layout.setSpacing(20)
 
         status_label = QLabel(task_status)
         status_label.setStyleSheet(f"""
@@ -125,6 +126,10 @@ class TaskLogWidget(QWidget):
         super().__init__(parent)
         logger.debug("Initializing TaskLogWidget.")
 
+        self.setObjectName("TaskLogWidget")
+
+        # Apply stylesheet to remove the border
+        self.setStyleSheet("#TaskLogWidget { border: none; }")
         # Main layout
         self._main_layout = QVBoxLayout(self)
         self._main_layout.setContentsMargins(0, 0, 0, 0)
@@ -204,63 +209,63 @@ class MainWindow(QMainWindow):
         # Sample data to demonstrate usage
         sample_data = [
             {
-                "task_status": "APPROVED",
+                "status": "APPROVED",
                 "username": "xyz",
                 "date": "01-15 10:30",
                 "comment": "Task approved for final submission.",
                 "task_status_color": "green"
             },
             {
-                "task_status": "REVIEW",
+                "status": "REVIEW",
                 "username": "pqr",
                 "date": "01-10 09:45",
                 "comment": "Reviewing progress for minor adjustments.",
                 "task_status_color": "blue"
             },
             {
-                "task_status": "DONE",
+                "status": "DONE",
                 "username": "lmn",
                 "date": "01-18 11:00",
                 "comment": "Final touchups completed.",
                 "task_status_color": "green"
             },
             {
-                "task_status": "APPROVED",
+                "status": "APPROVED",
                 "username": "xyz",
                 "date": "01-15 10:30",
                 "comment": "Task approved for final submission.",
                 "task_status_color": "green"
             },
             {
-                "task_status": "REVIEW",
+                "status": "REVIEW",
                 "username": "pqr",
                 "date": "01-10 09:45",
                 "comment": "Reviewing progress for minor adjustments.",
                 "task_status_color": "orange"
             },
             {
-                "task_status": "DONE",
+                "status": "DONE",
                 "username": "lmn",
                 "date": "01-18 11:00",
                 "comment": "Final touchups completed.",
                 "task_status_color": "green"
             },
             {
-                "task_status": "APPROVED",
+                "status": "APPROVED",
                 "username": "xyz",
                 "date": "01-15 10:30",
                 "comment": "Task approved for final submission.",
                 "task_status_color": "green"
             },
             {
-                "task_status": "REVIEW",
+                "status": "REVIEW",
                 "username": "pqr",
                 "date": "01-10 09:45",
                 "comment": "Reviewing progress for minor adjustments.",
                 "task_status_color": "blue"
             },
             {
-                "task_status": "DONE",
+                "status": "DONE",
                 "username": "lmn",
                 "date": "01-18 11:00",
                 "comment": "Final touchups completed.",

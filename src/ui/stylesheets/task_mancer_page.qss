@@ -24,6 +24,10 @@ QWidget#task_and_file_container {
     border-bottom-left-radius: 10px;
 }
 
+QFrame#task_and_file_container,
+QFrame#MainContainer {
+    border-radius: 8px;
+}
 
 QSplitter::handle {
     background-color: transparent; /* Make the handles transparent */
@@ -36,4 +40,19 @@ QSplitter::handle:horizontal {
 
 QSplitter::handle:vertical {
     height: 0px; /* Remove vertical handle */
+}
+
+QWidget#TaskLogWidget {
+    border: none;
+}
+
+QLabel#header_label {
+    color: #E1E1E8;
+}
+
+QComboBox#sort_comboBox::down-arrow {
+    image: url("resources/icons/work_list/filter.svg");
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
 }

@@ -1,58 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>WorkFilesForm</class>
-    <widget class="QWidget" name="WorkFilesForm">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>112</width>
-                <height>300</height>
-            </rect>
+ <class>WorkFilesForm</class>
+ <widget class="QWidget" name="WorkFilesForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>112</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <widget class="QFrame" name="MainContainer">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QComboBox" name="sort_comboBox">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>25</height>
+         </size>
         </property>
-        <property name="windowTitle">
-            <string>Form</string>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="header_line">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>1</height>
+         </size>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
-            <item>
-                <widget class="QFrame" name="MainContainer">
-                    <property name="frameShape">
-                        <enum>QFrame::NoFrame</enum>
-                    </property>
-                    <property name="frameShadow">
-                        <enum>QFrame::Plain</enum>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout">
-                        <item>
-                            <widget class="QComboBox" name="sort_comboBox"/>
-                        </item>
-                        <item>
-                            <widget class="Line" name="header_line">
-                                <property name="minimumSize">
-                                    <size>
-                                        <width>0</width>
-                                        <height>1</height>
-                                    </size>
-                                </property>
-                                <property name="maximumSize">
-                                    <size>
-                                        <width>16777215</width>
-                                        <height>1</height>
-                                    </size>
-                                </property>
-                                <property name="orientation">
-                                    <enum>Qt::Horizontal</enum>
-                                </property>
-                            </widget>
-                        </item>
-                        <item>
-                            <widget class="QListWidget" name="workFiles_listWidget"/>
-                        </item>
-                    </layout>
-                </widget>
-            </item>
-        </layout>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>1</height>
+         </size>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QListWidget" name="workFiles_listWidget">
+        <property name="verticalScrollBarPolicy">
+         <enum>Qt::ScrollBarAsNeeded</enum>
+        </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
-    <resources/>
-    <connections/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
 </ui>
