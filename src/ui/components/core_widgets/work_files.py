@@ -217,10 +217,10 @@ class WorkFilesWidget(QWidget):
 
     def set_task_data(self, task_data: dict):
         """
-        Set the task_selected property and refresh the UI accordingly.
+        Set the task_selected property.
 
         Args:
-            selected (bool): Whether a task is selected.
+            task_data (dict): Selected task Data.
         """
         logger.debug(f"Setting task_selected to {task_data}.")
         self.task_data = task_data
