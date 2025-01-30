@@ -379,13 +379,13 @@ class WorkFilesWidget(QWidget):
 
             action = menu.exec_(global_pos)
             if action == refresh_action:
-                self.populate_files()
+                self.refresh_list()
 
     # ------------------------------
     # Context Menu Action Handlers
     # ------------------------------
 
-    def refresh_list(self, item: QListWidgetItem):
+    def refresh_list(self):
         """
         Handles the 'Refresh work file list' action from the context menu.
         """
