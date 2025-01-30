@@ -11,9 +11,9 @@ from typing import List, Dict, Optional
 
 from PySide6.QtWidgets import (
     QWidget, QApplication, QHBoxLayout, QLabel, QSpacerItem,
-    QSizePolicy, QListWidgetItem, QPushButton
+    QSizePolicy, QListWidgetItem, QPushButton, QMenu
 )
-from PySide6.QtCore import Signal, Qt, QSize
+from PySide6.QtCore import Signal, Qt, QSize, QPoint
 from PySide6.QtGui import QIcon
 
 from ui.components.forms.work_files_form import Ui_WorkFilesForm
@@ -37,10 +37,10 @@ class WorkFilesWidget(QWidget):
     fileDeselected = Signal()
 
     def __init__(
-        self,
-        parent: Optional[QWidget] = None,
-        files: Optional[List[Dict]] = None,
-        task_data: dict = {}  # Add task_selected as an argument with a default value
+            self,
+            parent: Optional[QWidget] = None,
+            files: Optional[List[Dict]] = None,
+            task_data: dict = {}  # Add task_selected as an argument with a default value
     ):
         """
         Initialize the WorkFilesWidget.
@@ -100,6 +100,8 @@ class WorkFilesWidget(QWidget):
         self.workFiles_listWidget.itemClicked.connect(lambda item: self.fileSelected.emit(item.text()))
         self.workFiles_listWidget.itemClicked.connect(self._emit_workfiles_selected)
         self.workFiles_listWidget.currentItemChanged.connect(self._highlight_selected_item)
+        self.workFiles_listWidget.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.workFiles_listWidget.customContextMenuRequested.connect(self._show_context_menu)
 
     # -----------------------------
     # Public Properties
@@ -359,6 +361,37 @@ class WorkFilesWidget(QWidget):
                     """
                 )
 
+    def _show_context_menu(self, position: QPoint):
+        """
+        Show a context menu when the user right-clicks on a list item or empty space.
+
+        Args:
+            position (QPoint): The mouse click position.
+        """
+        global_pos = self.workFiles_listWidget.mapToGlobal(position)
+        item = self.workFiles_listWidget.itemAt(position)
+
+        menu = QMenu(self)
+
+        if not item:
+            # Right-clicked on empty space
+            refresh_action = menu.addAction("Refresh List")
+
+            action = menu.exec_(global_pos)
+            if action == refresh_action:
+                self.populate_files()
+
+    # ------------------------------
+    # Context Menu Action Handlers
+    # ------------------------------
+
+    def refresh_list(self, item: QListWidgetItem):
+        """
+        Handles the 'Refresh work file list' action from the context menu.
+        """
+        # self.files = []  # please make sure you pass new create file along with existing file
+        pass
+
 
 if __name__ == "__main__":
     import sys
@@ -368,15 +401,15 @@ if __name__ == "__main__":
 
     files_data = [
         {"app": "Blender", "version": "v182", "size": 1500, "date": "2024-12-10"},
-        {"app": "Blender", "version": "v054", "size": 800,  "date": "2024-11-30"},
+        {"app": "Blender", "version": "v054", "size": 800, "date": "2024-11-30"},
         {"app": "After Effects", "version": "v032", "size": 1200, "date": "2024-10-25"},
         {"app": "After Effects", "version": "v029", "size": 1100, "date": "2024-09-12"},
-        {"app": "DaVinci", "version": "v027", "size": 950,  "date": "2024-08-01"},
-        {"app": "Maya", "version": "v013",   "size": 700,  "date": "2024-07-15"},
-        {"app": "Maya", "version": "v012",   "size": 680,  "date": "2024-06-22"},
-        {"app": "Nuke", "version": "v009",   "size": 500,  "date": "2024-05-18"},
+        {"app": "DaVinci", "version": "v027", "size": 950, "date": "2024-08-01"},
+        {"app": "Maya", "version": "v013", "size": 700, "date": "2024-07-15"},
+        {"app": "Maya", "version": "v012", "size": 680, "date": "2024-06-22"},
+        {"app": "Nuke", "version": "v009", "size": 500, "date": "2024-05-18"},
         {"app": "Photoshop", "version": "v008", "size": 450, "date": "2024-04-10"},
-        {"app": "DaVinci", "version": "v006",  "size": 300, "date": "2024-03-05"},
+        {"app": "DaVinci", "version": "v006", "size": 300, "date": "2024-03-05"},
     ]
     files_data = []
 
