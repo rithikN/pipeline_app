@@ -3,13 +3,14 @@
 import logging
 from typing import Callable
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import (
     QMenuBar,
     QWidget,
     QHBoxLayout,
-    QSizePolicy
+    QSizePolicy,
+    QPushButton
 )
 
 from ui.components.core_widgets.menu_widget import CustomMenuWidget
@@ -173,6 +174,10 @@ class TopBarManager:
         logger.debug("Exit Project action triggered.")
         self.signal_manager.exit_project_triggered.emit()
 
+    def _emit_refresh_triggered(self):
+        logger.debug("Refresh action triggered.")
+        self.signal_manager.refresh_triggered.emit()
+
     # -------------------------------------------------
     # Dynamic Sections (added/removed at runtime)
     # -------------------------------------------------
@@ -235,7 +240,7 @@ class TopBarManager:
         self,
         parent: QWidget,
         username=None,
-        project_name= None
+        project_name=None
     ):
         """
         Dynamically add a widget on the top-right corner to display
@@ -283,6 +288,34 @@ class TopBarManager:
             self.display_user_label.setMinimumWidth(150)
             self.topbar_layout.addWidget(self.display_user_label)
 
+        # Add refresh button
+        self.refresh_button = QPushButton("", parent=self.topbar_widget)
+        self.refresh_button.setIcon(QIcon("resources/icons/menu_bar/refresh.svg"))
+        self.refresh_button.setIconSize(QSize(24, 24))
+        self.refresh_button.setFixedSize(30, 30)
+
+        # Make the button circular and change icon color on hover/press
+        self.refresh_button.setStyleSheet("""
+            QPushButton {
+                border: none;
+                border-radius: 15px;  /* Half of the width/height makes it a circle */
+                background-color: #007BFF;  /* Primary color */
+            }
+            QPushButton:hover {
+                background-color: #0056b3;
+            }
+            QPushButton:pressed {
+                background-color: #004494;
+            }
+        """)
+
+        self.refresh_button.setSizePolicy(
+            QSizePolicy.Fixed,
+            QSizePolicy.Fixed
+        )
+        self.refresh_button.clicked.connect(self._emit_refresh_triggered)
+        self.topbar_layout.addWidget(self.refresh_button)
+
         # Place the widget in the top-right corner of the menu bar
         self.menu_bar.setCornerWidget(self.topbar_widget, Qt.Corner.TopRightCorner)
 
@@ -319,6 +352,7 @@ if __name__ == "__main__":
         logout_triggered = Signal()
         download_triggered = Signal()
         exit_project_triggered = Signal()
+        refresh_triggered = Signal()
 
     # Main Application Window
     class MainWindow(QMainWindow):
@@ -341,6 +375,7 @@ if __name__ == "__main__":
             signal_manager.logout_triggered.connect(lambda: self.show_message("Logout Action Triggered"))
             signal_manager.download_triggered.connect(lambda: self.show_message("Download Action Triggered"))
             signal_manager.exit_project_triggered.connect(lambda: self.show_message("Exit Project Action Triggered"))
+            signal_manager.refresh_triggered.connect(lambda: self.show_message("Refresh Action Triggered"))
 
             # Create a message box
             message_box = QMessageBox(self)

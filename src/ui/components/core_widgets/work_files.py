@@ -19,8 +19,9 @@ from PySide6.QtGui import QIcon
 from ui.components.forms.work_files_form import Ui_WorkFilesForm
 from ui.utils.stylesheet_loader import load_stylesheet
 from services.constants import WORK_APP, WORK_VERSION, WORK_SIZE, WORK_DATE, SOFTWARE_ICON_DATA
-from services.data_service import create_file
+from services.data_service import create_file, get_apps
 from ui.components.extensions.message_box import MessageBox
+from ui.components.extensions.custom_selector import ItemSelectionDialog
 
 # Optional: Configure a module-level logger
 logger = logging.getLogger(__name__)
@@ -235,6 +236,16 @@ class WorkFilesWidget(QWidget):
         logger.debug("Create File button clicked.")
         response = create_file(self.task_data)
 
+        apps = get_apps()
+        app_selector = ItemSelectionDialog(apps)
+        if app_selector.exec():
+            selected_item = app_selector.get_selected_item()
+            if selected_item:
+                print(f"File created with item: {selected_item}")
+            else:
+                print("No item selected")
+
+
         self.message_box.show_message(
             "Yet To Implement",
             message_type="info",
@@ -390,6 +401,11 @@ class WorkFilesWidget(QWidget):
         Handles the 'Refresh work file list' action from the context menu.
         """
         # self.files = []  # please make sure you pass new create file along with existing file
+        self.message_box.show_message(
+            "Yet To Implement",
+            message_type="info",
+            title="Open"
+        )
         pass
 
 
