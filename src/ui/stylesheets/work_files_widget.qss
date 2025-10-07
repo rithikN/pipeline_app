@@ -46,3 +46,40 @@ QListWidget::item:selected:focus {
 QComboBox#sort_comboBox {
     padding: 0px;
 }
+
+
+/* ==============================
+   Context Menu
+   ============================== */
+
+QMenu {
+    background-color: #8391aa;
+    border: 1px solid #111419;
+    padding: 2px 1px 2px 1px;
+}
+
+QMenu::item {
+    background-color: #010409;
+    color: #E1E1E8;
+    padding: 8px 12px;
+    min-width: 160px;
+    border-bottom: 1.5px solid #8391aa;
+    border-top: 1.5px solid #8391aa;
+}
+
+/* ==============================
+   Create File Button
+   ============================== */
+
+QPushButton#createFileButton {
+    font-size: 14px;
+    background-color:rgb(58, 110, 158);
+    border-radius: 5px;
+    border: none;
+    color: #E1E1E8;
+}
+
+QPushButton#createFileButton:hover {
+    background-color: rgb(97, 150, 199);
+    color: #010409;
+}

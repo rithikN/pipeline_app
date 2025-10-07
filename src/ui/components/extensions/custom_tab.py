@@ -17,7 +17,6 @@ class GradientTabBar(QTabBar):
                 gradient.setColorAt(0.5, QColor(255, 255, 255))
                 gradient.setColorAt(0.6, QColor(255, 255, 255))
                 gradient.setColorAt(0.61, QColor(0, 0, 0, 0))
-
                 gradient_rect = QRect(rect.left(), rect.bottom() - 3, rect.width(), 3)
                 painter.fillRect(gradient_rect, gradient)
 

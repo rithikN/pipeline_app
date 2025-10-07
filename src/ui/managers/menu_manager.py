@@ -4,7 +4,7 @@ import logging
 from typing import Callable
 
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QAction, QIcon
+from PySide6.QtGui import QAction, QIcon, QShortcut, QKeySequence
 from PySide6.QtWidgets import (
     QMenuBar,
     QWidget,
@@ -22,6 +22,7 @@ from services.constants import (
     EDIT_LABEL, LOGOUT_LABEL, WIKI_LABEL,
     DOWNLOAD_LABEL, EXIT_PROJECT_LABEL
 )
+from services.data_service import (check_VPN_connection)
 
 
 logger = logging.getLogger(__name__)
@@ -61,8 +62,8 @@ class TopBarManager:
                 (EXIT_LABEL, self._emit_exit_triggered, "resources/icons/menu_bar/exit.svg"),
             ],
             HELP_LABEL: [
-                (WIKI_LABEL, self._emit_wiki_triggered, "resources/icons/menu_bar/wiki.svg"),
-                (ABOUT_LABEL, self._emit_about_triggered, "resources/icons/menu_bar/about.svg"),
+                (WIKI_LABEL, self._emit_wiki_triggered, "resources/icons/menu_bar/missing.svg"),
+                (ABOUT_LABEL, self._emit_about_triggered, "resources/icons/menu_bar/info.svg"),
             ],
         }
 
@@ -176,7 +177,12 @@ class TopBarManager:
 
     def _emit_refresh_triggered(self):
         logger.debug("Refresh action triggered.")
-        self.signal_manager.refresh_triggered.emit()
+
+        # Validation
+        if not check_VPN_connection():
+            return None
+        
+        self.signal_manager.refresh_triggered.emit()     
 
     # -------------------------------------------------
     # Dynamic Sections (added/removed at runtime)
@@ -218,6 +224,7 @@ class TopBarManager:
             help_section_action = self.menu_bar.actions()[-1]
             project_actions = [
                 (DOWNLOAD_LABEL, self._emit_download_triggered, "resources/icons/menu_bar/download.svg"),
+                ("Refresh App", self._emit_refresh_triggered, "resources/icons/menu_bar/refresh.svg"),
                 (EXIT_PROJECT_LABEL, self._emit_exit_project_triggered, "resources/icons/menu_bar/exit.svg"),
             ]
             project_menu = self._create_section("Project", project_actions)
@@ -316,6 +323,10 @@ class TopBarManager:
         self.refresh_button.clicked.connect(self._emit_refresh_triggered)
         self.topbar_layout.addWidget(self.refresh_button)
 
+        # Assign F5 as a shortcut to the refresh button
+        refresh_shortcut = QShortcut(QKeySequence(Qt.Key_F5), self.refresh_button)
+        refresh_shortcut.activated.connect(self.refresh_button.click)
+
         # Place the widget in the top-right corner of the menu bar
         self.menu_bar.setCornerWidget(self.topbar_widget, Qt.Corner.TopRightCorner)
 
@@ -352,7 +363,6 @@ if __name__ == "__main__":
         logout_triggered = Signal()
         download_triggered = Signal()
         exit_project_triggered = Signal()
-        refresh_triggered = Signal()
 
     # Main Application Window
     class MainWindow(QMainWindow):
@@ -375,7 +385,6 @@ if __name__ == "__main__":
             signal_manager.logout_triggered.connect(lambda: self.show_message("Logout Action Triggered"))
             signal_manager.download_triggered.connect(lambda: self.show_message("Download Action Triggered"))
             signal_manager.exit_project_triggered.connect(lambda: self.show_message("Exit Project Action Triggered"))
-            signal_manager.refresh_triggered.connect(lambda: self.show_message("Refresh Action Triggered"))
 
             # Create a message box
             message_box = QMessageBox(self)

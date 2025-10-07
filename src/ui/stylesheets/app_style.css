@@ -161,7 +161,7 @@ QProgressBar#progress_bar {
 }
 
 /* QMessageBox Styles */
-QMessageBox#msg_box {
+QMessageBox {
     background-color: #E1E1E8;
 }
 

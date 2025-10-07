@@ -23,7 +23,7 @@ class MessageBoxManager:
                 0, lambda: MessageBox.show_error(message, title=title, rich_text=rich_text)
             )
         else:
-            print(f"{title}: {message}")
+            print(f"{title}: {message}") #ToDo replace with logger
 
     @staticmethod
     def show_info(message, title="Information", rich_text=False):
@@ -39,7 +39,7 @@ class MessageBoxManager:
                 0, lambda: MessageBox.show_info(message, title=title, rich_text=rich_text)
             )
         else:
-            print(f"{title}: {message}")
+            print(f"{title}: {message}") #ToDo replace with logger
 
     @staticmethod
     def show_warning(message, title="Warning", rich_text=False):
@@ -55,4 +55,4 @@ class MessageBoxManager:
                 0, lambda: MessageBox.show_warning(message, title=title, rich_text=rich_text)
             )
         else:
-            print(f"{title}: {message}")
+            print(f"{title}: {message}") #ToDo replace with logger

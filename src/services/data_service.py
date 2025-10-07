@@ -1,186 +1,187 @@
-import requests
+"""
+data_service.py
+---------------
+High-level data layer.
+Handles API endpoints + local file sync helpers.
+No UI or dialogs here.
+"""
+
+import logging
+import socket
+from pipeline.config.settings import settings, PIPELINE_ENV
+from services.api_client import fetch_data, send_data
+from services.file_ops import sync_local_files
+from pipeline.infra.rclone import copy_through_rclone
+
 from services.constants import (
-    TASK_NAME, TASK_STATUS, USERNAME, DATE, COMMENT, STATUS_COLOR,
-    WORK_APP, WORK_VERSION, WORK_SIZE, WORK_DATE, PREVIEW_PATH,
-    TYPE, LABEL, ID, FIELD_TYPE
-)
-from ui.managers.message_box_manager import MessageBoxManager
-from handlers.error_handler import (
-    BackendError,
-    MissingKeyError,
-    handle_http_status,
-    validate_json_keys
+    PROJECT_NAME,
+    TASK_STATUS, TASK_STATUS_NAME, TASK_STATUS_COLOR,
+    TASK_SHOT_DETAIL, TASK_SHOT_SEQ_DETAIL, TASK_SHOT_SEQ_EPISODE_DETAIL,
+    TASK_SHOT_SEQ_EPISODE_NAME, TASK_SHOT_SEQ_NAME
 )
 
-BASE_URL = "http://127.0.0.1:5000/api"
+logger = logging.getLogger(__name__)
+
+# -------------------------------------------------------------------------
+# CONFIGURATION
+# -------------------------------------------------------------------------
+BASE_URL = settings.get("API_BASE_URL", "http://127.0.0.1:5000/api")
 
 
-def make_request(method, endpoint, data=None, required_keys=None):
-    """
-    Generic function for making API requests.
-
-    Args:
-        method (str): HTTP method (GET, POST, etc.)
-        endpoint (str): API endpoint relative to the base URL.
-        data (dict): Payload to send with the request.
-        required_keys (list): Keys expected in the response.
-
-    Returns:
-        dict: JSON response from the server.
-
-    Raises:
-        BackendError: For HTTP or connection errors.
-        MissingKeyError: If required keys are missing in the response.
-    """
-    try:
-        url = f"{BASE_URL}/{endpoint}"
-        response = requests.request(
-            method,
-            url,
-            json=data,
-            headers={'Content-Type': 'application/json'}
-        )
-
-        if response.status_code != 200:
-            handle_http_status(response, url)
-
-        json_data = response.json()
-        validate_json_keys(json_data, required_keys, endpoint)
-        return json_data
-
-    except BackendError as be:
-        MessageBoxManager.show_error(be.message)
-        raise
-    except MissingKeyError as mke:
-        MessageBoxManager.show_error(mke.message)
-        raise
-    except requests.RequestException as req_err:
-        error_message = f"Request error occurred: {req_err}\n Check backend!"
-        MessageBoxManager.show_error(error_message)
-        raise BackendError(error_message) from req_err
-    except Exception as ex:
-        error_message = f"An unexpected error occurred: {ex}"
-        MessageBoxManager.show_error(error_message)
-        raise BackendError(error_message) from ex
-
-
-# Common functions to send and fetch data
-def fetch_data(endpoint, required_keys=None):
-    """
-    Fetch data from the given endpoint.
-    """
-    return make_request("GET", endpoint, required_keys=required_keys)
-
-
-def send_data(endpoint, data, required_keys=None):
-    """
-    Send data to the given endpoint.
-    """
-    return make_request("POST", endpoint, data=data, required_keys=required_keys)
-
-
-# Specific API functions
+# -------------------------------------------------------------------------
+# API ENDPOINT WRAPPERS
+# -------------------------------------------------------------------------
 def login_user(credentials):
-    """
-    Login the user with provided credentials.
-    Args:
-        credentials (dict): Must include 'username' and 'password'.
-    Returns:
-        dict: Response containing login status.
-    Notes for backend:
-        Ensure the response includes the 'status' key.
-    """
-    return send_data("auth/login", credentials, required_keys=["status"])
+    return send_data("auth/login/", credentials, required_keys=["status"])
 
 
 def get_formUiData():
-    """
-    Fetch UI form data configuration.
-    Returns:
-        list: List of form elements with 'id', 'label', 'options', and 'type'.
-    """
-    return fetch_data("formUiData", required_keys=[TYPE, LABEL, ID, TYPE])
+    return fetch_data("formUiData", required_keys=["type", "label", "id"])
 
 
 def get_projects(data):
-    """
-    Fetch projects based on user details.
-    Args:
-        data (dict): Must include 'username', 'location', and 'work_mode'.
-    Returns:
-        list: List of projects.
-    """
     return send_data("projects", data)
 
 
-# Functions for specific hierarchical data
-def get_episodes(project_name):
-    return send_data("episodes", {"project_name": project_name})
-
-
-def get_scenes(project_name):
-    return send_data("scenes", {"project_name": project_name})
-
-
-def get_tasks(project_name):
-    return send_data("tasks", {"project_name": project_name})
-
-
-# Work file-related operations
-def get_workFiles(data):
-    """
-    Fetch work files related to a task.
-    Args:
-        data (dict): Should include required filters or task info.
-    """
-    return send_data("workFiles", data, required_keys=[
-        WORK_APP, WORK_VERSION, WORK_SIZE, WORK_DATE
-    ])
-
-
-def get_workDetails(data):
-    """
-    Fetch work file details.
-    Args:
-        data (dict): Includes task-related file metadata.
-    """
-    return send_data("workDetails", data, required_keys=[PREVIEW_PATH])
-
-
-def get_fileDetails(data):
-    """
-    Fetch specific file details.
-    """
-    return send_data("fileDetails", data, required_keys=[PREVIEW_PATH])
-
-
-# Task and log-related operations
-def get_taskDetail(task_data):
-    return send_data("TaskDetail", task_data, required_keys=[PREVIEW_PATH])
-
-
-def get_taskLog(task_name):
-    return send_data("TaskLog", task_name, required_keys=[
-        TASK_STATUS, USERNAME, DATE, COMMENT, STATUS_COLOR
-    ])
-
-
 def get_taskData(data):
-    return send_data("taskData", data, required_keys=[TASK_NAME, TASK_STATUS])
+    return send_data("api/tasks/", data)
 
 
-def get_taskStatus(data):
-    return send_data("taskStatus", data)
+def get_taskDetail(task_name, task_list):
+    for task in task_list:
+        if task_name == task["name"]:
+            return task
 
 
+def get_taskTypes(task_list):
+    return [task.get("task_type") for task in task_list if "task_type" in task]
+
+
+def get_taskStatus(task_list):
+    """
+    Build a map like {"IN_PROGRESS": "#ffaa00", "APPROVED": "#00ff88", ...}
+    using constant keys from services.constants.
+    """
+    status_map = {}
+    for task in task_list:
+        status_obj = task.get(TASK_STATUS) or {}
+        name = (status_obj.get(TASK_STATUS_NAME) or "").upper()
+        color = status_obj.get(TASK_STATUS_COLOR)
+        if name:
+            status_map[name] = color
+    return status_map
+
+
+
+def get_episodes(project_data, task_list):
+    """
+    Returns: { <project_name>: [episode_name, episode_name, ...] }
+    Uses constant keys for nested traversal.
+    """
+    project_name = project_data.get(PROJECT_NAME)
+    episodes = [
+        task.get(TASK_SHOT_DETAIL, {})
+            .get(TASK_SHOT_SEQ_DETAIL, {})
+            .get(TASK_SHOT_SEQ_EPISODE_DETAIL, {})
+            .get(TASK_SHOT_SEQ_EPISODE_NAME)
+        for task in task_list
+        if task.get(TASK_SHOT_DETAIL, {}).get(TASK_SHOT_SEQ_DETAIL, {}).get(TASK_SHOT_SEQ_EPISODE_DETAIL)
+    ]
+    return {project_name: episodes}
+
+
+
+def get_scenes(task_list):
+    """
+    Returns a flat list of sequence/scene names for the task list.
+    Uses constant keys for nested traversal.
+    """
+    return [
+        task.get(TASK_SHOT_DETAIL, {})
+            .get(TASK_SHOT_SEQ_DETAIL, {})
+            .get(TASK_SHOT_SEQ_NAME)
+        for task in task_list
+        if task.get(TASK_SHOT_DETAIL, {}).get(TASK_SHOT_SEQ_DETAIL)
+    ]
+
+
+
+# -------------------------------------------------------------------------
+# WORK FILES / LOCAL SYNC
+# -------------------------------------------------------------------------
+def get_workFiles(task_name, task_data):
+    return sync_local_files(task_data)
+
+
+def get_workDetails(work_file):
+    """Return work file details."""
+    return work_file
+
+
+# -------------------------------------------------------------------------
+# PIPELINE ACTIONS
+# -------------------------------------------------------------------------
 def create_file(data):
-    print(data)
-    return 'file created and updated database'
+    return send_data("api/create-file-record/", data)
 
 
-def get_apps():
-    return ['Maya', 'Nuke', 'Blender']
+def version_up_file(data):
+    return send_data("api/file/version_up/", data)
 
+
+def upload_to_kitsu(data):
+    return send_data("api/upload-to-kitsu/", data)
+
+
+def fetch_data_from_kitsu(data):
+    return send_data("api/fetch-data-from-kitsu/", data)
+
+
+def publish_file(data):
+    return send_data("api/file/publish/", data)
+
+
+# -------------------------------------------------------------------------
+# NETWORK / VPN / FTP CHECKS
+# -------------------------------------------------------------------------
+def check_internet_connection(timeout=3):
+    """Check if internet (Google DNS) is reachable."""
+    host, port = "8.8.8.8", 53
+    try:
+        socket.setdefaulttimeout(timeout)
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.connect((host, port))
+        return True
+    except socket.error:
+        return False
+
+
+def check_VPN_connection(check_NET=True, timeout=3):
+    """Check VPN by calling the backend health endpoint."""
+    if PIPELINE_ENV == "local":
+        logger.debug("[Mock VPN] Skipping VPN check in local mode.")
+        return True
+    response = fetch_data("api/check-connection/")
+    if response:
+        return True
+    if check_NET and not check_internet_connection(timeout=timeout):
+        return False
+    return False
+
+
+def check_ftp_connection(check_RCLONE=False, check_FTP_conn=False, check_NET=True, timeout=3):
+    """Verify FTP / Rclone connectivity."""
+    if PIPELINE_ENV == "local":
+        logger.debug("[Mock FTP] Skipping FTP check in local mode.")
+        return True
+    ftp_status = copy_through_rclone("lsd", src="hlm:/Heirloom_Server")
+    if check_RCLONE and "FileNotFoundError" in str(ftp_status):
+        return False
+    if check_FTP_conn and ftp_status != 0:
+        if check_NET and not check_internet_connection(timeout=timeout):
+            return False
+        return None
+    return True
 
 # Additional notes for backend
 """

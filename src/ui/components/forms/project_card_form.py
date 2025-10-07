@@ -9,21 +9,21 @@
 ################################################################################
 
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-                            QMetaObject, QObject, QPoint, QRect,
-                            QSize, QTime, QUrl, Qt)
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
 from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-                           QFont, QFontDatabase, QGradient, QIcon,
-                           QImage, QKeySequence, QLinearGradient, QPainter,
-                           QPalette, QPixmap, QRadialGradient, QTransform)
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QLabel,
-                               QSizePolicy, QWidget)
-
+    QSizePolicy, QWidget)
 
 class Ui_ProjectCard(object):
     def setupUi(self, ProjectCard):
         if not ProjectCard.objectName():
             ProjectCard.setObjectName(u"ProjectCard")
         ProjectCard.resize(392, 256)
+        ProjectCard.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.gridLayout = QGridLayout(ProjectCard)
         self.gridLayout.setSpacing(0)
         self.gridLayout.setObjectName(u"gridLayout")
@@ -36,9 +36,9 @@ class Ui_ProjectCard(object):
         sizePolicy.setHeightForWidth(self.thumbnailLabel.sizePolicy().hasHeightForWidth())
         self.thumbnailLabel.setSizePolicy(sizePolicy)
         self.thumbnailLabel.setMinimumSize(QSize(0, 120))
-        self.thumbnailLabel.setPixmap(QPixmap(u"../../../resources/empty_project.png"))
+        self.thumbnailLabel.setPixmap(QPixmap(u"../../resources/empty_project.png"))
         self.thumbnailLabel.setScaledContents(True)
-        self.thumbnailLabel.setAlignment(Qt.AlignCenter)
+        self.thumbnailLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout.addWidget(self.thumbnailLabel, 0, 0, 1, 1)
 
@@ -48,24 +48,24 @@ class Ui_ProjectCard(object):
         font.setBold(True)
         self.titleLabel.setFont(font)
         self.titleLabel.setLineWidth(0)
-        self.titleLabel.setAlignment(Qt.AlignLeading | Qt.AlignLeft | Qt.AlignVCenter)
+        self.titleLabel.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
         self.titleLabel.setMargin(2)
         self.titleLabel.setIndent(5)
-        self.titleLabel.setTextInteractionFlags(Qt.NoTextInteraction)
+        self.titleLabel.setTextInteractionFlags(Qt.TextInteractionFlag.NoTextInteraction)
 
         self.gridLayout.addWidget(self.titleLabel, 1, 0, 1, 1)
 
         self.authorLabel = QLabel(ProjectCard)
         self.authorLabel.setObjectName(u"authorLabel")
         self.authorLabel.setMinimumSize(QSize(0, 25))
-        self.authorLabel.setFrameShadow(QFrame.Plain)
+        self.authorLabel.setFrameShadow(QFrame.Shadow.Plain)
         self.authorLabel.setLineWidth(0)
         self.authorLabel.setScaledContents(False)
-        self.authorLabel.setAlignment(Qt.AlignLeading | Qt.AlignLeft | Qt.AlignTop)
+        self.authorLabel.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
         self.authorLabel.setWordWrap(False)
         self.authorLabel.setMargin(1)
         self.authorLabel.setIndent(5)
-        self.authorLabel.setTextInteractionFlags(Qt.NoTextInteraction)
+        self.authorLabel.setTextInteractionFlags(Qt.TextInteractionFlag.NoTextInteraction)
 
         self.gridLayout.addWidget(self.authorLabel, 2, 0, 1, 1)
 
@@ -74,18 +74,18 @@ class Ui_ProjectCard(object):
 
         self.gridLayout.addWidget(self.emptyLabel, 3, 0, 1, 1)
 
+
         self.retranslateUi(ProjectCard)
 
         QMetaObject.connectSlotsByName(ProjectCard)
-
     # setupUi
 
     def retranslateUi(self, ProjectCard):
-        self.thumbnailLabel.setStyleSheet(
-            QCoreApplication.translate("ProjectCard", u"background-color: lightgray; border: 1px solid gray;", None))
+        self.thumbnailLabel.setStyleSheet(QCoreApplication.translate("ProjectCard", u"background-color: lightgray; border: 1px solid gray;", None))
         self.thumbnailLabel.setText("")
         self.titleLabel.setText(QCoreApplication.translate("ProjectCard", u"Project Title", None))
         self.authorLabel.setText(QCoreApplication.translate("ProjectCard", u"Director: John Doe", None))
         self.emptyLabel.setText("")
         pass
     # retranslateUi
+

@@ -73,8 +73,8 @@ class CustomMenuWidget(QWidget):
             color: #E1E1E8; 
             font-size: 14px; 
             font-weight: bold; 
-            background-color: transparent; 
-            border: none; 
+            background-color: transparent;
+            border: none;
         """)
 
         # Add widgets to frame layout

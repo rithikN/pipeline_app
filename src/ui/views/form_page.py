@@ -6,14 +6,15 @@ within the 3D Pipeline application.
 """
 
 import logging
+from pathlib import Path
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QSpacerItem, QSizePolicy
-from PySide6.QtGui import QMovie
+from PySide6.QtGui import QMovie, QCursor
 from PySide6.QtCore import Qt, QSize
 
 from ui.components.extensions.user_form.lineedit_component import LineEditComponent
 from ui.components.extensions.user_form.combobox_component import ComboBoxComponent
 from ui.components.forms.user_form import Ui_UserForm
-from ui.utils.stylesheet_loader import load_stylesheet
+from ui.utils.stylesheet_utils import load_stylesheet
 from services.data_service import get_formUiData
 from services.constants import TYPE, LABEL, ID, OPTIONS, FIELD_TYPE
 
@@ -52,10 +53,15 @@ class FormPage(QWidget):
         self._ui.setupUi(self)
 
         # Load and apply the stylesheet
-        load_stylesheet(self, "ui/stylesheets/form_style.css")
-
+        css_path = Path.cwd() / "ui" / "stylesheets" / "form_style.css"
+        load_stylesheet(self, css_path)
         self._setup_ui()
         self._setup_connections()
+
+    def set_response_data(self, response_data):
+        username = response_data["artist_name"]
+        self.set_username(username)
+        self.user_data = response_data    
 
     def _setup_ui(self):
         """
@@ -91,6 +97,7 @@ class FormPage(QWidget):
                 self.scroll_layout.addWidget(component)
             elif field_type == FIELD_TYPE.combobox.name:
                 component = ComboBoxComponent(field_id, label, field[OPTIONS])
+                component.combo_box.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
                 self.scroll_layout.addWidget(component)
             else:
                 logger.warning(f"Unknown field type encountered: {field_type}")
@@ -151,7 +158,7 @@ class FormPage(QWidget):
             logger.info("Form data collected successfully.")
             logger.debug(f"Form data: {form_data}")
             if self.next_page_callback:
-                self.next_page_callback(form_data)
+                self.next_page_callback(self.user_data)
         else:
             logger.warning("No form data was collected. Submission failed.")
 

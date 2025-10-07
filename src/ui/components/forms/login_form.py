@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'login_form.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.2
+## Created by: Qt User Interface Compiler version 6.8.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -33,7 +33,7 @@ class Ui_LoginForm(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.logo_label = QLabel(LoginForm)
         self.logo_label.setObjectName(u"logo_label")
-        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(100)
         sizePolicy.setVerticalStretch(100)
         sizePolicy.setHeightForWidth(self.logo_label.sizePolicy().hasHeightForWidth())
@@ -58,36 +58,37 @@ class Ui_LoginForm(object):
 #endif // QT_CONFIG(accessibility)
         self.logo_label.setStyleSheet(u"")
         self.logo_label.setLineWidth(0)
-        self.logo_label.setTextFormat(Qt.PlainText)
+        self.logo_label.setTextFormat(Qt.TextFormat.PlainText)
         self.logo_label.setScaledContents(True)
-        self.logo_label.setAlignment(Qt.AlignCenter)
+        self.logo_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.logo_label.setIndent(0)
-        self.logo_label.setTextInteractionFlags(Qt.NoTextInteraction)
+        self.logo_label.setTextInteractionFlags(Qt.TextInteractionFlag.NoTextInteraction)
 
         self.horizontalLayout.addWidget(self.logo_label)
 
         self.right_frame = QFrame(LoginForm)
         self.right_frame.setObjectName(u"right_frame")
         self.right_frame.setStyleSheet(u"")
-        self.right_frame.setFrameShape(QFrame.NoFrame)
-        self.right_frame.setFrameShadow(QFrame.Plain)
+        self.right_frame.setFrameShape(QFrame.Shape.NoFrame)
+        self.right_frame.setFrameShadow(QFrame.Shadow.Plain)
         self.gridLayout_2 = QGridLayout(self.right_frame)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout_2.setContentsMargins(130, 130, 130, 130)
         self.scrollArea = QScrollArea(self.right_frame)
         self.scrollArea.setObjectName(u"scrollArea")
         self.scrollArea.setEnabled(True)
-        sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
         self.scrollArea.setSizePolicy(sizePolicy1)
         self.scrollArea.setMinimumSize(QSize(0, 0))
-        self.scrollArea.setFrameShape(QFrame.NoFrame)
-        self.scrollArea.setFrameShadow(QFrame.Plain)
+        self.scrollArea.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.scrollArea.setFrameShape(QFrame.Shape.NoFrame)
+        self.scrollArea.setFrameShadow(QFrame.Shadow.Plain)
         self.scrollArea.setLineWidth(0)
         self.scrollArea.setWidgetResizable(True)
-        self.scrollArea.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.scrollArea.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
         self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 334, 254))
@@ -97,7 +98,7 @@ class Ui_LoginForm(object):
 
         self.ready_textlabel = QLabel(self.right_frame)
         self.ready_textlabel.setObjectName(u"ready_textlabel")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.ready_textlabel.sizePolicy().hasHeightForWidth())
@@ -137,7 +138,9 @@ class Ui_LoginForm(object):
         font3 = QFont()
         font3.setPointSize(20)
         self.login_pushButton.setFont(font3)
+        self.login_pushButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.login_pushButton.setStyleSheet(u"")
+        self.login_pushButton.setAutoDefault(True)
 
         self.gridLayout_2.addWidget(self.login_pushButton, 3, 0, 1, 1)
 
@@ -149,13 +152,16 @@ class Ui_LoginForm(object):
 
         self.header_line = QFrame(LoginForm)
         self.header_line.setObjectName(u"header_line")
-        self.header_line.setFrameShape(QFrame.HLine)
-        self.header_line.setFrameShadow(QFrame.Sunken)
+        self.header_line.setFrameShape(QFrame.Shape.HLine)
+        self.header_line.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.gridLayout.addWidget(self.header_line, 0, 0, 1, 1)
 
 
         self.retranslateUi(LoginForm)
+
+        self.login_pushButton.setDefault(True)
+
 
         QMetaObject.connectSlotsByName(LoginForm)
     # setupUi

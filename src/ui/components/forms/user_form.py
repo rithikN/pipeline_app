@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'user_form.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.2
+## Created by: Qt User Interface Compiler version 6.8.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -30,8 +30,8 @@ class Ui_UserForm(object):
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
         self.header_line = QFrame(UserForm)
         self.header_line.setObjectName(u"header_line")
-        self.header_line.setFrameShape(QFrame.HLine)
-        self.header_line.setFrameShadow(QFrame.Sunken)
+        self.header_line.setFrameShape(QFrame.Shape.HLine)
+        self.header_line.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.gridLayout_2.addWidget(self.header_line, 0, 0, 1, 1)
 
@@ -40,7 +40,7 @@ class Ui_UserForm(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.logo_label = QLabel(UserForm)
         self.logo_label.setObjectName(u"logo_label")
-        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(100)
         sizePolicy.setVerticalStretch(100)
         sizePolicy.setHeightForWidth(self.logo_label.sizePolicy().hasHeightForWidth())
@@ -48,21 +48,21 @@ class Ui_UserForm(object):
         self.logo_label.setMinimumSize(QSize(600, 0))
         self.logo_label.setPixmap(QPixmap(u"../../../../../../../../resources/logo.png"))
         self.logo_label.setScaledContents(True)
-        self.logo_label.setAlignment(Qt.AlignCenter)
+        self.logo_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.logo_label.setIndent(0)
 
         self.horizontalLayout.addWidget(self.logo_label)
 
         self.right_frame = QFrame(UserForm)
         self.right_frame.setObjectName(u"right_frame")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.right_frame.sizePolicy().hasHeightForWidth())
         self.right_frame.setSizePolicy(sizePolicy1)
         self.right_frame.setStyleSheet(u"")
-        self.right_frame.setFrameShape(QFrame.NoFrame)
-        self.right_frame.setFrameShadow(QFrame.Raised)
+        self.right_frame.setFrameShape(QFrame.Shape.NoFrame)
+        self.right_frame.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout = QGridLayout(self.right_frame)
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setContentsMargins(130, 130, 130, 130)
@@ -78,7 +78,7 @@ class Ui_UserForm(object):
 
         self.user_text_label = QLabel(self.right_frame)
         self.user_text_label.setObjectName(u"user_text_label")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.user_text_label.sizePolicy().hasHeightForWidth())
@@ -88,14 +88,15 @@ class Ui_UserForm(object):
         font1 = QFont()
         font1.setPointSize(30)
         self.user_text_label.setFont(font1)
-        self.user_text_label.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.user_text_label.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout.addWidget(self.user_text_label, 1, 0, 1, 1)
 
         self.scrollArea = QScrollArea(self.right_frame)
         self.scrollArea.setObjectName(u"scrollArea")
-        self.scrollArea.setFrameShape(QFrame.NoFrame)
-        self.scrollArea.setFrameShadow(QFrame.Plain)
+        self.scrollArea.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.scrollArea.setFrameShape(QFrame.Shape.NoFrame)
+        self.scrollArea.setFrameShadow(QFrame.Shadow.Plain)
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
@@ -110,12 +111,15 @@ class Ui_UserForm(object):
         self.button_Layout.setContentsMargins(-1, 0, -1, -1)
         self.previous_button = QPushButton(self.right_frame)
         self.previous_button.setObjectName(u"previous_button")
+        self.previous_button.setEnabled(True)
         sizePolicy2.setHeightForWidth(self.previous_button.sizePolicy().hasHeightForWidth())
         self.previous_button.setSizePolicy(sizePolicy2)
         self.previous_button.setMinimumSize(QSize(0, 45))
         font2 = QFont()
         font2.setPointSize(20)
         self.previous_button.setFont(font2)
+        self.previous_button.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.previous_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
         self.button_Layout.addWidget(self.previous_button)
 
@@ -126,7 +130,9 @@ class Ui_UserForm(object):
         self.next_button.setMinimumSize(QSize(0, 45))
         self.next_button.setBaseSize(QSize(0, 0))
         self.next_button.setFont(font2)
+        self.next_button.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.next_button.setStyleSheet(u"")
+        self.next_button.setAutoDefault(True)
 
         self.button_Layout.addWidget(self.next_button)
 
@@ -141,6 +147,9 @@ class Ui_UserForm(object):
 
 
         self.retranslateUi(UserForm)
+
+        self.next_button.setDefault(True)
+
 
         QMetaObject.connectSlotsByName(UserForm)
     # setupUi
