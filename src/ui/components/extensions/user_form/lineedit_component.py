@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QScrollArea,
+    QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QScrollArea, QHBoxLayout, QToolButton
 )
-from PySide6.QtGui import QFont, QIcon, QAction, QPixmap
+from PySide6.QtGui import QFont, QIcon, QPixmap
 from PySide6.QtCore import Qt
 
 
@@ -13,47 +13,64 @@ class LineEditComponent(QWidget):
         # Main layout for this component
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
+        layout.setSpacing(5)
 
         # Create and style the label
         self.label = QLabel(label)
         font = QFont()
-        font.setPointSize(13)
+        font.setPointSize(15)
         font.setBold(True)
         self.label.setFont(font)
         self.label.setFixedHeight(30)
 
-        # Create and style the line edit
+        # Create a container widget to hold both the icon and the QLineEdit
+        container = QWidget()
+        container.setFixedHeight(48)
+        container_layout = QHBoxLayout(container)
+        container_layout.setContentsMargins(0, 5, 10, 5)
+        container_layout.setSpacing(0)
+
+        # Apply border style to container
+        container.setStyleSheet("""
+            QWidget {
+                border: 1px solid #333;
+                border-radius: 5px;
+                background-color: white;
+            }
+        """)
+
+        # Create the QLineEdit
         self.line_edit = QLineEdit()
         self.line_edit.setPlaceholderText(placeholder)
+        self.line_edit.setStyleSheet("border: none; background: transparent;")  # Remove QLineEdit border
 
         if is_password:
             self.line_edit.setEchoMode(QLineEdit.Password)
 
         # Optionally add an icon to the line edit
         if icon_path:
-            # Add icon with increased size
-            if icon_path:
-                pixmap = QPixmap(icon_path)
-                if pixmap.isNull():
-                    print(f"Error: Could not load icon from {icon_path}")
-                    return
+            pixmap = QPixmap(icon_path)
+            if pixmap.isNull():
+                print(f"Error: Could not load icon from {icon_path}")
+                return
 
-                # Scale the pixmap only by height, maintaining the width proportion
-                scaled_pixmap = pixmap.scaledToHeight(
-                    40,  # Icon height slightly smaller than the QLineEdit height
-                    Qt.SmoothTransformation,
-                )
+            # Scale the pixmap properly
+            scaled_pixmap = pixmap.scaled(30, 30, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             icon = QIcon(scaled_pixmap)
-            action = QAction(icon, "", self.line_edit)
-            action.setIconVisibleInMenu(False)  # Hide in menus (optional)
-            action.setIcon(icon)
-            self.line_edit.addAction(action, QLineEdit.LeadingPosition)
 
-        # Add widgets to layout
+            # Create a QToolButton to hold the icon
+            self.icon_button = QToolButton()
+            self.icon_button.setIcon(icon)
+            self.icon_button.setIconSize(scaled_pixmap.size())
+            self.icon_button.setStyleSheet("border: none; background: transparent; padding: 5px;")
+            self.icon_button.setFixedSize(40, 40)  # Ensure the button size matches the icon
+
+            # Add icon and line_edit to the layout
+            container_layout.addWidget(self.icon_button)
+            container_layout.addWidget(self.line_edit)
+
         layout.addWidget(self.label)
-        layout.addWidget(self.line_edit)
-
+        layout.addWidget(container)
         self.setLayout(layout)
 
     def get_value(self):
@@ -83,13 +100,13 @@ class MainWidget(QWidget):
             "username",
             "Enter your username:",
             "User ID",
-            icon_path=r"path/to/user_icon.png"
+            icon_path=r"C:\Users\sknay\PycharmProjects\pipeline_app\src\resources\icons\login_page\user.svg"
         )
         password_component = LineEditComponent(
             "password",
             "Enter your password:",
             "••••••••••",
-            icon_path=r"C:\Users\sknay\Downloads\icons_user\user_icon.png"
+            icon_path=r"C:\Users\sknay\PycharmProjects\pipeline_app\src\resources\icons\login_page\pass.svg"
         )
 
         # Add components to the content layout

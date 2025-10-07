@@ -112,9 +112,9 @@ class MainWindow(QMainWindow):
         self._connect_signals()
 
         # --- Example usage for quick testing ---
-        # self.login_page.username = 'Art'
-        # self.show_task_mancer_page({'name': 'Testing Project'})
-        # self.show_project_page({})
+        self.login_page.username = 'Art'
+        self.show_task_mancer_page({'name': 'Testing Project'})
+        self.show_project_page({})
         # ---------------------------------------
 
 
@@ -144,6 +144,14 @@ class MainWindow(QMainWindow):
         # Project-related signals
         self.signal_manager.download_triggered.connect(self.task_mancer_page._download_project_files)
         self.signal_manager.exit_project_triggered.connect(self.task_mancer_page._on_previous)
+
+        self.signal_manager.refresh_triggered.connect(
+            lambda: self.message_box.show_message(
+                "Yet To Implement",
+                message_type="info",
+                title="Refresh Ui"
+            )
+        )
 
     # --------------------
     # Slot Implementations

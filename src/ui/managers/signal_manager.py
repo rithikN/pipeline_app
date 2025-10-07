@@ -21,6 +21,7 @@ class SignalManager(QObject):
     logout_triggered = Signal()
     download_triggered = Signal()
     exit_project_triggered = Signal()
+    refresh_triggered = Signal()
 
     def __init__(self):
         super().__init__()

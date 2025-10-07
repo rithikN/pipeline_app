@@ -178,6 +178,10 @@ def create_file(data):
     return 'file created and updated database'
 
 
+def get_apps():
+    return ['Maya', 'Nuke', 'Blender']
+
+
 # Additional notes for backend
 """
 - UI will pass the required arguments in the request payload as JSON.
