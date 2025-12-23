@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'project_form.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.2
+## Created by: Qt User Interface Compiler version 6.8.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -31,8 +31,8 @@ class Ui_ProjectForm(object):
         self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
         self.bottom_frame = QFrame(ProjectForm)
         self.bottom_frame.setObjectName(u"bottom_frame")
-        self.bottom_frame.setFrameShape(QFrame.StyledPanel)
-        self.bottom_frame.setFrameShadow(QFrame.Raised)
+        self.bottom_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.bottom_frame.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout = QGridLayout(self.bottom_frame)
         self.gridLayout.setSpacing(0)
         self.gridLayout.setObjectName(u"gridLayout")
@@ -41,22 +41,26 @@ class Ui_ProjectForm(object):
         self.horizontalLayout_2.setSpacing(20)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.horizontalLayout_2.setContentsMargins(-1, 9, -1, -1)
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer)
 
         self.previous_pushButton = QPushButton(self.bottom_frame)
         self.previous_pushButton.setObjectName(u"previous_pushButton")
+        self.previous_pushButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.previous_pushButton.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
         self.horizontalLayout_2.addWidget(self.previous_pushButton)
 
         self.next_pushButton = QPushButton(self.bottom_frame)
         self.next_pushButton.setObjectName(u"next_pushButton")
-        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.next_pushButton.sizePolicy().hasHeightForWidth())
         self.next_pushButton.setSizePolicy(sizePolicy)
+        self.next_pushButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.next_pushButton.setAutoDefault(True)
 
         self.horizontalLayout_2.addWidget(self.next_pushButton)
 
@@ -65,8 +69,9 @@ class Ui_ProjectForm(object):
 
         self.project_tableWidget = QTableWidget(self.bottom_frame)
         self.project_tableWidget.setObjectName(u"project_tableWidget")
-        self.project_tableWidget.setFrameShape(QFrame.NoFrame)
-        self.project_tableWidget.setFrameShadow(QFrame.Plain)
+        self.project_tableWidget.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.project_tableWidget.setFrameShape(QFrame.Shape.NoFrame)
+        self.project_tableWidget.setFrameShadow(QFrame.Shadow.Plain)
         self.project_tableWidget.setLineWidth(0)
         self.project_tableWidget.setDragDropOverwriteMode(False)
         self.project_tableWidget.setShowGrid(False)
@@ -87,7 +92,7 @@ class Ui_ProjectForm(object):
 
         self.line = QFrame(self.bottom_frame)
         self.line.setObjectName(u"line")
-        sizePolicy1 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Fixed)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.line.sizePolicy().hasHeightForWidth())
@@ -101,9 +106,9 @@ class Ui_ProjectForm(object):
         self.line.setStyleSheet(u"color: rgb(255, 255, 255);\n"
 "                                        background-color: rgb(255, 255, 255);\n"
 "                                    ")
-        self.line.setFrameShadow(QFrame.Plain)
+        self.line.setFrameShadow(QFrame.Shadow.Plain)
         self.line.setLineWidth(1)
-        self.line.setFrameShape(QFrame.HLine)
+        self.line.setFrameShape(QFrame.Shape.HLine)
 
         self.gridLayout.addWidget(self.line, 0, 0, 1, 1)
 
@@ -112,6 +117,9 @@ class Ui_ProjectForm(object):
 
 
         self.retranslateUi(ProjectForm)
+
+        self.next_pushButton.setDefault(True)
+
 
         QMetaObject.connectSlotsByName(ProjectForm)
     # setupUi

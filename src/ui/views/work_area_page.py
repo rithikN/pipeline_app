@@ -1,14 +1,12 @@
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QSplitter, QScrollArea, QApplication, QTabWidget, QLabel, QFrame
-)
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QSplitter, QScrollArea, QApplication, QTabWidget,
+                               QLabel, QFrame)
 from PySide6.QtCore import Qt
-
 from ui.components.extensions.custom_line import GradientLineWidget
 
 
 class WorkAreaWidget(QWidget):
     def __init__(self, selection_widget, task_list_widget, work_file_widget, work_file_detail_widget,
-                 file_preview_widget):
+                 applications_widget):
         """
         Initialize WorkAreaWidget with pre-initialized components.
         """
@@ -17,29 +15,23 @@ class WorkAreaWidget(QWidget):
         self.task_list_widget = task_list_widget
         self.work_file_widget = work_file_widget
         self.work_file_detail_widget = work_file_detail_widget
-        self.file_preview_widget = file_preview_widget
-
+        self.applications_widget = applications_widget
+        # self.file_preview_widget = file_preview_widget
         self.init_ui()
 
     def init_ui(self):
         main_layout = QVBoxLayout()
         top_line = GradientLineWidget()
 
-        # Wrap Selection Widget
-        selection_wrapper = QWidget()
-        selection_layout = QVBoxLayout()
-        selection_layout.setContentsMargins(0, 0, 0, 0)
-        selection_layout.addWidget(self.selection_widget)
-        selection_wrapper.setLayout(selection_layout)
-        selection_wrapper.setFixedHeight(50)
-
         # Shared container for work_file_detail_widget and file_preview_widget
         shared_container = QWidget()
         shared_container.setObjectName(u"shared_container")
         shared_layout = QVBoxLayout()
         shared_layout.setContentsMargins(0, 0, 0, 0)
-        shared_layout.addWidget(self.work_file_detail_widget)
-        shared_layout.addWidget(self.file_preview_widget)
+        self.applications_widget.setFixedHeight(50)
+        shared_layout.addWidget(self.work_file_detail_widget, stretch=1)
+        shared_layout.addWidget(self.applications_widget, stretch=0,
+                                alignment=Qt.AlignmentFlag.AlignTop|Qt.AlignmentFlag.AlignBottom)
         shared_container.setLayout(shared_layout)
 
         # Add scroll area for shared container
@@ -72,7 +64,6 @@ class WorkAreaWidget(QWidget):
         main_splitter.setSizes([600, 700])
 
         main_layout.addWidget(top_line)
-        main_layout.addWidget(selection_wrapper)
         main_layout.addWidget(main_splitter)
         self.setLayout(main_layout)
 
@@ -90,11 +81,8 @@ if __name__ == "__main__":
     work_file_widget = QLabel("Work File Widget")
     work_file_detail_widget = QLabel("Work File Detail Widget\n" * 20)  # For scrolling demo
     file_preview_widget = QLabel("File Preview Widget\n" * 20)  # For scrolling demo
-
-    work_area_page = WorkAreaWidget(
-        selection_widget, task_list_widget, work_file_widget, work_file_detail_widget, file_preview_widget
-    )
-    main_window.addTab(work_area_page, "Work Area")
-
+    work_area_page = WorkAreaWidget(selection_widget, task_list_widget, work_file_widget, work_file_detail_widget,
+                                   file_preview_widget)
+    main_window.addTab(work_area_page, "Work")
     main_window.show()
     sys.exit(app.exec())

@@ -12,7 +12,8 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QSize
 
-from services.constants import default_task_status_color, TASK_STATUS, USERNAME, DATE, COMMENT, STATUS_COLOR
+from services.constants import default_task_status_color, LOG_USERNAME, LOG_STATUS, LOG_DATE , LOG_COMMENT, LOG_STATUS_COLOR
+
 
 logger = logging.getLogger(__name__)
 
@@ -172,11 +173,11 @@ class TaskLogWidget(QWidget):
 
         for task in self._tasks_data:
             task_widget = TaskContent(
-                task_status=task[TASK_STATUS],
-                username=task[USERNAME],
-                date=task[DATE],
-                comment=task[COMMENT],
-                task_status_color=task.get(STATUS_COLOR)
+                task_status=task[LOG_STATUS],
+                username=task[LOG_USERNAME],
+                date=task[LOG_DATE],
+                comment=task[LOG_COMMENT],
+                task_status_color=task.get(LOG_STATUS_COLOR)
             )
 
             list_item = QListWidgetItem()

@@ -5,6 +5,8 @@ Defines the LoginPage class which handles user login functionality.
 """
 
 import logging
+from pathlib import Path
+
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 from PySide6.QtGui import QMovie, QFont
 from PySide6.QtCore import Qt, QSize
@@ -12,10 +14,10 @@ from PySide6.QtCore import Qt, QSize
 from ui.components.extensions.user_form.lineedit_component import LineEditComponent
 from ui.components.forms.login_form import Ui_LoginForm
 from ui.components.extensions.message_box import MessageBox
-from ui.utils.stylesheet_loader import load_stylesheet
+from ui.utils.stylesheet_utils import load_stylesheet
 from ui.utils.common import verify_fonts
 
-from services.data_service import login_user
+from services.data_service import login_user, check_VPN_connection, check_ftp_connection
 from services.constants import USER_ID, USER_LABEL, USER_PLACEHOLDER, PASS_ID, PASS_LABEL, PASS_PLACEHOLDER
 
 # Initialize logger
@@ -58,7 +60,8 @@ class LoginPage(QWidget):
         self.login_ui.setupUi(self)
 
         # Load and apply the login stylesheet
-        load_stylesheet(self, r'ui/stylesheets/login_style.css')
+        css_path = Path.cwd() / "ui" / "stylesheets" / "login_style.css"
+        load_stylesheet(self, css_path)
 
         # Set up the GIF animation
         movie = QMovie("resources/logo.gif")
@@ -74,10 +77,10 @@ class LoginPage(QWidget):
         self.scroll_layout.setSpacing(0)
 
         self.username_lineEdit = LineEditComponent(
-            USER_ID, USER_LABEL, USER_PLACEHOLDER, "resources/icons/login_page/user.png")
+            USER_ID, USER_LABEL, USER_PLACEHOLDER, "resources/icons/login_page/user.png", False, self.login_ui.login_pushButton)
         self.scroll_layout.addWidget(self.username_lineEdit)
         self.password_lineEdit = LineEditComponent(
-            PASS_ID, PASS_LABEL, PASS_PLACEHOLDER, "resources/icons/login_page/pass.svg", True)
+            PASS_ID, PASS_LABEL, PASS_PLACEHOLDER, "resources/icons/login_page/pass.svg", True, self.login_ui.login_pushButton)
         self.scroll_layout.addWidget(self.password_lineEdit)
 
 
@@ -106,16 +109,23 @@ class LoginPage(QWidget):
                 title="Input Error"
             )
             return
+        
+        # Validation
+        if not check_VPN_connection():
+            return
+        elif not check_ftp_connection(check_RCLONE=True):
+            return None
 
         response = login_user({"username": self.username, "password": self.password})
         if not response:
             logger.error("No response received from the login service.")
             return
 
-        if response.get("status") == "success":
+        if response.get("status"):
+            data = response
             logger.info(f"User '{self.username}' logged in successfully.")
             if self.next_page_callback:
-                self.next_page_callback()
+                self.next_page_callback(data)
         else:
             logger.warning(f"Login failed for user '{self.username}'.")
             self.message_box.show_message(
@@ -147,16 +157,6 @@ class LoginPage(QWidget):
         super().resizeEvent(event)
 
 
-from PySide6.QtGui import QFont
-
-
-def apply_global_font(widget, font_name):
-    font = QFont(font_name)
-    widget.setFont(font)
-    for child in widget.findChildren(QWidget):
-        child.setFont(font)
-
-
 if __name__ == "__main__":
     # Setup application and logger
     from PySide6.QtWidgets import QApplication
@@ -170,12 +170,11 @@ if __name__ == "__main__":
         r"C:\Users\sknay\PycharmProjects\pipeline_app\src\resources\fonts\Inter\Inter-VariableFont_opsz,wght.ttf")
     if font_id_inter != -1:
         families = QFontDatabase.applicationFontFamilies(font_id_inter)
-        print("Loaded Font Families for Inter:", families)
+        logger.info(f"Loaded Font Families for Inter: {families}")
     else:
-        print("Failed to load the Inter font.")
+        logger.debug("Failed to load the Inter font.")
     # Create and show the LoginPage
     login_page = LoginPage()
-    # apply_global_font(login_page, "Inter")
     login_page.show()
 
     # Start the application event loop

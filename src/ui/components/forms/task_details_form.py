@@ -23,13 +23,13 @@ class Ui_TaskDetailsForm(object):
     def setupUi(self, TaskDetailsForm):
         if not TaskDetailsForm.objectName():
             TaskDetailsForm.setObjectName(u"TaskDetailsForm")
-        TaskDetailsForm.resize(670, 590)
+        TaskDetailsForm.resize(470, 590)
         sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(TaskDetailsForm.sizePolicy().hasHeightForWidth())
         TaskDetailsForm.setSizePolicy(sizePolicy)
-        TaskDetailsForm.setMinimumSize(QSize(670, 0))
+        TaskDetailsForm.setMinimumSize(QSize(470, 0))
         self.horizontalLayout_2 = QHBoxLayout(TaskDetailsForm)
         self.horizontalLayout_2.setSpacing(0)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")

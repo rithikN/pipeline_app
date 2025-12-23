@@ -1,8 +1,11 @@
 import os
+from pathlib import Path
+import logging
 
 from PySide6.QtWidgets import QLayout, QWidget
 from PySide6.QtGui import QFontDatabase, QFont
 
+logger = logging.getLogger(__name__)
 
 def set_layout_visibility(layout, state):
     """
@@ -65,21 +68,33 @@ class CenteringContainer(QWidget):
         self.parent_table.mouseDoubleClickEvent(event)
 
 
-def load_fonts_from_directory(directory_path):
+def load_fonts_from_directory(directory_path: str | Path, verbose: bool = False) -> list[int]:
     """
-    Load all font files from the specified directory and its subdirectories.
+    Load all font files (.ttf, .otf) from the specified directory and its subdirectories.
     """
-    font_ids = []
-    for root, dirs, files in os.walk(directory_path):
-        for file in files:
-            if file.endswith((".ttf", ".otf")):
-                font_path = os.path.join(root, file)
-                font_id = QFontDatabase.addApplicationFont(font_path)
-                if font_id != -1:
-                    font_ids.append(font_id)
-                else:
-                    print(f"Failed to load font: {font_path}")
+    directory = Path(directory_path)
+    if not directory.exists() or not directory.is_dir():
+        logger.warning("Font directory does not exist: %s", directory)
+        return []
+
+    font_ids: list[int] = []
+    for font_file in directory.rglob("*"):
+        if font_file.suffix.lower() in (".ttf", ".otf"):
+            font_id = QFontDatabase.addApplicationFont(str(font_file))
+            if font_id != -1:
+                font_ids.append(font_id)
+                if verbose:
+                    logger.debug("Loaded font: %s", font_file)
+            else:
+                logger.error("Failed to load font: %s", font_file)
+
+    if font_ids:
+        logger.info("Loaded %d fonts from %s", len(font_ids), directory)
+    else:
+        logger.warning("No fonts loaded from %s", directory)
+
     return font_ids
+
 
 
 def verify_fonts(widget):

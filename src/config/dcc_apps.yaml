@@ -1,0 +1,11 @@
+- name: "Maya"
+  icon: "C:/Program Files/Autodesk/Maya2023/icons/mayaPlaceholder.png"
+  command: "C:/Program Files/Autodesk/Maya2023/bin/maya.exe"
+
+- name: "Nuke"
+  icon: "C:/Program Files/Nuke14.0v1/plugins/icons/NukeApp48.png"
+  command: "C:/Program Files/Nuke14.0v1/Nuke14.0.exe"
+
+- name: "Silhouette"
+  icon: "C:/Program Files/BorisFX/Silhouette 2021.5/application.ico"
+  command: "C:/Program Files/BorisFX/Silhouette 2021.5/Silhouette.exe"

@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'details_form.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.2
+## Created by: Qt User Interface Compiler version 6.8.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -23,8 +23,8 @@ class Ui_DetailsForm(object):
     def setupUi(self, DetailsForm):
         if not DetailsForm.objectName():
             DetailsForm.setObjectName(u"DetailsForm")
-        DetailsForm.resize(535, 438)
-        sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        DetailsForm.resize(534, 438)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(DetailsForm.sizePolicy().hasHeightForWidth())
@@ -34,8 +34,8 @@ class Ui_DetailsForm(object):
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.MainContainer = QFrame(DetailsForm)
         self.MainContainer.setObjectName(u"MainContainer")
-        self.MainContainer.setFrameShape(QFrame.NoFrame)
-        self.MainContainer.setFrameShadow(QFrame.Plain)
+        self.MainContainer.setFrameShape(QFrame.Shape.NoFrame)
+        self.MainContainer.setFrameShadow(QFrame.Shadow.Plain)
         self.MainContainer.setLineWidth(0)
         self.verticalLayout_2 = QVBoxLayout(self.MainContainer)
         self.verticalLayout_2.setSpacing(6)
@@ -43,7 +43,7 @@ class Ui_DetailsForm(object):
         self.verticalLayout_2.setContentsMargins(-1, -1, -1, 6)
         self.header_label = QLabel(self.MainContainer)
         self.header_label.setObjectName(u"header_label")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.header_label.sizePolicy().hasHeightForWidth())
@@ -57,38 +57,36 @@ class Ui_DetailsForm(object):
         self.header_line.setObjectName(u"header_line")
         self.header_line.setMinimumSize(QSize(0, 1))
         self.header_line.setMaximumSize(QSize(16777215, 1))
-        self.header_line.setFrameShadow(QFrame.Plain)
-        self.header_line.setFrameShape(QFrame.HLine)
+        self.header_line.setFrameShadow(QFrame.Shadow.Plain)
+        self.header_line.setFrameShape(QFrame.Shape.HLine)
 
         self.verticalLayout_2.addWidget(self.header_line)
 
         self.main_frame = QFrame(self.MainContainer)
         self.main_frame.setObjectName(u"main_frame")
-        self.main_frame.setFrameShape(QFrame.NoFrame)
-        self.main_frame.setFrameShadow(QFrame.Plain)
+        self.main_frame.setFrameShape(QFrame.Shape.NoFrame)
+        self.main_frame.setFrameShadow(QFrame.Shadow.Plain)
         self.main_horizontalLayout = QVBoxLayout(self.main_frame)
-        self.main_horizontalLayout.setSpacing(6)
         self.main_horizontalLayout.setObjectName(u"main_horizontalLayout")
-        self.main_horizontalLayout.setContentsMargins(-1, -1, -1, 0)
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.preview_frame = QFrame(self.main_frame)
         self.preview_frame.setObjectName(u"preview_frame")
-        sizePolicy2 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.preview_frame.sizePolicy().hasHeightForWidth())
         self.preview_frame.setSizePolicy(sizePolicy2)
         self.preview_frame.setMinimumSize(QSize(238, 0))
-        self.preview_frame.setFrameShape(QFrame.NoFrame)
-        self.preview_frame.setFrameShadow(QFrame.Plain)
+        self.preview_frame.setFrameShape(QFrame.Shape.NoFrame)
+        self.preview_frame.setFrameShadow(QFrame.Shadow.Plain)
         self.preview_frame.setLineWidth(0)
 
         self.horizontalLayout.addWidget(self.preview_frame)
 
         self.details_textEdit = QTextEdit(self.main_frame)
         self.details_textEdit.setObjectName(u"details_textEdit")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.MinimumExpanding)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.MinimumExpanding)
         sizePolicy3.setHorizontalStretch(0)
         sizePolicy3.setVerticalStretch(0)
         sizePolicy3.setHeightForWidth(self.details_textEdit.sizePolicy().hasHeightForWidth())
@@ -97,12 +95,12 @@ class Ui_DetailsForm(object):
         font.setPointSize(8)
         self.details_textEdit.setFont(font)
         self.details_textEdit.setMouseTracking(False)
-        self.details_textEdit.setFocusPolicy(Qt.NoFocus)
-        self.details_textEdit.setFrameShape(QFrame.NoFrame)
-        self.details_textEdit.setFrameShadow(QFrame.Plain)
-        self.details_textEdit.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.details_textEdit.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.details_textEdit.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
+        self.details_textEdit.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.details_textEdit.setFrameShape(QFrame.Shape.NoFrame)
+        self.details_textEdit.setFrameShadow(QFrame.Shadow.Plain)
+        self.details_textEdit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.details_textEdit.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.details_textEdit.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustIgnored)
         self.details_textEdit.setUndoRedoEnabled(False)
         self.details_textEdit.setLineWrapColumnOrWidth(0)
         self.details_textEdit.setReadOnly(True)
@@ -112,48 +110,58 @@ class Ui_DetailsForm(object):
 
         self.main_horizontalLayout.addLayout(self.horizontalLayout)
 
-        self.button_horizontalLayout = QHBoxLayout()
-        self.button_horizontalLayout.setSpacing(8)
-        self.button_horizontalLayout.setObjectName(u"button_horizontalLayout")
-        self.horizontalSpacer = QSpacerItem(200, 20, QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalSpacer = QSpacerItem(258, 20, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Minimum)
 
-        self.button_horizontalLayout.addItem(self.horizontalSpacer)
-
-        self.delete_button = QPushButton(self.main_frame)
-        self.delete_button.setObjectName(u"delete_button")
-        sizePolicy4 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Fixed)
-        sizePolicy4.setHorizontalStretch(0)
-        sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.delete_button.sizePolicy().hasHeightForWidth())
-        self.delete_button.setSizePolicy(sizePolicy4)
-        self.delete_button.setStyleSheet(u"background-color: #7B0A15; color: #E1E1E8;\n"
-"                                                            padding: 5px;\n"
-"                                                        ")
-
-        self.button_horizontalLayout.addWidget(self.delete_button)
-
-        self.explorer_button = QPushButton(self.main_frame)
-        self.explorer_button.setObjectName(u"explorer_button")
-        sizePolicy4.setHeightForWidth(self.explorer_button.sizePolicy().hasHeightForWidth())
-        self.explorer_button.setSizePolicy(sizePolicy4)
-        self.explorer_button.setStyleSheet(u"background-color: #9C521B; color: #E1E1E8;\n"
-"                                                            padding: 5px;\n"
-"                                                        ")
-
-        self.button_horizontalLayout.addWidget(self.explorer_button)
+        self.horizontalLayout_2.addItem(self.horizontalSpacer)
 
         self.open_button = QPushButton(self.main_frame)
         self.open_button.setObjectName(u"open_button")
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Fixed)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
         sizePolicy4.setHeightForWidth(self.open_button.sizePolicy().hasHeightForWidth())
         self.open_button.setSizePolicy(sizePolicy4)
-        self.open_button.setStyleSheet(u"background-color: #216582; color: #E1E1E8;\n"
+        font1 = QFont()
+        font1.setPointSize(10)
+        font1.setBold(False)
+        self.open_button.setFont(font1)
+        self.open_button.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.open_button.setStyleSheet(u"background-color: #7da7d9; color: #0b1936;\n"
 "                                                            padding: 5px;\n"
 "                                                        ")
 
-        self.button_horizontalLayout.addWidget(self.open_button)
+        self.horizontalLayout_2.addWidget(self.open_button)
+
+        self.explorer_button = QPushButton(self.main_frame)
+        self.explorer_button.setObjectName(u"explorer_button")
+        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.explorer_button.sizePolicy().hasHeightForWidth())
+        self.explorer_button.setSizePolicy(sizePolicy5)
+        self.explorer_button.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.explorer_button.setStyleSheet(u"background-color: #c7b299; color: #503514;\n"
+"                                                            padding: 5px;\n"
+"                                                        ")
+
+        self.horizontalLayout_2.addWidget(self.explorer_button)
+
+        self.publish_file_button = QPushButton(self.main_frame)
+        self.publish_file_button.setObjectName(u"publish_file_button")
+        self.publish_file_button.setEnabled(True)
+        sizePolicy2.setHeightForWidth(self.publish_file_button.sizePolicy().hasHeightForWidth())
+        self.publish_file_button.setSizePolicy(sizePolicy2)
+        self.publish_file_button.setFont(font1)
+        self.publish_file_button.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.publish_file_button.setStyleSheet(u"background-color: #a3d39c; color: #173a12;\n"
+"                                                            padding: 5px;")
+
+        self.horizontalLayout_2.addWidget(self.publish_file_button)
 
 
-        self.main_horizontalLayout.addLayout(self.button_horizontalLayout)
+        self.main_horizontalLayout.addLayout(self.horizontalLayout_2)
 
 
         self.verticalLayout_2.addWidget(self.main_frame)
@@ -173,8 +181,8 @@ class Ui_DetailsForm(object):
 #if QT_CONFIG(accessibility)
         self.details_textEdit.setAccessibleName(QCoreApplication.translate("DetailsForm", u"v", None))
 #endif // QT_CONFIG(accessibility)
-        self.delete_button.setText(QCoreApplication.translate("DetailsForm", u"Delete", None))
-        self.explorer_button.setText(QCoreApplication.translate("DetailsForm", u"Explorer", None))
-        self.open_button.setText(QCoreApplication.translate("DetailsForm", u"Open", None))
+        self.open_button.setText(QCoreApplication.translate("DetailsForm", u"Open File", None))
+        self.explorer_button.setText("")
+        self.publish_file_button.setText(QCoreApplication.translate("DetailsForm", u"Publish File", None))
     # retranslateUi
 

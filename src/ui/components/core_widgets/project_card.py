@@ -125,8 +125,8 @@ class ProjectCard(QWidget):
                 self._ui.thumbnailLabel.size(),
                 Qt.KeepAspectRatio,
                 Qt.SmoothTransformation
-            )
-            self._ui.thumbnailLabel.setPixmap(scaled_pixmap)
+            ) # ToDo remove scaled_pixmap if not needed
+            self._ui.thumbnailLabel.setPixmap(pixmap)
             self._ui.thumbnailLabel.setAlignment(Qt.AlignCenter)
         else:
             self._ui.thumbnailLabel.setText("No Thumbnail")

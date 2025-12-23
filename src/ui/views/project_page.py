@@ -6,6 +6,7 @@ and allows the user to select and proceed to the next step in the 3D Pipeline.
 """
 
 import logging
+from pathlib import Path
 from PySide6.QtWidgets import (
     QWidget,
     QTableWidget,
@@ -19,8 +20,9 @@ from ui.components.forms.project_form import Ui_ProjectForm
 from ui.components.extensions.message_box import MessageBox
 from ui.components.core_widgets.project_card import ProjectCard
 from services.data_service import get_projects
-from services.constants import PROJECT_NAME, PROJECT_TYPE, THUMBNAIL_PATH
-from ui.utils.stylesheet_loader import load_stylesheet
+from services.constants import PROJECT_NAME, PROJECT_TYPE
+from ui.utils.stylesheet_utils import load_stylesheet
+from pipeline.config.settings import settings
 
 # Initialize logger
 logger = logging.getLogger(__name__)
@@ -45,7 +47,8 @@ class ProjectPage(QWidget):
         # UI setup
         self._ui = Ui_ProjectForm()
         self._ui.setupUi(self)
-        load_stylesheet(self, r'ui/stylesheets/project_style.css')
+        css_path = Path.cwd() / "ui" / "stylesheets" / "project_style.css"
+        load_stylesheet(self, css_path)
 
         # Callbacks
         self.next_page_callback = next_page_callback
@@ -62,6 +65,9 @@ class ProjectPage(QWidget):
         self.message_box = MessageBox()
         self._setup_ui()
         self._setup_connections()
+
+        # Select first project cell by default while loading page
+        self._default_selection()
 
     def _setup_ui(self):
         """
@@ -108,6 +114,7 @@ class ProjectPage(QWidget):
         self._ui.previous_pushButton.clicked.connect(self._on_previous)
         self._ui.project_tableWidget.cellClicked.connect(self._on_cell_clicked)
         self._ui.project_tableWidget.cellDoubleClicked.connect(self._on_cell_double_clicked)
+        self._ui.project_tableWidget.keyPressEvent = self.keyPressEvent
 
     def set_form_data(self, form_data):
         """
@@ -117,7 +124,8 @@ class ProjectPage(QWidget):
             form_data (dict): Data from the FormPage.
         """
         logger.debug(f"Setting form data: {form_data}")
-        self.projects = get_projects(form_data)
+        self.form_data = form_data
+        self.projects = self.form_data["current_projects"]
         self._populate_project_table()
 
     def _populate_project_table(self):
@@ -150,7 +158,7 @@ class ProjectPage(QWidget):
                 title=project.get(PROJECT_NAME, ""),
                 project_type=project.get(PROJECT_TYPE, ""),
                 parent=self,
-                thumbnail=project.get(THUMBNAIL_PATH, "resources/empty_project.png")
+                thumbnail=project.get(settings["THUMBNAIL_PATH"], "resources/empty_project.png")
             )
             container = self._wrap_project_card(project_card)
             table.setCellWidget(row, col, container)
@@ -204,7 +212,8 @@ class ProjectPage(QWidget):
         table = self._ui.project_tableWidget
         item = table.item(self.selected_row, self.selected_col)
         if item and (project_data := item.data(Qt.UserRole)):
-            self.next_page_callback(project_data)
+            data = {"artist_slug": self.form_data["user_slug"], "artist_name": self.form_data["artist_name"], "project": project_data}
+            self.next_page_callback(data)
 
     def _on_cell_clicked(self, row, col):
         """
@@ -216,6 +225,13 @@ class ProjectPage(QWidget):
             self.selected_row, self.selected_col = row, col
             self._ui.next_pushButton.setEnabled(True)
 
+    def _default_selection(self):
+        """
+        Select first project cell by default while loading page.
+        """
+        self.selected_row, self.selected_col = 0, 0
+        self._ui.next_pushButton.setEnabled(True) 
+            
     def _on_cell_double_clicked(self, row, col):
         """
         Handle cell double-click event.
@@ -223,7 +239,8 @@ class ProjectPage(QWidget):
         table = self._ui.project_tableWidget
         item = table.item(row, col)
         if item and (project_data := item.data(Qt.UserRole)):
-            self.next_page_callback(project_data)
+            data = {"artist_slug": self.form_data["user_slug"], "artist_name": self.form_data["artist_name"], "project": project_data}
+            self.next_page_callback(data)
 
     def _on_resize(self, event):
         """
@@ -231,3 +248,9 @@ class ProjectPage(QWidget):
         """
         if self.projects:
             self._populate_project_table()
+
+    def keyPressEvent(self, event):
+        key = event.key()
+
+        if key == Qt.Key_Return or key == Qt.Key_Enter:
+            self._on_next()

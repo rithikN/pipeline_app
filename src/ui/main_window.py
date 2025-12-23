@@ -5,16 +5,22 @@ Provides the MainWindow class for the 3D Pipeline application.
 This class handles navigation between different pages and manages
 the top bar (menu bar) via TopBarManager.
 """
-
-import logging
+import os, sys, logging, subprocess
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import (
     QMainWindow,
     QStackedWidget,
     QWidget,
     QHBoxLayout,
-    QMenuBar
+    QMenuBar,
+    QMessageBox,
+    QApplication
 )
+
+from controllers.task_controller import TaskController
+from controllers.workfile_controller import WorkFilesController
+from controllers.work_details_controller import WorkDetailsController
+from controllers.project_controller import ProjectController
 
 from ui.components.core_widgets.menu_widget import CustomMenuWidget
 from ui.components.extensions.message_box import MessageBox
@@ -27,7 +33,10 @@ from ui.views.form_page import FormPage
 from ui.views.project_page import ProjectPage
 from ui.views.task_mancer_page import TaskMancerPage
 
-from services.constants import ABOUT_INFO_LABEL, ABOUT_LABEL, PROJECT_NAME
+
+from services.constants import APP_LABEL, EXIT_LABEL, HELP_LABEL, ABOUT_LABEL, ABOUT_INFO_LABEL, PROJECT_NAME
+from services.data_service import (check_VPN_connection)
+
 
 # Initialize logger
 logger = logging.getLogger(__name__)
@@ -62,7 +71,7 @@ class MainWindow(QMainWindow):
         Initialize the MainWindow class, set up the UI, pages, and menu bar.
         """
         super().__init__()
-        self.setWindowTitle("PhilmCGI Pipeline 2.0")
+        self.setWindowTitle("PhilmCGI Pipeline 3.7.3")
         self.setWindowIcon(QIcon("resources/icons/main_window.svg"))
         self.resize(1200, 700)
 
@@ -74,6 +83,12 @@ class MainWindow(QMainWindow):
         self.signal_manager = SignalManager()
         self.form_data = {}
         self.project_data = {}
+
+        # -- Initialize controllers --
+        self.task_controller = TaskController(event_manager=self.signal_manager)
+        self.workfile_controller = WorkFilesController(event_manager=self.signal_manager)
+        self.work_details_controller = WorkDetailsController(event_manager=self.signal_manager)
+        self.project_controller = ProjectController(event_manager=self.signal_manager)
 
         self.menu_widget = None
         self.menu_layout = None
@@ -92,8 +107,14 @@ class MainWindow(QMainWindow):
             next_page_callback=self.show_task_mancer_page,
             prev_page_callback=self.go_back_to_form_page
         )
+
         self.task_mancer_page = TaskMancerPage(
-            prev_page_callback=self.go_back_to_project_page
+            prev_page_callback=self.go_back_to_project_page,
+            signal_manager=self.signal_manager,
+            task_controller=self.task_controller,
+            workfile_controller=self.workfile_controller,
+            work_details_controller=self.work_details_controller,
+            project_controller=self.project_controller,
         )
 
         # -- Create and configure the stacked widget --
@@ -112,12 +133,10 @@ class MainWindow(QMainWindow):
         self._connect_signals()
 
         # --- Example usage for quick testing ---
-        self.login_page.username = 'Art'
-        self.show_task_mancer_page({'name': 'Testing Project'})
-        self.show_project_page({})
+        # self.login_page.username = 'Art'
+        # self.show_task_mancer_page({'name': 'Testing Project'})
+        # self.show_project_page({})
         # ---------------------------------------
-
-
 
         logger.info("MainWindow initialized successfully.")
 
@@ -142,16 +161,8 @@ class MainWindow(QMainWindow):
         self.signal_manager.logout_triggered.connect(self.handle_logout)
 
         # Project-related signals
-        self.signal_manager.download_triggered.connect(self.task_mancer_page._download_project_files)
         self.signal_manager.exit_project_triggered.connect(self.task_mancer_page._on_previous)
-
-        self.signal_manager.refresh_triggered.connect(
-            lambda: self.message_box.show_message(
-                "Yet To Implement",
-                message_type="info",
-                title="Refresh Ui"
-            )
-        )
+        self.signal_manager.refresh_triggered.connect(self.task_mancer_page._refresh_task_manager_page)
 
     # --------------------
     # Slot Implementations
@@ -200,24 +211,25 @@ class MainWindow(QMainWindow):
     # Navigation Methods
     # --------------------
 
-    def show_form_page(self):
+    def show_form_page(self, response_data=None):
         """
         Navigate from login -> form page.
         Remove any corner widget, remove any existing 'Project' section,
         add a 'User' section, then switch to FormPage.
         """
         logger.debug("Navigating to FormPage.")
-        # Remove top bar corner widget and project section if any
+        # Remove top bar corner widget and project section, if any
         self.top_bar_manager.remove_topbar_widget()
         self.top_bar_manager.remove_project_section()
+        if response_data:
+            # Set username in form page
+            username = self.login_page.get_username()
+            self.form_page.set_username(username)
+            self.form_page.set_response_data(response_data)
 
-        # Set username in form page
-        username = self.login_page.get_username()
-        self.form_page.set_username(username)
-
-        # Add the 'User' section and go to FormPage
-        self.top_bar_manager.add_user_section()
-        self.stack.setCurrentWidget(self.form_page)
+            # Add the 'User' section and go to FormPage
+            self.top_bar_manager.add_user_section()
+            self.stack.setCurrentWidget(self.form_page)
 
     def show_project_page(self, form_data):
         """
@@ -257,19 +269,23 @@ class MainWindow(QMainWindow):
         logger.debug("Navigating to TaskMancerPage.")
         self.project_data = project_data
 
+        # Validation
+        if not check_VPN_connection():
+            return None
+
         # Reset corner widget
         self.top_bar_manager.remove_topbar_widget()
 
         # Add new corner widget with user + project
         username = self.login_page.get_username()
-        project_name = project_data.get(PROJECT_NAME, "Unknown Project")
+        project_name = project_data.get("project", {}).get(PROJECT_NAME, "Unknown Project")
         self.top_bar_manager.add_topbar_widget(self, username=username, project_name=project_name)
 
         # Add the 'Project' section
         self.top_bar_manager.add_project_section()
 
         # Set project data on TaskMancerPage and switch
-        self.task_mancer_page.set_project(project_name)
+        self.task_mancer_page.set_project(project_data)
         self.stack.setCurrentWidget(self.task_mancer_page)
 
     # --------------------

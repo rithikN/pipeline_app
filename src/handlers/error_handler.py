@@ -30,7 +30,7 @@ def handle_http_status(response, url=None):
     """
     status_messages = {
         400: "Bad Request. Please check your input.",
-        401: "Unauthorized. Invalid credentials or session expired.",
+        401: "\nLogin failed. Please check your credentials and try again.",
         403: "Forbidden. You do not have access to this resource.",
         404: f"Not Found. The requested resource was not found at {url}.",
         500: "Internal Server Error. Please try again later.",
@@ -47,7 +47,7 @@ def handle_http_status(response, url=None):
         MessageBoxManager.show_error(f"Backend Error: Client Error. {response.status_code} {response.reason}")
 
     elif response.status_code >= 500:
-        MessageBoxManager.show_error(f"Backend Error: Server Error. {response.status_code} {response.reason}")
+        MessageBoxManager.show_error(f"Backend Error: Server Error. {response.status_code} {response.json().get("message")}")
 
 
 def truncate_json(data, max_length=500):
@@ -130,94 +130,8 @@ def validate_json_keys(json_data, required_keys, endpoint, max_display_length=50
 
         # Log full data to the console using pprint
         logger.error(f"Full data for debugging from '{endpoint}':")
-        pprint.pprint(json_data, width=120)
 
         # Raise the exception with the full message
-        raise MissingKeyError(msg)
-
-
-def truncate_json_pretty(data, max_length=500):
-    """
-    Truncate large JSON data for display while keeping it readable and formatted with HTML.
-
-    Args:
-        data (any): The JSON data to truncate.
-        max_length (int): Maximum length of the string representation.
-
-    Returns:
-        str: Truncated and formatted string representation of the data in HTML.
-    """
-    import json
-    formatted_json = json.dumps(data, indent=4, ensure_ascii=False)
-    if len(formatted_json) > max_length:
-        truncated = formatted_json[:max_length] + "\n...\n[Truncated]"
-    else:
-        truncated = formatted_json
-
-    # Wrap the formatted JSON in a <pre> tag for better readability
-    return f"<pre style='font-family: Consolas, monospace; font-size: 12px;'>{truncated}</pre>"
-
-
-def validate_json_keys1(json_data, required_keys, endpoint, max_display_length=500):
-    """
-    Checks if all required_keys are present in the given json_data.
-    Handles nested dictionaries and lists of dictionaries based on a dot-separated key path.
-    Raises MissingKeyError if any required key is missing.
-
-    Args:
-        json_data (dict or list): The JSON data to validate.
-        required_keys (list): List of required keys or key paths to check for (dot-separated).
-        endpoint (str): The API endpoint for context in error messages.
-        max_display_length (int): Maximum length of the truncated data for display.
-
-    Raises:
-        MissingKeyError: If any required key is missing.
-    """
-    if not required_keys:
-        return  # No required keys to check
-
-
-    def check_key_path(data, key_path):
-        """
-        Recursively check if a key path exists in the data.
-
-        Args:
-            data (dict or list): The JSON data to check.
-            key_path (str): Dot-separated path of keys to check.
-
-        Returns:
-            bool: True if the key path exists, False otherwise.
-        """
-        keys = key_path.split(".")
-        current_data = data
-        for key in keys:
-            if isinstance(current_data, list):
-                # If it's a list, check each element for the next key
-                if not all(check_key_path(item, ".".join(keys)) for item in current_data if isinstance(item, dict)):
-                    return False
-                return True
-            elif isinstance(current_data, dict):
-                # If it's a dictionary, check for the key
-                if key not in current_data:
-                    return False
-                current_data = current_data[key]
-            else:
-                return False
-        return True
-
-    missing_keys = []
-    for key_path in required_keys:
-        if not check_key_path(json_data, key_path):
-            missing_keys.append(key_path)
-
-    if missing_keys:
-        # Truncate and format the JSON data
-        truncated_data_html = truncate_json_pretty(json_data, max_display_length)
-        msg = (
-            f"<b>Error:</b> Missing keys in response from '<i>{endpoint}</i>': "
-            f"<span style='color: red;'>{', '.join(missing_keys)}</span>.<br>"
-            f"<b>Received data:</b><br>{truncated_data_html}"
-        )
         raise MissingKeyError(msg)
 
 

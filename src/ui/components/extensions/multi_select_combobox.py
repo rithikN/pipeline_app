@@ -49,6 +49,13 @@ class MultiSelectComboBox(QComboBox):
             self.lineEdit().setText(self.placeholder)
             self.selectionChanged.emit([])
 
+    def select_all(self):
+        for row in range(self.model().rowCount()):
+            item = self.model().item(row)
+            if item.flags() & Qt.ItemIsUserCheckable:
+                item.setCheckState(Qt.Checked)
+        self._selected_items = []
+
     def deselect_all(self):
         for row in range(self.model().rowCount()):
             item = self.model().item(row)
@@ -80,9 +87,14 @@ class MultiSelectComboBox(QComboBox):
 
         if index.row() == 0:
             # "Select All" / first element pressed => deselect everything
-            self.deselect_all()
-            self.lineEdit().setText(self.placeholder)
-            self.selectionChanged.emit([])
+            if item.checkState() == Qt.Checked:
+                self.deselect_all()
+                self.lineEdit().setText(self.placeholder)
+                self.selectionChanged.emit([])
+            else:
+                self.select_all()
+                self.lineEdit().setText(self.placeholder)
+                self.selectionChanged.emit([])
         else:
             # Deselect the first item if any other item is selected
             first_item = self.model().item(0)

@@ -1,23 +1,24 @@
 """
 task_list_widget.py
 
-Provides the TaskListWidget class, which displays a searchable list of tasks
-with color-coded statuses. Includes context menus for various actions.
+UI widget for displaying and interacting with tasks.
+Delegates business logic (download/upload/asset tracker) to an injected controller.
 """
 
 import logging
 from typing import Dict, List
 from PySide6.QtWidgets import (
-    QWidget, QApplication, QHBoxLayout, QLabel, QSpacerItem,
-    QSizePolicy, QListWidgetItem, QMenu, QLineEdit
+    QWidget, QHBoxLayout, QLabel, QSpacerItem, QSizePolicy, QListWidgetItem,
+    QMenu, QLineEdit
 )
 from PySide6.QtCore import Signal, Qt, QPoint
-from PySide6.QtGui import  QIcon, QAction, QPixmap
+from PySide6.QtGui import QIcon, QAction, QPixmap
 
 from ui.components.forms.task_list_form import Ui_TaskListForm
-from ui.utils.stylesheet_loader import load_stylesheet
+from ui.utils.stylesheet_utils import load_stylesheet
 from ui.utils.task_filter import TaskFilter
-from services.constants import TASK_NAME, TASK_STATUS
+from services.constants import TASK_NAME, TASK_STATUS, TASK_STATUS_NAME
+
 logger = logging.getLogger(__name__)
 
 
@@ -25,46 +26,50 @@ class TaskListWidget(QWidget):
     """
     A widget that displays a list of tasks and their statuses.
     Users can search, filter, and select tasks.
+
+    Emits only signals (UI-only). Business logic handled by controllers.
     """
 
-    taskSelected = Signal(str, dict)
+    # Signals (UI → Controller)
+    taskSelected = Signal(str, dict)      # (task_name, task_data)
+    downloadRequested = Signal(dict)      # full task_data
+    uploadRequested = Signal(dict)        # full task_data
+    assetTrackerRequested = Signal(dict)  # full task_data
 
     def __init__(
-            self,
-            tasks: List[Dict] = None,
-            task_status_colors: Dict[str, str] = None,
-            parent: QWidget = None
+        self,
+        tasks: List[Dict] = None,
+        task_status_colors: Dict[str, str] = None,
+        parent: QWidget = None,
     ):
         """
         Initialize the TaskListWidget.
 
         Args:
             tasks (List[Dict], optional): A list of task dictionaries.
-                Each dictionary should have 'task_name' and 'task_status' keys.
-                Defaults to an empty list.
-            task_status_colors (Dict[str, str], optional): A mapping from task status
-                to a color string (e.g., "#FF0000"). Defaults to None.
-            parent (QWidget, optional): Optional parent widget. Defaults to None.
+            task_status_colors (Dict[str, str], optional): Mapping from status to colors.
+            parent (QWidget, optional): Optional parent widget.
         """
         super().__init__(parent)
         logger.debug("Initializing TaskListWidget.")
 
-        # Create and set up the UI
+        # Internal state
+        self._tasks = tasks or []
+        self._task_status_colors = task_status_colors or {}
+
+        # Setup UI
         self._ui = Ui_TaskListForm()
         self._ui.setupUi(self)
 
-        # Expose key UI elements for external usage
+        # Expose UI elements
         self.task_listWidget = self._ui.task_listWidget
         self.search_lineEdit = self._ui.search_lineEdit
 
-        # Internal state
-        self._tasks = tasks if tasks else []
-        self._task_status_colors = task_status_colors if task_status_colors else {}
-
+        # Private UI setup (icon, stylesheet, list config, context menu policy)
         self._setup_ui()
-        self._setup_connections()
 
-        # Populate the tasks initially
+        # Setup signals
+        self._setup_connections()
         self._populate_tasks()
 
     # ------------------------------
@@ -115,19 +120,21 @@ class TaskListWidget(QWidget):
         """
         logger.debug("Configuring UI elements and loading stylesheet.")
         self.setObjectName("TaskListWidget")
-
-        # Load external stylesheet
+        # qss_path = Path.cwd() / "ui" / "stylesheets" / "task_list_widget.qss"
+        # load_stylesheet(self, qss_path)
         load_stylesheet(self, r"ui\stylesheets\task_list_widget.qss")
 
+
+        # Search icon
         pixmap = QPixmap("resources/icons/task_list/search.svg")
         if not pixmap.isNull():
             icon = QIcon(pixmap)
             action = QAction(icon, "", self.search_lineEdit)
-            action.setIconVisibleInMenu(False)  # Hide in menus (optional)
+            action.setIconVisibleInMenu(False)
             action.setIcon(icon)
             self.search_lineEdit.addAction(action, QLineEdit.LeadingPosition)
 
-        # Configure the task_listWidget
+        # Task list config
         self.task_listWidget.setMinimumWidth(400)
         self.task_listWidget.setSpacing(5)
         self.task_listWidget.setViewportMargins(0, 0, 10, 0)
@@ -138,10 +145,10 @@ class TaskListWidget(QWidget):
         Connect various signals to their respective slots.
         """
         logger.debug("Setting up signal connections for TaskListWidget.")
+        self.task_listWidget.itemClicked.connect(self._emit_selected)
         self.task_listWidget.customContextMenuRequested.connect(self._show_context_menu)
-        self.task_listWidget.itemClicked.connect(self._emit_task_selected)
+        self.search_lineEdit.textChanged.connect(lambda text: self.filter_tasks(search_text=text))
         self.task_listWidget.currentItemChanged.connect(self._highlight_selected_item)
-        self.search_lineEdit.textChanged.connect(self.filter_tasks)
 
     def set_icon(self):
         pixmap = QPixmap("resources/icons/task_list/search.svg")
@@ -166,7 +173,7 @@ class TaskListWidget(QWidget):
             return
 
         for task in self._tasks:
-            item_widget = self._create_task_widget(TASK_NAME, TASK_STATUS)
+            item_widget = self._create_task_widget(task[TASK_NAME], task[TASK_STATUS])
             list_item = QListWidgetItem()
             list_item.setSizeHint(item_widget.sizeHint())
             list_item.setData(Qt.UserRole, task)
@@ -187,29 +194,28 @@ class TaskListWidget(QWidget):
         logger.debug(f"Creating task widget for '{task_name}' with status '{task_status}'.")
         task_widget = QWidget()
         task_widget.setFixedHeight(34)
-        task_widget.setStyleSheet(
-            """
-            background-color: #E1E1E8;
-            border-radius: 5px;
-            """
-        )
+        task_widget.setStyleSheet("background-color: #E1E1E8; border-radius: 5px;")
+
         layout = QHBoxLayout(task_widget)
         layout.setContentsMargins(10, 5, 10, 5)
 
-        # Task name label
+        # Task name
         name_label = QLabel(task_name)
         name_label.setStyleSheet("font-size: 14px; border: 0px;")
         layout.addWidget(name_label)
 
-        # Spacer to push the status label to the right
+        # Spacer
         spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         layout.addItem(spacer)
 
-        # Task status label
-        status_color = self._task_status_colors.get(task_status, "gray")
-        task_status_label = QLabel(task_status)
-        task_status_label.setAlignment(Qt.AlignCenter)
-        task_status_label.setStyleSheet(
+        # Status
+        print( task_status, TASK_STATUS_NAME)
+        task_status[TASK_STATUS_NAME] = task_status[TASK_STATUS_NAME].upper()
+        status_color = self._task_status_colors.get(task_status[TASK_STATUS_NAME], "gray")
+
+        status_label = QLabel(task_status[TASK_STATUS_NAME])
+        status_label.setAlignment(Qt.AlignCenter)
+        status_label.setStyleSheet(
             f"""
             background-color: {status_color};
             color: #E1E1E8;
@@ -218,8 +224,7 @@ class TaskListWidget(QWidget):
             border-radius: 5px;
             """
         )
-        layout.addWidget(task_status_label)
-
+        layout.addWidget(status_label)
         return task_widget
 
     def _update_task_list_widget(self, tasks: List[Dict]):
@@ -281,10 +286,9 @@ class TaskListWidget(QWidget):
             logger.info(f"Task '{task_name}' not found in the list.")
 
     # ------------------------------
-    # Event Handlers & Slots
+    # Events, Slots & Context Menu
     # ------------------------------
-
-    def _emit_task_selected(self, item: QListWidgetItem):
+    def _emit_selected(self, item: QListWidgetItem):
         """
         Emit taskSelected signal with the task name when an item is clicked.
         """
@@ -306,103 +310,77 @@ class TaskListWidget(QWidget):
         Update style to highlight the newly selected item and unhighlight the previous one.
         """
         logger.debug("Highlighting selected item and unhighlighting previous one.")
-        # Unhighlight previous
         if previous:
             prev_widget = self.task_listWidget.itemWidget(previous)
             if prev_widget:
-                prev_widget.setStyleSheet(
-                    """
-                    background-color: #E1E1E8;
-                    border-radius: 5px;
-                    """
-                )
-
-        # Highlight current
+                prev_widget.setStyleSheet("background-color: #E1E1E8; border-radius: 5px;")
         if current:
             curr_widget = self.task_listWidget.itemWidget(current)
             if curr_widget:
                 curr_widget.setStyleSheet(
-                    """
-                    border-radius: 5px;
-                    background-color: rgba(0, 120, 215, 0.1); /* Light highlight */
-                    """
+                    "border-radius: 5px; background-color: rgba(0, 120, 215, 0.1);"
                 )
 
     def _show_context_menu(self, position: QPoint):
         """
         Display a context menu for the item at the given position.
         """
-        logger.debug("Showing context menu for a task item.")
+
+        logger.info("Showing context menu for a task item.")
+
         item = self.task_listWidget.itemAt(position)
-        if item:
-            # Create the context menu
-            context_menu = QMenu(self)
+        if not item:
+            return
+        task_data = item.data(Qt.UserRole)
 
-            # Add actions
-            open_action = QAction("Open Task", self)
-            delete_action = QAction("Delete Task", self)
-            mark_done_action = QAction("Mark as Done", self)
-
-            # Connect actions
-            open_action.triggered.connect(lambda: self.open_task(item))
-            delete_action.triggered.connect(lambda: self.delete_task(item))
-            mark_done_action.triggered.connect(lambda: self.mark_task_done(item))
-
-            # Add to the context menu
-            context_menu.addAction(open_action)
-            context_menu.addAction(delete_action)
-            context_menu.addAction(mark_done_action)
-
-            context_menu.exec(self.task_listWidget.mapToGlobal(position))
-
-    # ------------------------------
-    # Context Menu Action Handlers
-    # ------------------------------
-
-    def open_task(self, item: QListWidgetItem):
-        """
-        Handles the 'Open Task' action from the context menu.
-        """
-        logger.debug(f"Open Task action triggered for item data: {item.data(Qt.UserRole)}")
-        print(f"Opening task: {item.data(Qt.UserRole)}")
-
-    def delete_task(self, item: QListWidgetItem):
-        """
-        Handles the 'Delete Task' action from the context menu.
-        """
-        logger.debug(f"Delete Task action triggered for item text: {item.text()}")
-        print(f"Deleting task: {item.text()}")
-
-    def mark_task_done(self, item: QListWidgetItem):
-        """
-        Handles the 'Mark as Done' action from the context menu.
-        """
-        logger.debug(f"Mark Task Done action triggered for item text: {item.text()}")
-        print(f"Marking task as done: {item.text()}")
+        menu = QMenu(self)
+        menu.addAction("Download Task Files", lambda: self.downloadRequested.emit(task_data))
+        menu.addAction("Upload Input Files", lambda: self.uploadRequested.emit(task_data))
+        menu.addSeparator()
+        menu.addAction("Asset Tracker", lambda: self.assetTrackerRequested.emit(task_data))
+        menu.exec(self.task_listWidget.mapToGlobal(position))
 
 
 if __name__ == "__main__":
     import sys
+    import logging
+    from PySide6.QtWidgets import QApplication
 
     logging.basicConfig(level=logging.DEBUG)
     app = QApplication(sys.argv)
 
-    # Example tasks
     tasks = [
-        {"task_name": "prj_e000_sc000_sh0000_task", "task_status": "NYS"},
-        {"task_name": "prj_e014_sc001_sh0010_lay", "task_status": "APP"},
-        {"task_name": "prj_e410_SC010_sh0145_bgl", "task_status": "EXT_RTK"},
-        {"task_name": "prj_sq0910_sh0562_abc", "task_status": "WFA"},
-        {"task_name": "prj_SEQ0450_SH1480_cmp", "task_status": "IN FARM"},
+        {
+            "name": "HL_BGL_Sc9998_Sh0040",
+            "slug": "hl_bgl_sc9998_sh0040-24b3",
+            "task_status": {"short_name": "TODO", "color": "#f5f5f5"},
+        },
+        {
+            "name": "HL_Sc9998_Sh0070_COMP",
+            "slug": "hl_sc9998_sh0070_comp-4abd",
+            "task_status": {"short_name": "WIP", "color": "#E81123"},
+        },
+        {
+            "name": "HL_Sc0940_Sh0020_TNL",
+            "slug": "hl_sc0940_sh0020_tnl-4f64",
+            "task_status": {"short_name": "HOLD", "color": "#442211"},
+        },
     ]
+
+    # Map status codes → colors (fallback)
     task_status_colors = {
-        "NYS": "blue",
-        "APP": "green",
-        "EXT_RTK": "red",
-        "WFA": "orange",
-        "IN FARM": "brown"
+        "TODO": "gray",
+        "WIP": "red",
+        "HOLD": "brown",
     }
 
-    window = TaskListWidget(tasks, task_status_colors)
-    window.show()
+    widget = TaskListWidget(tasks=tasks, task_status_colors=task_status_colors)
+
+    widget.taskSelected.connect(lambda n, d: print("Selected:", n))
+    widget.downloadRequested.connect(lambda d: print("Download:", d["name"]))
+    widget.uploadRequested.connect(lambda d: print("Upload:", d["name"]))
+    widget.assetTrackerRequested.connect(lambda d: print("Track assets for:", d["name"]))
+
+    widget.show()
     sys.exit(app.exec())
+
