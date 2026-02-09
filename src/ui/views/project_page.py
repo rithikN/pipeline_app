@@ -206,14 +206,10 @@ class ProjectPage(QWidget):
             self.prev_page_callback()
 
     def _on_next(self):
-        """
-        Navigate to the next page with the selected project data.
-        """
         table = self._ui.project_tableWidget
         item = table.item(self.selected_row, self.selected_col)
         if item and (project_data := item.data(Qt.UserRole)):
-            data = {"artist_slug": self.form_data["user_slug"], "artist_name": self.form_data["artist_name"], "project": project_data}
-            self.next_page_callback(data)
+            self.next_page_callback(self._build_next_payload(project_data))
 
     def _on_cell_clicked(self, row, col):
         """
@@ -230,8 +226,8 @@ class ProjectPage(QWidget):
         Select first project cell by default while loading page.
         """
         self.selected_row, self.selected_col = 0, 0
-        self._ui.next_pushButton.setEnabled(True) 
-            
+        self._ui.next_pushButton.setEnabled(True)
+
     def _on_cell_double_clicked(self, row, col):
         """
         Handle cell double-click event.
@@ -239,8 +235,7 @@ class ProjectPage(QWidget):
         table = self._ui.project_tableWidget
         item = table.item(row, col)
         if item and (project_data := item.data(Qt.UserRole)):
-            data = {"artist_slug": self.form_data["user_slug"], "artist_name": self.form_data["artist_name"], "project": project_data}
-            self.next_page_callback(data)
+            self.next_page_callback(self._build_next_payload(project_data))
 
     def _on_resize(self, event):
         """
@@ -254,3 +249,13 @@ class ProjectPage(QWidget):
 
         if key == Qt.Key_Return or key == Qt.Key_Enter:
             self._on_next()
+
+    def _build_next_payload(self, project_data: dict) -> dict:
+        profile_id = (self.form_data or {}).get("environment_profile") or (self.form_data or {}).get("profile_id")
+
+        return {
+            "artist_slug": self.form_data.get("user_slug"),
+            "artist_name": self.form_data.get("artist_name"),
+            "project": project_data,
+            "profile_id": profile_id,
+        }

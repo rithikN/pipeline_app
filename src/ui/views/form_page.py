@@ -58,10 +58,19 @@ class FormPage(QWidget):
         self._setup_ui()
         self._setup_connections()
 
+
     def set_response_data(self, response_data):
-        username = response_data["artist_name"]
+        if "user" in response_data:
+            username = response_data["user"].get("display_name") or response_data["user"].get("username")
+        else:
+            # fallback for older payloads
+            username = response_data.get("artist_name") or response_data.get("username")
+
+        if not username:
+            raise KeyError("No display name found in response_data")
+
         self.set_username(username)
-        self.user_data = response_data    
+        self.user_data = response_data
 
     def _setup_ui(self):
         """
@@ -155,10 +164,11 @@ class FormPage(QWidget):
                 form_data[widget.id] = widget.get_value()
 
         if form_data:
+            form_data.update(self.user_data)
             logger.info("Form data collected successfully.")
             logger.debug(f"Form data: {form_data}")
             if self.next_page_callback:
-                self.next_page_callback(self.user_data)
+                self.next_page_callback(form_data)
         else:
             logger.warning("No form data was collected. Submission failed.")
 

@@ -1,12 +1,14 @@
 # controllers/task_controller.py
 
-import os, subprocess, logging
+import os, subprocess
 from pathlib import Path
+import logging
+from typing import Optional, Dict, Any
 
 from controllers.base_controller import BaseController
 from services.data_service import check_ftp_connection
 
-# domain services
+# ToD deprecate domain services
 from pipeline.domain.services import task_service
 from pipeline.infra.rclone import copy_through_rclone
 from pipeline.infra.kitsu_client import fetch_data_from_kitsu
@@ -15,6 +17,8 @@ from pipeline.domain.services.assets import get_local_asset_base
 from pipeline.config.settings import ASSET_SERVER_BASE
 
 from pipeline.events import Event
+from services import wfh_mapping  # you already have this
+from pipeline.infra.threads.workfile_download_thread import WorkfileDownloadThread
 
 logger = logging.getLogger(__name__)
 
@@ -22,37 +26,85 @@ logger = logging.getLogger(__name__)
 class TaskController(BaseController):
     """
     Orchestrates operations related to tasks:
-    - Download task files
+    - Download task files (legacy)
+    - Download selected workfile + dependencies (new)
     - Upload input files
     - Track assets
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._active_threads = set()  # keep QThreads alive
+
     # --------------------
-    # Download
+    # Download (Legacy + New)
     # --------------------
     def handle_download(self, task_data: dict):
-        with self.operation(
-            title="Download Task",
-            message=f"Downloading {task_data['name']}",
-            payload=task_data,
-        ):
-            if not check_ftp_connection(check_FTP_conn=True):
-                raise RuntimeError("FTP connection failed")
+        title = "Download"
+        message = f"Downloading {task_data.get('name')}"
+        payload = {"task": task_data}
 
-            fail_codes, error_codes = {}, {}
+        # Start progress (manual, async-safe)
+        if self.event_manager and not self.headless:
+            self.event_manager.progressStarted.emit(
+                Event(type="progress", title=title, message=message, payload=payload))
+        else:
+            logger.info(f"[START] {title}: {message}")
 
-            # Step 1: Empty folder skeleton
-            task_service.download_empty_folder(task_data, fail_codes, error_codes)
+        th = WorkfileDownloadThread(
+            task_data=task_data,
+            logger=logger,
+            check_ftp_connection_fn=check_ftp_connection,  # service must call only when is_remote_scheme(src)
+        )
 
-            # Step 2: Standard folders
-            for folder in ("input", "feedback", "references"):
-                task_service.download_folder(folder, task_data, fail_codes, error_codes)
+        # keep thread alive using existing BaseController tracking
+        self.add_worker(th)
 
-            # Step 3: Dependencies
-            task_service.download_dependencies(task_data, fail_codes, error_codes)
+        def _finish_ok(summary: dict):
+            # remove first
+            self.remove_worker(th)
 
-            if fail_codes or error_codes:
-                raise RuntimeError(f"Download issues: {fail_codes}, {error_codes}")
+            # close progress dialog
+            if self.event_manager and not self.headless:
+                self.event_manager.progressFinished.emit(
+                    Event(type="success", title=title, message="Download completed",
+                          payload={"task": task_data, "summary": summary})
+                )
+            else:
+                logger.info(f"[SUCCESS] {title}")
+
+            # optional: also publish a richer event if your UI listens for it
+            self.publish_event(
+                "workfileDownloadFinished",
+                Event(type="success", title=title, message="Download completed",
+                      payload={"task": task_data, "summary": summary}),
+            )
+
+        def _finish_err(err: str):
+            self.remove_worker(th)
+
+            if self.event_manager and not self.headless:
+                self.event_manager.errorOccurred.emit(
+                    Event(type="error", title=title, message=str(err), payload={"task": task_data})
+                )
+            else:
+                logger.error(f"[ERROR] {title}: {err}")
+
+            self.publish_event(
+                "workfileDownloadError",
+                Event(type="error", title="Download error", message=str(err), payload={"task": task_data}),
+            )
+
+        th.progress.connect(
+            lambda m, c, t: self.publish_event(
+                "workfileDownloadProgress",
+                Event(type="progress", title=title, message=f"{m} ({c}/{t})", payload={"task": task_data}),
+            )
+        )
+        th.data_fetched.connect(_finish_ok)
+        th.error_occurred.connect(_finish_err)
+
+        th.start()
 
     # --------------------
     # Upload

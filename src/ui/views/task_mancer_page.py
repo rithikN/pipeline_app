@@ -44,8 +44,8 @@ from services.constants import PROJECT, PROJECT_NAME, PROJECT_SLUG, ARTIST_SLUG
 from pipeline.events import Event
 from pipeline.infra.threads.project_fetch_thread import ProjectDataFetchThread
 
-# Config
-from pipeline.config.settings import settings
+from services.file_ops import find_latest_version_on_disk
+
 
 logger = logging.getLogger(__name__)
 
@@ -110,7 +110,8 @@ class TaskMancerPage(QWidget):
         self._selected_file = ""
 
         # Applications from config
-        self.applications = settings.get("APPLICATIONS", [])
+        # self.applications = settings.get("APPLICATIONS", [])
+        self.applications = []
 
         # Tracking variables
         self.current_working_version = None
@@ -182,6 +183,7 @@ class TaskMancerPage(QWidget):
         sm.assetTrackerEmpty.connect(self._on_asset_tracker_empty)
         sm.download_triggered.connect(self._on_download_project_files)
 
+
     # ------------------------------------------------------------
     #  PROJECT LOADING
     # ------------------------------------------------------------
@@ -205,11 +207,14 @@ class TaskMancerPage(QWidget):
         progress_dialog = ProgressDialog(self, title="Loading Project Data", message="Fetching data...")
         progress_dialog.show()
 
+        profile_id = (project_data or {}).get("profile_id") or (project_data or {}).get("environment_profile") or ""
         self.data_thread = ProjectDataFetchThread(
-            project_data = {
-            "project_slug": project_data[PROJECT][PROJECT_SLUG],
-            "artist_slug": project_data[ARTIST_SLUG],
-        })
+            project_data={
+                PROJECT_NAME: project_data[PROJECT][PROJECT_NAME],
+                "user": project_data[ARTIST_SLUG],  # ToDo Depreciated if need to pass user not use ARTIST_SLUG
+                "profile_id": profile_id,
+            }
+        )
 
         # --- Callbacks ---
         def on_data_fetched(result):
@@ -219,10 +224,11 @@ class TaskMancerPage(QWidget):
 
         def _build_and_populate_ui(task_data, task_status, dialog_ref):
             if not task_data or not task_status:
-                logger.error("Incomplete data received from the server.")
-                self.message_box.show_error("Received incomplete data from the server.", "error", "On Refresh.")
-                dialog_ref.close()
-                return
+                pass
+                # logger.error("Incomplete data received from the server.")
+                # self.message_box.show_error("Received incomplete data from the server.", "error", "On Refresh.")
+                # dialog_ref.close()
+                # return
 
             self._taskStatus = task_status
             self._taskData = task_data
@@ -308,7 +314,7 @@ class TaskMancerPage(QWidget):
           - selected task & file
           - apply filters
         """
-        logger.debug("Populating TaskMancerPage with fetched data.")
+        logger.debug("Populating TaskMancerPage with fetched data %s %s", task_data, task_status)
         if not task_data or not task_status:
             logger.warning("No task data or status data to populate.")
             return
@@ -363,6 +369,11 @@ class TaskMancerPage(QWidget):
 
         scenes = sorted(set(get_scenes(self._task_list)), reverse=True)
         self._fill_combobox(selection_widget.scene_comboBox, "Select All", list(scenes))
+
+        # ToDo there may be a case where backend start changing respone hence may affect here like
+        #    task_types = sorted(set(get_taskTypes(self._task_list)))
+        #    TypeError: unhashable type: 'dict'
+        #  tackle or design a robust system here
 
         task_types = sorted(set(get_taskTypes(self._task_list)))
         self._fill_combobox(selection_widget.task_comboBox, "Select All", task_types)
@@ -433,6 +444,7 @@ class TaskMancerPage(QWidget):
 
         if wfwidget:
             wfwidget.fileSelected.connect(self._update_work_details)
+            wfwidget.fileDoubleClicked.connect(self._open_file)
             wfwidget.createRequested.connect(self._on_workfile_create_requested)
             wfwidget.downloadRequested.connect(self._on_download_requested)
             wfwidget.uploadRequested.connect(self._on_upload_requested)
@@ -548,7 +560,9 @@ class TaskMancerPage(QWidget):
         if not wf:
             return
         files_data = get_workFiles(task_name, task_data)
+        print(files_data, '>>>>>>>>>>678')
         wf.set_task_data(task_data)
+        logger.debug(f"files setting with :- {files_data}")
         wf.files = files_data
 
     def _update_work_details(self, workfile_data):
@@ -603,6 +617,7 @@ class TaskMancerPage(QWidget):
     #  CONTROLLER DELEGATES
     # ------------------------------------------------------------
     def _on_workfile_create_requested(self, task_data: dict):
+        logger.debug(f"For Create Requested WorkFile task '{task_data}'.")
         self.workfile_controller.handle_create_file(task_data)
 
     def _on_download_requested(self, file_data: dict):
@@ -666,8 +681,17 @@ class TaskMancerPage(QWidget):
     def _on_file_created(self, event: Event):
         # Refresh the file list for the active task when a file is created
         wfwidget = self.areas["work"]["file_widget"]
-        if wfwidget and wfwidget.task_data:
-            wfwidget.files = wfwidget.task_data.get("work_files", [])
+        if not (wfwidget and wfwidget.task_data):
+            return
+
+        p = event.payload or {}
+        path = p.get("workfile_path")
+        if path:
+            # keep your existing list format if it’s dicts; adjust as needed
+            wfwidget.task_data.setdefault("work_files", [])
+            wfwidget.task_data["work_files"].insert(0, {"path": path})
+
+        wfwidget.files = wfwidget.task_data.get("work_files", [])
 
     def _on_asset_list_ready(self, event: Event):
         assets = event.payload.get("assets", [])
@@ -707,6 +731,84 @@ class TaskMancerPage(QWidget):
             selected_task = ""
             selected_file = ""
         self.set_project(self._project_data, search_text, selection_filters, selected_task, selected_file)
+
+
+
+    def _open_file(self, workfile_data: dict, task_data: dict):
+        work_detail = (workfile_data or {}).get("work_detail") or {}
+        file_name = work_detail.get("file_name") or "this file"
+        file_path = work_detail.get("file_path") or ""
+        app_name = workfile_data.get("app_name") or "the application"
+        version = workfile_data.get("version") or ""
+        slug = workfile_data.get("slug") or ""
+
+        # --- ToDO temp, due to deadline, it should not exists here
+        # if selected file is not latest on disk ---
+
+        if file_path:
+            res = find_latest_version_on_disk(file_path)
+            if not res.is_latest and res.latest_path:
+                cur_str = (
+                    f"V{res.current_version:0{res.version_width}d}"
+                    if res.current_version is not None and res.version_width
+                    else (version or "UNKNOWN")
+                )
+                latest_str = (
+                    f"V{res.latest_version:0{res.version_width}d}"
+                    if res.latest_version is not None and res.version_width
+                    else "UNKNOWN"
+                )
+
+                # Use your existing global MessageBox instance
+                self.message_box.show_message(
+                    message=(
+                        "You did not select the latest workfile.\n\n"
+                        f"Selected: {cur_str}\n"
+                        f"Latest on disk: {latest_str}\n\n"
+                        f"Latest path:\n{str(res.latest_path)}\n\n"
+                        "Please refresh the workfile list and select the latest version."
+                    ),
+                    message_type="warning",
+                    title="Not Latest Version",
+                    rich_text=False,
+                )
+                return
+        # -------------------------------------------------------
+
+        # Nice display path (shorten if long)
+        display_path = file_path
+        try:
+            p = Path(file_path)
+            display_path = str(p)
+        except Exception:
+            pass
+
+        # ToDo please create or use global confirm message box
+        from PySide6.QtWidgets import QMessageBox
+        msg = QMessageBox(self)
+        msg.setIcon(QMessageBox.Question)
+        msg.setWindowTitle("Open Work File")
+        msg.setText(f"Open {file_name} in {app_name}?")
+        msg.setInformativeText(
+            "\n".join(
+                s for s in [
+                    f"Version: {version}" if version else "",
+                    f"Slug: {slug}" if slug else "",
+                    f"Path: {display_path}" if display_path else "",
+                ]
+                if s
+            )
+        )
+        msg.setStandardButtons(QMessageBox.Open | QMessageBox.Cancel)
+        msg.setDefaultButton(QMessageBox.Open)
+
+        result = msg.exec()
+        if result != QMessageBox.Open:
+            return
+
+        # User confirmed
+        print(f"Opening file...{workfile_data} and {task_data}")
+        self.workfile_controller.handle_open_file(workfile_data, task_data)
 
 
 if __name__ == "__main__":

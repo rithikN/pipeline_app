@@ -4,20 +4,28 @@ data_service.py
 High-level data layer.
 Handles API endpoints + local file sync helpers.
 No UI or dialogs here.
+
+Notes:
+- WFH drive mapping + local-only file visibility is handled inside services.file_ops.get_work_files().
+  That function may also attach task_data["pipeline"]["wfh_state"] for UI logic.
 """
 
 import logging
 import socket
 from pipeline.config.settings import settings, PIPELINE_ENV
 from services.api_client import fetch_data, send_data
-from services.file_ops import sync_local_files
+from services.auth_context import set_tokens
+
+# Keep import minimal; sync_local_files is legacy / optional
+from services.file_ops import get_work_files
+
 from pipeline.infra.rclone import copy_through_rclone
 
 from services.constants import (
     PROJECT_NAME,
     TASK_STATUS, TASK_STATUS_NAME, TASK_STATUS_COLOR,
     TASK_SHOT_DETAIL, TASK_SHOT_SEQ_DETAIL, TASK_SHOT_SEQ_EPISODE_DETAIL,
-    TASK_SHOT_SEQ_EPISODE_NAME, TASK_SHOT_SEQ_NAME
+    TASK_SHOT_SEQ_EPISODE_NAME, TASK_SHOT_SEQ_NAME, TASK_TYPE, TASK_TYPE_NAME
 )
 
 logger = logging.getLogger(__name__)
@@ -25,14 +33,19 @@ logger = logging.getLogger(__name__)
 # -------------------------------------------------------------------------
 # CONFIGURATION
 # -------------------------------------------------------------------------
-BASE_URL = settings.get("API_BASE_URL", "http://127.0.0.1:5000/api")
+BASE_URL = settings.get("API_BASE_URL", "http://10.10.19.99:8000/api")
 
 
 # -------------------------------------------------------------------------
 # API ENDPOINT WRAPPERS
 # -------------------------------------------------------------------------
+
+
 def login_user(credentials):
-    return send_data("auth/login/", credentials, required_keys=["status"])
+    tokens = send_data("auth/login/", credentials, required_keys=["access", "refresh"])
+    set_tokens(tokens.get("access"), tokens.get("refresh"))
+    profile = get_pipeline_profile()
+    return {"tokens": tokens, "profile": profile}
 
 
 def get_formUiData():
@@ -44,7 +57,14 @@ def get_projects(data):
 
 
 def get_taskData(data):
-    return send_data("api/tasks/", data)
+    show = data[PROJECT_NAME]
+    profile_id = data.get("profile_id") or data.get("environment_profile")
+
+    params = {"show": show, "include_done": False}
+    if profile_id:
+        params["profile_id"] = profile_id
+
+    return fetch_data("tasks/assigned/", params=params)
 
 
 def get_taskDetail(task_name, task_list):
@@ -54,7 +74,17 @@ def get_taskDetail(task_name, task_list):
 
 
 def get_taskTypes(task_list):
-    return [task.get("task_type") for task in task_list if "task_type" in task]
+    task_types = []
+    for task in task_list:
+        task_obj = task.get(TASK_TYPE) or {}
+        name = (task_obj.get(TASK_TYPE_NAME) or "")
+        task_types.append(name)
+    return task_types
+
+
+def get_pipeline_profile(access_token: str | None = None):
+    headers = {"Authorization": f"Bearer {access_token}"} if access_token else None
+    return fetch_data("pipeline/profile/", required_keys=["user", "pipeline"], headers=headers)
 
 
 def get_taskStatus(task_list):
@@ -64,13 +94,12 @@ def get_taskStatus(task_list):
     """
     status_map = {}
     for task in task_list:
-        status_obj = task.get(TASK_STATUS) or {}
+        status_obj = task.get(TASK_TYPE) or {}
         name = (status_obj.get(TASK_STATUS_NAME) or "").upper()
         color = status_obj.get(TASK_STATUS_COLOR)
         if name:
             status_map[name] = color
     return status_map
-
 
 
 def get_episodes(project_data, task_list):
@@ -109,8 +138,23 @@ def get_scenes(task_list):
 # -------------------------------------------------------------------------
 # WORK FILES / LOCAL SYNC
 # -------------------------------------------------------------------------
+
 def get_workFiles(task_name, task_data):
-    return sync_local_files(task_data)
+    """
+    Returns workfiles for the given task_data.
+
+    Important:
+    - In WFH/remote mode, services.file_ops.get_work_files() will:
+        - ensure Z: mapping (local cache root)
+        - return ONLY local (Z:) workfiles
+        - optionally probe UNC and attach task_data["pipeline"]["wfh_state"]
+          so UI can hide/disable Create File when files exist only on UNC.
+    """
+    try:
+        return get_work_files(task_data)
+    except Exception as exc:
+        logger.warning("get_workFiles failed for task=%s err=%s", task_name, exc)
+        return []
 
 
 def get_workDetails(work_file):
@@ -122,23 +166,23 @@ def get_workDetails(work_file):
 # PIPELINE ACTIONS
 # -------------------------------------------------------------------------
 def create_file(data):
-    return send_data("api/create-file-record/", data)
+    return send_data("tasks/create-file/", data)
 
 
 def version_up_file(data):
-    return send_data("api/file/version_up/", data)
+    return send_data("file/version_up/", data)
 
 
 def upload_to_kitsu(data):
-    return send_data("api/upload-to-kitsu/", data)
+    return send_data("upload-to-kitsu/", data)
 
 
 def fetch_data_from_kitsu(data):
-    return send_data("api/fetch-data-from-kitsu/", data)
+    return send_data("fetch-data-from-kitsu/", data)
 
 
 def publish_file(data):
-    return send_data("api/file/publish/", data)
+    return send_data("file/publish/", data)
 
 
 # -------------------------------------------------------------------------
@@ -182,6 +226,11 @@ def check_ftp_connection(check_RCLONE=False, check_FTP_conn=False, check_NET=Tru
             return False
         return None
     return True
+
+
+def finalize_file_record(payload: dict) -> dict:
+    return send_data("tasks/finalize-file-op", payload)
+
 
 # Additional notes for backend
 """

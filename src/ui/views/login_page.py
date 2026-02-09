@@ -83,6 +83,9 @@ class LoginPage(QWidget):
             PASS_ID, PASS_LABEL, PASS_PLACEHOLDER, "resources/icons/login_page/pass.svg", True, self.login_ui.login_pushButton)
         self.scroll_layout.addWidget(self.password_lineEdit)
 
+        self.username_lineEdit.set_value('shiva.bot')
+        self.password_lineEdit.set_value('abc.123')
+
 
 
 
@@ -116,18 +119,20 @@ class LoginPage(QWidget):
         elif not check_ftp_connection(check_RCLONE=True):
             return None
 
+        logger.debug("Login payload username=%r password_len=%d", self.username, self.password, len(self.password or ""))
         response = login_user({"username": self.username, "password": self.password})
+        profile = response["profile"]
+        tokens = response["tokens"]  # store somewhere global if needed
         if not response:
             logger.error("No response received from the login service.")
             return
 
-        if response.get("status"):
-            data = response
+        if tokens.get("access") and tokens.get("refresh"):
             logger.info(f"User '{self.username}' logged in successfully.")
             if self.next_page_callback:
-                self.next_page_callback(data)
+                self.next_page_callback(profile)
         else:
-            logger.warning(f"Login failed for user '{self.username}'.")
+            logger.warning(f"Login failed for user '{self.username}'. Response: {response}")
             self.message_box.show_message(
                 "Login failed. Please check your credentials and try again.",
                 message_type="warning",

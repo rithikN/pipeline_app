@@ -41,7 +41,7 @@ class TaskFilter:
         def matches_filter(value, filter_values):
             """Case-insensitive matching for a task value and filter values."""
             if type(value) == dict:
-                value = value["short_name"]
+                value = value["name"] #ToDo if possible use constants key here
             if not filter_values:
                 return True
             if not isinstance(filter_values, list):

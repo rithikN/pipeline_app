@@ -47,7 +47,7 @@ def handle_http_status(response, url=None):
         MessageBoxManager.show_error(f"Backend Error: Client Error. {response.status_code} {response.reason}")
 
     elif response.status_code >= 500:
-        MessageBoxManager.show_error(f"Backend Error: Server Error. {response.status_code} {response.json().get("message")}")
+        MessageBoxManager.show_error(f"Backend Error: Server Error. {response.status_code} {response.json().get('message')}")
 
 
 def truncate_json(data, max_length=500):

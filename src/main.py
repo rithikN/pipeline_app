@@ -7,6 +7,10 @@ applies global styles, configures logging, and runs the MainWindow.
 
 import sys
 import os
+from dotenv import load_dotenv
+
+load_dotenv()  # Loads .env from current dir
+print(os.environ['PIPELINE_LOCAL_CACHE_ROOT'])
 import logging
 from pathlib import Path
 

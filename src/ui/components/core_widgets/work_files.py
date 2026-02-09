@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
     QWidget, QApplication, QHBoxLayout, QLabel, QSpacerItem,
     QSizePolicy, QListWidgetItem, QPushButton, QMenu
 )
-from PySide6.QtCore import Signal, Qt, QSize, QPoint
+from PySide6.QtCore import Signal, Qt, QSize, QPoint, Slot
 from PySide6.QtGui import QIcon, QCursor
 
 from ui.components.forms.work_files_form import Ui_WorkFilesForm
@@ -39,6 +39,7 @@ class WorkFilesWidget(QWidget):
     downloadRequested = Signal(dict)   # emits file_data
     uploadRequested = Signal(dict)     # emits file_data
     fileSelected = Signal(dict)        # emits file_data
+    fileDoubleClicked = Signal(dict, dict)   # emits file_data  and task_data
     refreshRequested = Signal()
 
     def __init__(
@@ -97,6 +98,7 @@ class WorkFilesWidget(QWidget):
         logger.debug("Setting up signal connections for WorkFilesWidget.")
         self.workFiles_listWidget.customContextMenuRequested.connect(self._show_context_menu)
         self.workFiles_listWidget.itemClicked.connect(self._emit_selected)
+        self.workFiles_listWidget.itemDoubleClicked.connect(self._emit_double_clicked)
         self.workFiles_listWidget.currentItemChanged.connect(self._highlight_selected_item)
 
     # ---------------------------
@@ -155,6 +157,7 @@ class WorkFilesWidget(QWidget):
             self._add_create_file_button()
         elif self._files:
             # Sort files based on the current combo box choice
+            logger.debug(f"Populating files in WorkFilesWidget with files: {self.files}")
             self._sort_files()
 
             # Create list items for each file
@@ -279,6 +282,18 @@ class WorkFilesWidget(QWidget):
         file_data = item.data(Qt.UserRole)
         if file_data:
             self.fileSelected.emit(file_data)
+
+    @Slot(QListWidgetItem)
+    def _emit_double_clicked(self, item: QListWidgetItem):
+        """
+        Emits fileDoubleClicked(file_data) when a list entry is double-clicked.
+        """
+        if not item:
+            return
+
+        file_data = item.data(Qt.UserRole) or {}
+        if file_data and self.task_data:
+            self.fileDoubleClicked.emit(file_data, self.task_data)
 
     def _highlight_selected_item(self, current: QListWidgetItem, previous: QListWidgetItem):
         """

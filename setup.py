@@ -36,6 +36,7 @@ def build_application():
         "--name", "PipelineManager",
         "--add-data", f"src/ui/stylesheets{path_sep}ui/stylesheets",
         "--add-data", f"src/resources{path_sep}resources",
+        "--add-data", f"src/config{path_sep}config",
         "src/main.py"
     ]
     

@@ -167,7 +167,7 @@ class TaskListWidget(QWidget):
         """
         Clears the list widget and repopulates it with the tasks.
         """
-        logger.debug("Populating task list widget with tasks.")
+        logger.debug("Populating task list widget with tasks: %s", self._tasks)
         self.task_listWidget.clear()
         if not self._tasks:
             return
@@ -292,7 +292,10 @@ class TaskListWidget(QWidget):
         """
         Emit taskSelected signal with the task name when an item is clicked.
         """
-        logger.debug("Task item clicked.")
+
+        # ToDo Please empty workfile list so that it always refresh correct workfiles,
+        #  handle Could not determine task_code, here or in backend
+        logger.debug(f"Task item clicked. {item}")
         if not item:
             return
 

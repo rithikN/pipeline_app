@@ -49,8 +49,10 @@ VALID_VIDEO_FORMATS = [".mp4",".mov"]
 # task_list
 TASK_SLUG                    = "slug"
 TASK_NAME                    = "name"
-TASK_STATUS                  = "task_status"
-TASK_STATUS_NAME             = "short_name"
+TASK_TYPE                    = "task_type"
+TASK_TYPE_NAME               = "name"
+TASK_STATUS                  = "status"
+TASK_STATUS_NAME             = "name"
 TASK_STATUS_COLOR            = "color"
 TASK_SHOT_DETAIL             = "shot_detail"
 TASK_SHOT_SEQ_DETAIL         = "sequence_details"

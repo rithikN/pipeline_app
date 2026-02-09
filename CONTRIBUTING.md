@@ -2,7 +2,7 @@
 
 ## Overview
 
-The **TaskMancer** application is a modular PySide6-based desktop application designed for managing complex project workflows in a 3D production pipeline. It incorporates user authentication, dynamic forms, task management, and project review areas. Its architecture follows a layered approach, separating UI components, business logic, and backend services.
+The **TaskMancer** application is a modular PySide6-based desktop application designed for managing complex project workflows in a 3D production pipeline_client. It incorporates user authentication, dynamic forms, task management, and project review areas. Its architecture follows a layered approach, separating UI components, business logic, and backend services.
 
 ## High-Level Architecture
 

@@ -140,3 +140,17 @@ def get_widget_size(widget):
     return width, height
 
 
+
+
+from PySide6.QtWidgets import QMessageBox
+
+def confirm_open_dialog(parent, *, title: str, text: str, info: str = "") -> bool:
+    msg = QMessageBox(parent)
+    msg.setIcon(QMessageBox.Question)
+    msg.setWindowTitle(title)
+    msg.setText(text)
+    if info:
+        msg.setInformativeText(info)
+    msg.setStandardButtons(QMessageBox.Open | QMessageBox.Cancel)
+    msg.setDefaultButton(QMessageBox.Open)
+    return msg.exec() == QMessageBox.Open

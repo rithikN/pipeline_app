@@ -62,6 +62,9 @@ class LineEditComponent(QWidget):
     def get_value(self):
         return self.line_edit.text()
 
+    def set_value(self, value):
+        return self.line_edit.setText(value)
+
 
 class MainWidget(QWidget):
     def __init__(self):

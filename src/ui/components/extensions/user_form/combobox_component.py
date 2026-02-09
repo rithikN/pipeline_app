@@ -28,7 +28,7 @@ class ComboBoxComponent(QWidget):
         self.icon_label.setStyleSheet("background: transparent;")
 
         self.combo_box = QComboBox()
-        self.combo_box.addItems(options)
+        self._load_options(options)
 
         # Add widgets to layout based on the icon
         if self.icon_path:
@@ -68,8 +68,32 @@ class ComboBoxComponent(QWidget):
 
         return pixmap
 
+    def _load_options(self, options: list):
+        """
+        Supports:
+          - ["Pune", "Thrissur"]
+          - [{"label":"Office","value":"prod_office"}, ...]
+        Stores "value" in itemData so get_value() can return it.
+        """
+        self.combo_box.clear()
+
+        if not options:
+            return
+
+        # dict options
+        if isinstance(options[0], dict):
+            for opt in options:
+                label = str(opt.get("label", ""))
+                value = opt.get("value", label)
+                self.combo_box.addItem(label, value)
+        else:
+            # string options (backward compatible)
+            for opt in options:
+                self.combo_box.addItem(str(opt), str(opt))
+
     def get_value(self):
-        return self.combo_box.currentText()
+        data = self.combo_box.currentData()
+        return data if data is not None else self.combo_box.currentText()
 
 
 # Example Usage
